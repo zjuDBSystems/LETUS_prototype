@@ -23,8 +23,7 @@ public:
 
         ofstream file("data_file_" + to_string(current_fileID_), ios::app);// create or open the file for appending
         if (!file) {
-            cerr << "Error : can't open file " << endl;
-            return;
+            throw std::runtime_error("Cannot open the VDLS file");
         }
 
         file << "(" << version << "," << key << "," << value << ")" << endl;
