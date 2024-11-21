@@ -15,6 +15,8 @@ namespace fs = std::filesystem;
 // 假设： 同一个版本 同一个k只有一个v
 // 可能的优化：#120可能在DMM-Trie的cache里面 #121就很容易replay但是在LSVPSreplay就需要#100basepage+21个deltapage
 
+class DMMTrie;
+
 // 页面块类型枚举
 enum class PageBlockType { BasePage, DeltaPage };
 

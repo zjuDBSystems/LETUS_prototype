@@ -2,14 +2,22 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 
 PROJECT(letus_prototype)
 
-set(PROTOBUF_PROTOC_EXECUTABLE "/usr/bin/protoc")
-set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+find_library(jsoncpp REQUIRED)
+
+set(CMAKE_CXX_COMPILER "/usr/bin/g++-8")
+# set(CMAKE_CXX_COMPILER "clang")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O2 -pthread -lssl -Wall -Wno-unused-function -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-find_package(Protobuf 2.6.1 REQUIRED)
-message(STATUS "${PROTOBUF_PROTOC_EXECUTABLE}")
+aux_source_directory(lib/ letus_lib)
+include_directories(lib/)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2 -pthread -lssl -Wall -Wno-unused-function -fPIC")
+add_executable(trace_replay "workload/exes/trace_replay.cc" ${letus_lib})
+target_link_libraries(trace_replay jsoncpp)
 
-add_subdirectory(workload)
+
+# set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+
+
 
