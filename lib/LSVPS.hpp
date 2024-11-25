@@ -13,31 +13,8 @@
 
 namespace fs = std::filesystem;
 // 假设： 同一个版本 同一个k只有一个v
-// 可能的优化：#120可能在DMM-Trie的cache里面
-// #121就很容易replay但是在LSVPSreplay就需要#100basepage+21个deltapage
+// 可能的优化：#120可能在DMM-Trie的cache里面 #121就很容易replay但是在LSVPSreplay就需要#100basepage+21个deltapage
 
-// class DMMTrie;
-
-// 页面块类型枚举
-enum class PageBlockType { BasePage, DeltaPage };
-
-// 页面块结构体
-struct PageBlock {
-  PageBlockType type;
-  Page data;
-
-  // Serialization function
-  void SerializeTo(std::ostream &out) const {
-    out.write(reinterpret_cast<const char *>(&type), sizeof(type));
-    data.SerializeTo(out);
-  }
-
-  // Deserialization function
-  void Deserialize(std::istream &in) {
-    in.read(reinterpret_cast<char *>(&type), sizeof(type));
-    data.Deserialize(in);
-  }
-};
 
 // 索引块结构体
 struct IndexBlock {
@@ -48,9 +25,8 @@ struct IndexBlock {
     uint64_t location;
   };
 
-  // 计算一个4KB的块能存储多少个映射
-  static constexpr size_t MAPPINGS_PER_BLOCK =
-      (OS_PAGE_SIZE - sizeof(size_t)) / sizeof(Mapping);
+  // 计算一个4KB的块能存储多少个映射，减去一开始存储的映射数量
+  static constexpr size_t MAPPINGS_PER_BLOCK = (OS_PAGE_SIZE - sizeof(size_t)) / sizeof(Mapping);
 
   IndexBlock() { mappings_.reserve(MAPPINGS_PER_BLOCK); }
 
@@ -113,8 +89,8 @@ struct IndexBlock {
 
 // 索引文件结构体
 struct IndexFile {
-  PageKey minKP;
-  PageKey maxKP;
+  PageKey min_pagekey;
+  PageKey max_pagekey;
   std::string filepath;
 };
 
@@ -150,7 +126,7 @@ struct LookupBlock {
 class LSVPS : public LSVPSInterface {
  public:
   LSVPS() : cache_(), table_(*this) {}
-
+    
   // 页面查询函数（用于实现范围查询）
   Page *PageQuery(int version) {
     // unimplemented
@@ -158,22 +134,48 @@ class LSVPS : public LSVPSInterface {
   }
 
   // 加载页面函数
-  Page *LoadPage(const PageKey &pagekey) {
-    // 步骤1：页面查找
-    // Page page = PageLookup(pagekey);
+  Page *LoadPage(const PageKey& pagekey) {
+    // 获取最近的 basepage
+    PageKey base_pagekey = trie_->GetLatestBasePageKey(pagekey);
+  
+    
+    // 如果找不到基础页面，返回 nullptr
+    if (base_pagekey.version == 0) {
+        return nullptr;
+    }
 
-    // // 步骤2：页面重放
-    // std::vector<Page> pages = {/* 基础页和增量页的集合 */};
-    // // 假设已经获取了相关的页面列表
+    // 加载 basepage
+    BasePage* basepage = dynamic_cast<BasePage*>(PageLookup(base_pagekey));
+    if (!basepage) {
+        return nullptr;
+    }
 
-    // PageReplay(pages);
+    // 先收集所有需要的 delta pages
+    std::vector<const DeltaPage*> delta_pages;
+    PageKey current_delta = base_pagekey;
+    const DeltaPage* active_deltapage = trie_->GetDeltaPage(pagekey.pid);
+    delta_pages.push_back(active_deltapage);//get the active_delta_page
+    auto current_pagekey = active_deltapage->GetLastPageKey();
+    while (current_pagekey != base_pagekey) {
+        DeltaPage* delta_page = dynamic_cast<DeltaPage*>(PageLookup(current_pagekey));
+        if (delta_page) {
+            delta_pages.push_back(delta_page);
+            current_pagekey = delta_page->GetLastPageKey();  // 获取上一个 delta page
+        } else {
+            break;
+        }
+    }
 
-    // 返回最终页面
-    return nullptr;
+    // 按照时间顺序（从旧到新）应用 delta pages
+    for (const auto& delta : delta_pages) { 
+        ApplyDelta(basepage, delta, pagekey);
+    }
+
+    return basepage;
   }
 
   // 存储页面函数
-  void StorePage(const Page &page) {
+  void StorePage(Page* page) {
     table_.store(page);
     if (table_.IsFull()) {
       table_.flush();
@@ -186,169 +188,85 @@ class LSVPS : public LSVPSInterface {
 
   int GetNumOfIndexFile() { return indexFiles_.size(); }
 
-  void RegisterTrie(const DMMTrie *DMM_trie) { trie_ = DMM_trie; }
+  void RegisterTrie(DMMTrie *DMM_trie) { trie_ = DMM_trie; }
 
  private:
   // 页面查找函数
-  Page PageLookup(const PageKey &pagekey) {
-    // 步骤1：在内存索引表中查找
-    const auto &buffer = table_.getBuffer();
-    auto it = std::find_if(buffer.begin(), buffer.end(), [&](const Page &page) {
-      return page.GetPageKey() == pagekey;
-    });
-
-    if (it != buffer.end()) {
-      return *it;  // 在内存中找到页面
+  Page* PageLookup(const PageKey &pagekey) {
+    // 步骤1：在内存中查找
+    auto &buffer = table_.getBuffer();
+    for(const auto& page : buffer){
+      if(page->GetPageKey() == pagekey){
+        return page;
+      }
     }
 
-    // 步骤2：根据索引文件查找
-    auto fileIt = std::find_if(
-        indexFiles_.begin(), indexFiles_.end(), [&](const IndexFile &file) {
-          return file.minKP <= pagekey && pagekey <= file.maxKP;
-        });
+    // 步骤2：查找page所在的索引文件
+    auto file_iterator = std::find_if(indexFiles_.begin(), indexFiles_.end(),
+                               [&pagekey](const IndexFile &file) { return file.min_pagekey <= pagekey && pagekey <= file.max_pagekey; });
 
-    if (fileIt == indexFiles_.end()) {
+    if (file_iterator == indexFiles_.end()) {
       throw std::runtime_error("Page not found in any index file.");
     }
-
-    // 步骤3：读取基础页和增量页
-    std::vector<Page> pages = readPagesFromIndexFile(*fileIt, pagekey);
-
-    // 步骤4：重放增量，构建最终页面
-    Page finalPage = PageReplay(pages);
-
-    return finalPage;
-  }
-
-  // 读取索引文件中的页面（需要实现）
-  std::vector<Page> readPagesFromIndexFile(const IndexFile &index_file,
-                                           const PageKey &pagekey) {
-    // 实现读取基础页和增量页的逻辑
-    // 要根据index结构读取对应的页面
-    Page page = readPageFromIndexFile(index_file, pagekey);
-    return {page};
+    
+    // 步骤3：在对应的索引文件中查找page
+    Page* page = readPageFromIndexFile(*file_iterator, pagekey);
+  
+    return page;
   }
 
   // 从索引文件中读取页面
-  Page readPageFromIndexFile(const IndexFile &index_file,
-                             const PageKey &pagekey) {
-    std::ifstream inFile(index_file.filepath, std::ios::binary);
-    if (!inFile) {
-      throw std::runtime_error("Error opening index file.");
+  Page* readPageFromIndexFile(const IndexFile& file, const PageKey& pagekey) {
+    std::ifstream in_file(file.filepath, std::ios::binary);
+    if (!in_file) {
+      throw std::runtime_error("Failed to open index file: " + file.filepath);
     }
 
-    // Step 1: Use the lookup block to find the IndexBlock location
-    LookupBlock lookup_blocks;
-    inFile.seekg(-static_cast<std::streamoff>(sizeof(LookupBlock)),
-                 std::ios::end);
-    lookup_blocks.Deserialize(inFile);
+    // Read lookup block from end of file
+    LookupBlock lookup_block;
+    in_file.seekg(-sizeof(LookupBlock), std::ios::end);
+    lookup_block.Deserialize(in_file);
 
-    // Step 2: Find IndexBlock location using lookup block
-    size_t index_block_location =
-        findIndexBlockLocation(lookup_blocks, pagekey, inFile);
-
-    // Step 3: Read IndexBlock
-    inFile.seekg(index_block_location);
-    IndexBlock indexBlock;
-    indexBlock.Deserialize(inFile);
-
-    // Step 4: Read PageBlock using location from IndexBlock
-    auto mappings = indexBlock.GetMappings();
-    auto mapping = std::find_if(mappings.begin(), mappings.end(),
-                                [&pagekey](const IndexBlock::Mapping &m) {
-                                  return m.pagekey == pagekey;
-                                });
-    if (mapping == mappings.end()) {
-      throw std::runtime_error("Page not found in index block.");
-    }
-    inFile.seekg(mapping->location);
-    PageBlock pageBlock;
-    pageBlock.Deserialize(inFile);
-
-    return pageBlock.data;
-  }
-
-  // Helper function to find IndexBlock location
-  size_t findIndexBlockLocation(const LookupBlock &lookup_blocks,
-                                const PageKey &pagekey, std::ifstream &inFile) {
-    // Implement binary search over lookup_blocks.entries to find the right
-    // IndexBlock Return the location of the IndexBlock in the file For
-    // simplification, here's a linear search example:
-    size_t index_block_location = 0;
-    for (const auto &entry : lookup_blocks.entries) {
-      if (entry.first >= pagekey) {
-        index_block_location = entry.second;
-        break;
-      }
-    }
-    return index_block_location;
-  }
-
-  // 页面重放函数（需要实现）
-  Page PageReplay(const std::vector<Page> &pages) {
-    if (pages.empty()) {
-      throw std::runtime_error("No pages to replay");
+    // Find the relevant index block
+    auto it = std::lower_bound(lookup_block.entries.begin(), lookup_block.entries.end(),
+                              std::make_pair(pagekey, size_t(0)));
+    
+    if (it == lookup_block.entries.end()) {
+      return nullptr;
     }
 
-    // First page should be a base page
-    Page result_page = pages[0];
+    // Read the index block
+    in_file.seekg(it->second);
+    IndexBlock index_block;
+    index_block.Deserialize(in_file);
 
-    // Apply delta pages in order
-    for (size_t i = 1; i < pages.size(); i++) {
-      applyDelta(result_page, pages[i]);
+    // Find the page location
+    auto mapping = std::find_if(index_block.GetMappings().begin(), index_block.GetMappings().end(),
+                               [&pagekey](const auto& m) { return m.pagekey == pagekey; });
+
+    if (mapping == index_block.GetMappings().end()) {
+      return nullptr;
     }
 
-    return result_page;
+    // Read the actual page data
+    in_file.seekg(mapping->location);
+    Page temp_page;
+    
+    temp_page.Deserialize(in_file);//反序列化函数，先从文件中读出数据流存入data_，后面可以利用data_反序列化构造出BasePage或者DeltaPage对象
+    Page* page = (pagekey.type) ? 
+                 static_cast<Page*>(new BasePage(trie_, temp_page.GetData())) : 
+                 static_cast<Page*>(new DeltaPage(temp_page.GetData()));
+
+    return page;
   }
 
   // 添加辅助方法来应用deltapage
-  void applyDelta(Page &basepage, const Page &deltapage) {
-    // char* baseData = basePage.getData();
-    // const char* deltaData = deltaPage.getData();
-    // // delatapage：<offset><length><new_data>
-    // size_t offset = 0;
-    // while (offset < PAGE_SIZE) {
-    //     // 读取修改信息并应用
-
-    // }
-  }
-
-  // 写入二级存储
-  void writeToStorage(const std::vector<PageBlock> &page_blocks,
-                      const std::vector<IndexBlock> &index_blocks,
-                      const LookupBlock &lookup_blocks,
-                      const fs::path &filepath) {
-    std::ofstream outFile(filepath, std::ios::binary);
-    if (!outFile) {
-      std::cerr << "Error opening file for writing." << std::endl;
-      return;
+  void ApplyDelta(BasePage *basepage, const DeltaPage *deltapage, PageKey pagekey) {
+    for(auto deltapage_item : deltapage->GetDeltaItems()){  
+      //check if version is beyond the needed pagekey (active delta page)
+      if(deltapage_item.version > pagekey.version) break;
+      basepage->UpdateDeltaItem(deltapage_item);
     }
-
-    size_t offset = 0;
-
-    // Write page blocks
-    for (const auto &pageBlock : page_blocks) {
-      outFile.write(reinterpret_cast<const char *>(&pageBlock.type),
-                    sizeof(pageBlock.type));
-      pageBlock.data.SerializeTo(outFile);
-      offset += sizeof(pageBlock.type) + pageBlock.data.GetSerializedSize();
-    }
-
-    // Write index blocks
-    for (const auto &indexBlock : index_blocks) {
-      for (const auto &mapping : indexBlock.GetMappings()) {
-        mapping.pagekey.SerializeTo(outFile);
-        outFile.write(reinterpret_cast<const char *>(&mapping.location),
-                      sizeof(mapping.location));
-        offset += sizeof(int) + sizeof(int) + sizeof(bool) + sizeof(size_t) +
-                  mapping.pagekey.pid.size();  // PageKey
-      }
-    }
-
-    // Write lookup block
-    lookup_blocks.SerializeTo(outFile);
-
-    outFile.close();
   }
 
   // 块缓存类（占位）
@@ -361,53 +279,37 @@ class LSVPS : public LSVPSInterface {
    public:
     memIndexTable(LSVPS &parent) : parentLSVPS_(parent) {}
 
-    const std::vector<Page> &getBuffer() const { return buffer_; }
+    const std::vector<Page*> &getBuffer() const { return buffer_; }
 
-    void store(const Page &page) { buffer_.push_back(page); }
+    void store(Page* page) { buffer_.push_back(page); }
 
     bool IsFull() const { return buffer_.size() >= maxSize_; }
 
     void flush() {
       if (buffer_.empty()) return;
-
-      // Create PageBlocks from Pages
-      std::vector<PageBlock> page_blocks;
-      page_blocks.reserve(buffer_.size());
-
-      // Convert Pages to PageBlocks
-      for (const auto &page : buffer_) {
-        PageBlock block;
-        block.data = page;
-        // Determine if it's BasePage or DeltaPage based on version
-        block.type = isBasePage(page) ? PageBlockType::BasePage
-                                      : PageBlockType::DeltaPage;
-        page_blocks.push_back(block);
-      }
-
       // Create index blocks
       std::vector<IndexBlock> index_blocks;
-      IndexBlock currentBlock;
-      uint64_t currentLocation = 0;
+      IndexBlock current_block;
+      uint64_t current_location = 0;
 
-      for (size_t i = 0; i < page_blocks.size(); i++) {
-        if (currentBlock.IsFull()) {
-          index_blocks.push_back(currentBlock);
-          currentBlock = IndexBlock();
+      for (size_t i = 0; i < buffer_.size(); i++) {
+        if (current_block.IsFull()) {
+          index_blocks.push_back(current_block);
+          current_block = IndexBlock();
         }
 
-        currentBlock.AddMapping(buffer_[i].GetPageKey(), currentLocation);
-        currentLocation +=
-            sizeof(PageBlockType) + buffer_[i].GetSerializedSize();
+        current_block.AddMapping(buffer_[i]->GetPageKey(), current_location);
+        current_location += PAGE_SIZE;
       }
 
       // Add the last index block if it contains any mappings
-      if (!currentBlock.GetMappings().empty()) {
-        index_blocks.push_back(currentBlock);
+      if (!current_block.GetMappings().empty()) {
+        index_blocks.push_back(current_block);
       }
 
       // Create lookup block
       LookupBlock lookup_blocks;
-      uint64_t indexBlockOffset = currentLocation;
+      uint64_t indexBlockOffset = current_location;
       for (const auto &block : index_blocks) {
         if (!block.GetMappings().empty()) {
           lookup_blocks.entries.push_back(
@@ -416,32 +318,86 @@ class LSVPS : public LSVPSInterface {
               block.GetMappings().size() * sizeof(IndexBlock::Mapping);
         }
       }
-      std::string filepath =
-          "index_" + std::to_string(parentLSVPS_.GetNumOfIndexFile()) + ".dat";
+      const std::string dir_path = "IndexFile";
+      if (!std::filesystem::exists(dir_path)) {
+          std::filesystem::create_directory(dir_path);
+      }
+      std::string filepath = dir_path + "/index_" + std::to_string(parentLSVPS_.GetNumOfIndexFile()) + ".dat";
 
       // Write to storage
-      parentLSVPS_.writeToStorage(page_blocks, index_blocks, lookup_blocks,
-                                  filepath);
-
+      this->writeToStorage(index_blocks, lookup_blocks, filepath);
+      parentLSVPS_.AddIndexFile({
+          buffer_.front()->GetPageKey(),                    // min_pagekey
+          buffer_.back()->GetPageKey(),                     // max_pagekey
+          filepath  // filepath
+      });
       // Clear buffer
       buffer_.clear();
     }
 
    private:
-    std::vector<Page> buffer_;
-    const size_t maxSize_ =
-        256 * 1024 * 1024 / sizeof(Page);  // 假设最大大小为256MB
-
-    PageKey minKP_;
-    PageKey maxKP_;
-
-    LSVPS &parentLSVPS_;
-
-    // 辅助函数：判断页面是否为基础页
+   // 辅助函数：判断页面是否为基础页
     bool isBasePage(const Page &page) {
       // 根据页面的属性判断
       return true;  // 占位实现
     }
+    // 写入二级存储
+    void writeToStorage(const std::vector<IndexBlock> &index_blocks,
+                      const LookupBlock &lookup_blocks, const fs::path &filepath) {
+      std::ofstream outFile(filepath, std::ios::binary);
+      if (!outFile) {
+        throw std::runtime_error("Failed to open file for writing: " + filepath.string());
+      }
+
+      try {
+        // size_t offset = 0;
+
+        // Write page blocks
+        for (const auto &page : buffer_) {
+          if (!page || !page->GetData()) {
+            throw std::runtime_error("Invalid page data encountered");
+          }
+          outFile.write(reinterpret_cast<const char*>(page->GetData()), PAGE_SIZE);
+          if (!outFile) {
+            throw std::runtime_error("Failed to write page data");
+          }
+          // offset += PAGE_SIZE;
+        }
+
+        // Write index blocks
+        for (const auto &indexBlock : index_blocks) {
+          for (const auto &mapping : indexBlock.GetMappings()) {
+            mapping.pagekey.SerializeTo(outFile);
+            outFile.write(reinterpret_cast<const char *>(&mapping.location), sizeof(mapping.location));
+            if (!outFile) {
+              throw std::runtime_error("Failed to write index block");
+            }
+            // offset += sizeof(int) + sizeof(int) + sizeof(bool) + sizeof(size_t) + mapping.pagekey.pid.size();
+          }
+        }
+
+        // Write lookup block
+        lookup_blocks.SerializeTo(outFile);
+        if (!outFile) {
+          throw std::runtime_error("Failed to write lookup block");
+        }
+
+        outFile.flush();
+        outFile.close();
+      } catch (const std::exception& e) {
+        outFile.close();  // 确保文件被关闭
+        throw;  // 重新抛出异常
+      }
+    }
+
+    std::vector<Page*> buffer_;
+    const size_t maxSize_ = 20000; /*256 * 1024 * 1024 / sizeof(Page);   假设最大大小为256MB*/
+
+
+    LSVPS &parentLSVPS_;
+
+    
+  
   };
 
   // // B树索引类（占位）
@@ -451,7 +407,7 @@ class LSVPS : public LSVPSInterface {
 
   blockCache cache_;
   memIndexTable table_;
-  const DMMTrie *trie_;
+  DMMTrie *trie_;
 
   std::vector<IndexFile> indexFiles_;
 };

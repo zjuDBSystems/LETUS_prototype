@@ -30,7 +30,7 @@
 *.exe
 *.out
 *.app
-
-bak/
-build/
 .vscode/
+build/
+IndexFile/
+bak/
