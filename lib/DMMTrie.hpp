@@ -24,7 +24,6 @@ using namespace std;
 
 struct PageKey;
 class Page;
-
 class LSVPS;
 
 
@@ -76,7 +75,6 @@ class Node {
   virtual void UpdateNode() {};
   virtual void SetLocation(tuple<uint64_t, uint64_t, uint64_t> location) {};
 
-  
   string GetHash() { return hash_; }
   uint64_t GetVersion() { return version_; }
   virtual void SetVersion(uint64_t version) { version_ = version; };
@@ -189,7 +187,7 @@ class IndexNode : public Node {
     }
   }
 
-  void UpdateNode(uint64_t version, int index, const string &child_hash, bool is_root, DeltaPage& deltapage) {
+  void UpdateNode(uint64_t version, int index, const string &child_hash, bool is_root, DeltaPage* deltapage) {
     version_ = version;
     bitmap_ |= (1 << index);
     get<0>(children_[index]) = version;
@@ -202,7 +200,7 @@ class IndexNode : public Node {
     hash_ = HashFunction(concatenated_hash);
 
     uint8_t location_in_page = is_root ? 0 : index + 1;
-    deltapage.AddIndexNodeUpdate(location_in_page, version, hash_, index, child_hash);
+    deltapage->AddIndexNodeUpdate(location_in_page, version, hash_, index, child_hash);
   }
 
   void AddChild(int index, Node *child, uint64_t version = 0, const string &hash = "") override {
@@ -245,9 +243,7 @@ class IndexNode : public Node {
 
 class LeafNode : public Node {
  public:
-  LeafNode(uint64_t V = 0, const string &k = "",
-           const tuple<uint64_t, uint64_t, uint64_t> &l = {},
-           const string &h = "")
+  LeafNode(uint64_t V = 0, const string &k = "", const tuple<uint64_t, uint64_t, uint64_t> &l = {}, const string &h = "")
       : version_(V), key_(k), location_(l), hash_(h) {}
 
   void CalculateHash(const string &value) {
@@ -309,13 +305,13 @@ class LeafNode : public Node {
     current_size += HASH_SIZE;
   }
 
-  void UpdateNode(uint64_t version, const tuple<uint64_t, uint64_t, uint64_t> &location, const string &value, int index, bool is_root, DeltaPage& deltapage) {
+  void UpdateNode(uint64_t version, const tuple<uint64_t, uint64_t, uint64_t> &location, const string &value, int index, bool is_root, DeltaPage* deltapage) {
     version_ = version;
     location_ = location;
     hash_ = HashFunction(key_ + value);
     
     uint8_t location_in_page = is_root ? 0 : index + 1;
-    deltapage.AddLeafNodeUpdate(location_in_page, version, hash_, get<0>(location), get<1>(location), get<2>(location));
+    deltapage->AddLeafNodeUpdate(location_in_page, version, hash_, get<0>(location), get<1>(location), get<2>(location));
   }
 
   tuple<uint64_t, uint64_t, uint64_t> GetLocation() const { return location_; }
@@ -352,62 +348,143 @@ class DeltaPage : public Page {
         : location_in_page(loc), is_leaf_node(leaf), version(ver), hash(h),
           fileID(fID), offset(off), size(sz), index(idx), child_hash(ch_hash) {}
 
-    void SerializeTo(char* buffer, size_t& current_size) const {
-        memcpy(buffer + offset, &location_in_page, sizeof(location_in_page));
-        current_size += sizeof(location_in_page);
-        
-        memcpy(buffer + offset, &is_leaf_node, sizeof(is_leaf_node));
-        current_size += sizeof(is_leaf_node);
-        
-        memcpy(buffer + offset, &version, sizeof(version));
-        current_size += sizeof(version);
-        
-        memcpy(buffer + offset, hash.c_str(), HASH_SIZE);
-        current_size += HASH_SIZE;
-        
-        if (is_leaf_node) {
-          memcpy(buffer + offset, &fileID, sizeof(fileID));
-          current_size += sizeof(fileID);
-          memcpy(buffer + offset, &offset, sizeof(offset));
-          current_size += sizeof(offset);
-          memcpy(buffer + offset, &size, sizeof(size));
-          current_size += sizeof(size);
-        } else {
-          memcpy(buffer + offset, &index, sizeof(index));
-          current_size += sizeof(index);
+    DeltaItem(char* buffer, size_t &current_size) {
+      location_in_page = *(reinterpret_cast<uint8_t *>(buffer + current_size));
+      current_size += sizeof(uint8_t);
+      is_leaf_node = *(reinterpret_cast<bool *>(buffer + current_size));
+      current_size += sizeof(bool);
+      version = *(reinterpret_cast<uint64_t *>(buffer + current_size));
+      current_size += sizeof(uint64_t);
+      hash = string(buffer + current_size, HASH_SIZE);
+      current_size += HASH_SIZE;
 
-          memcpy(buffer + offset, child_hash.c_str(), HASH_SIZE);
-          current_size += HASH_SIZE;
-        }
+      if(is_leaf_node) {
+        fileID = *(reinterpret_cast<uint64_t *>(buffer + current_size));
+        current_size += sizeof(uint64_t);
+        offset = *(reinterpret_cast<uint64_t *>(buffer + current_size));
+        current_size += sizeof(uint64_t);
+        size = *(reinterpret_cast<uint64_t *>(buffer + current_size));
+        current_size += sizeof(uint64_t);
+      } else {
+        index = *(reinterpret_cast<uint8_t *>(buffer + current_size));
+        current_size += sizeof(uint8_t);
+        child_hash = string(buffer + current_size, HASH_SIZE);
+        current_size += HASH_SIZE;
+      }
+    }
+
+    void SerializeTo(char* buffer, size_t& current_size) const {
+      memcpy(buffer + current_size, &location_in_page, sizeof(location_in_page));
+      current_size += sizeof(location_in_page);
+      
+      memcpy(buffer + current_size, &is_leaf_node, sizeof(is_leaf_node));
+      current_size += sizeof(is_leaf_node);
+      
+      memcpy(buffer + current_size, &version, sizeof(version));
+      current_size += sizeof(version);
+      
+      memcpy(buffer + current_size, hash.c_str(), HASH_SIZE);
+      current_size += HASH_SIZE;
+      
+      if (is_leaf_node) {
+        memcpy(buffer + current_size, &fileID, sizeof(fileID));
+        current_size += sizeof(fileID);
+        memcpy(buffer + current_size, &offset, sizeof(offset));
+        current_size += sizeof(offset);
+        memcpy(buffer + current_size, &size, sizeof(size));
+        current_size += sizeof(size);
+      } else {
+        memcpy(buffer + current_size, &index, sizeof(index));
+        current_size += sizeof(index);
+
+        memcpy(buffer + current_size, child_hash.c_str(), HASH_SIZE);
+        current_size += HASH_SIZE;
+      }
     }
  };
 
-  DeltaPage() {};
+  DeltaPage(PageKey last_pagekey = {0, 0, true, ""}, uint16_t update_count = 0) 
+            : last_pagekey_(last_pagekey), update_count_(update_count) {};
+
+  DeltaPage(char* buffer) {
+    size_t current_size = 0;
+
+    last_pagekey_.version = *(reinterpret_cast<uint64_t *>(buffer + current_size));
+    current_size += sizeof(uint64_t);
+    last_pagekey_.tid = *(reinterpret_cast<int *>(buffer + current_size));
+    current_size += sizeof(int);
+    last_pagekey_.type = *(reinterpret_cast<bool *>(buffer + current_size));
+    current_size += sizeof(bool);
+    size_t pid_size = *(reinterpret_cast<size_t *>(buffer + current_size));
+    current_size += sizeof(pid_size);
+    last_pagekey_.pid = string(buffer + current_size, pid_size);  // deserialize pid (pid_size bytes)
+    current_size += pid_size;
+   
+    update_count_ = *(reinterpret_cast<uint16_t *>(buffer + current_size));
+    current_size += sizeof(uint16_t);
+
+    for(int i = 0;i < update_count_; i++) {
+      deltaitems_.push_back(DeltaItem(buffer, current_size));
+    }
+  }
 
   void AddIndexNodeUpdate(uint8_t location, uint64_t version, const string& hash, uint8_t index, const string& child_hash) {
-    DeltaItems.push_back(DeltaItem(location, false, version, hash, 0, 0, 0, index, child_hash));
+    deltaitems_.push_back(DeltaItem(location, false, version, hash, 0, 0, 0, index, child_hash));
+    ++update_count_;
   }
 
   void AddLeafNodeUpdate(uint8_t location, uint64_t version, const string& hash, uint64_t fileID, uint64_t offset, uint64_t size) {
-    DeltaItems.push_back(DeltaItem(location, true, version, hash, fileID, offset, size));
+    deltaitems_.push_back(DeltaItem(location, true, version, hash, fileID, offset, size));
+    ++update_count_;
   }
 
   void SerializeTo() {
+    char* buffer = this->GetData();
     size_t current_size = 0; 
-    for (const auto& item : DeltaItems) {
+    memcpy(buffer + current_size, &last_pagekey_.version, sizeof(uint64_t));
+    current_size += sizeof(uint64_t);
+    memcpy(buffer + current_size, &last_pagekey_.tid, sizeof(int));
+    current_size += sizeof(int);
+    memcpy(buffer + current_size, &last_pagekey_.type, sizeof(bool));
+    current_size += sizeof(bool);
+    size_t pid_size = last_pagekey_.pid.size();
+    memcpy(buffer + current_size, &pid_size, sizeof(pid_size)); 
+    current_size += sizeof(pid_size);
+    memcpy(buffer + current_size, last_pagekey_.pid.c_str(), pid_size);
+    current_size += pid_size;
+
+    memcpy(buffer + current_size, &update_count_, sizeof(uint16_t));
+    current_size += sizeof(uint16_t);
+
+    for (const auto& item : deltaitems_) {
       if (current_size + sizeof(DeltaItem) > PAGE_SIZE) {  // exceeds page size
           throw overflow_error("DeltaPage exceeds PAGE_SIZE during serialization.");
       }
-      item.SerializeTo(this->GetData(), current_size); 
+      item.SerializeTo(buffer, current_size); 
     }
   }
 
   void ClearDeltaPage() {
-    DeltaItems.clear();
+    deltaitems_.clear();
+    update_count_ = 0;
+  }
+
+  vector<DeltaItem> GetDeltaItems() const {
+    return deltaitems_;
+  }
+
+  PageKey GetLastPageKey() const {
+    return last_pagekey_;
+  }
+
+  void SetLastPageKey(PageKey pagekey) {
+    last_pagekey_ = pagekey;
   }
 
  private:
-  vector<DeltaItem> DeltaItems;
+  vector<DeltaItem> deltaitems_;
+  PageKey last_pagekey_;
+  uint16_t update_count_;
 };
 
 class BasePage : public Page {
@@ -469,7 +546,8 @@ class BasePage : public Page {
      (pid_size) | | deltapage update count (2) | basepage update count (2) |
      root node |
   */
-  void SerializeTo(char* buffer) const {
+  void SerializeTo() {
+    char* buffer = this->GetData();
     size_t current_size = 0;
 
     uint64_t version = root_->GetVersion();
@@ -499,7 +577,7 @@ class BasePage : public Page {
   }
 
   void UpdatePage(uint64_t version, tuple<uint64_t, uint64_t, uint64_t> location, const string &value,
-                  const string &nibbles, const string &child_hash, DeltaPage& deltapage,
+                  const string &nibbles, const string &child_hash, DeltaPage* deltapage,
                   PageKey pagekey) {  // parameter "nibbles" are the first two nibbles after pid
     if (nibbles.size() == 0) {        // page has one leafnode, eg. page "abcdef" for key "abcdef"
       static_cast<LeafNode *>(root_)->UpdateNode(version, location, value, 0, true, deltapage);
@@ -517,19 +595,22 @@ class BasePage : public Page {
       string child_hash_2 = root_->GetChild(index)->GetHash();
       static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash_2, false, deltapage);
     }
-
+    
+    PageKey deltapage_pagekey = {version, 0, true, pid_};
     if (++d_update_count_ >= Td_) {  // When a DeltaPage accumulates 𝑇𝑑 updates, it is frozen and a new active one is initiated
       d_update_count_ = 0;
-      PageKey deltapage_pagekey = {version, 0, true, pid_};
-      deltapage.SerializeTo();
-      trie_->GetPageStore()->StorePage(deltapage);  // send deltapage to LSVPS
-      deltapage.ClearDeltaPage();  // delete all DeltaItems in DeltaPage
+      // PageKey deltapage_pagekey = {version, 0, true, pid_};
+      deltapage->SerializeTo();
+      trie_->GetPageStore()->StorePage(*deltapage);  // send deltapage to LSVPS
+      deltapage->ClearDeltaPage();  // delete all DeltaItems in DeltaPage
+      deltapage->SetLastPageKey(deltapage_pagekey); // record the PageKey of DeltaPage that is passed to LSVPS
     }
     if(++b_update_count_ >= Tb_) {  // Each page generates a checkpoint as BasePage after every 𝑇𝑏 updates
       b_update_count_ = 0;
-      this->SerializeTo(this->GetData());
+      this->SerializeTo();
       trie_->GetPageStore()->StorePage(*this);  // send basepage to LSVPS
       trie_->UpdatePageVersion(pagekey, version, version);
+      deltapage->SetLastPageKey(deltapage_pagekey);
       return;
     }
 
@@ -635,7 +716,7 @@ class DMMTrie {
         PutPage(pagekey, page);  // add the newly generated page into cache
       }
 
-      DeltaPage& deltapage = GetDeltaPage(nibble_path.substr(0, i));
+      DeltaPage* deltapage = GetDeltaPage(nibble_path.substr(0, i));
       page->UpdatePage(version, location, value, nibbles, child_hash, deltapage, pagekey);
       child_hash = page->GetRoot()->GetHash();
     }
@@ -668,14 +749,14 @@ class DMMTrie {
 
   string CalcRootHash(uint64_t tid, uint64_t version) { return ""; }
 
-  DeltaPage& GetDeltaPage(const string& pid, size_t reserve_size = 1024) {
+  DeltaPage* GetDeltaPage(const string& pid) {
     auto it = active_deltapages_.find(pid);
     if (it != active_deltapages_.end()) {
-        return it->second;  // return deltapage if it exiests
+        return &it->second;  // return deltapage if it exiests
     } else {
         DeltaPage new_page;
         active_deltapages_[pid] = new_page;
-        return active_deltapages_[pid];
+        return &active_deltapages_[pid];
     }
   }
 
@@ -687,8 +768,14 @@ class DMMTrie {
     return {0, 0};
   }
 
-  void UpdatePageVersion(PageKey pagekey, uint64_t current_version,
-                         uint64_t latest_basepage_version) {
+  PageKey GetLatestBasePageKey(PageKey pagekey) {
+    auto it = page_versions_.find(pagekey);
+    if (it != page_versions_.end()) {
+      return {it->second.second, pagekey.tid, true, pagekey.pid};
+    }
+  }
+
+  void UpdatePageVersion(PageKey pagekey, uint64_t current_version, uint64_t latest_basepage_version) {
     page_versions_[pagekey] = {current_version, latest_basepage_version};
   }
 
@@ -700,7 +787,7 @@ class DMMTrie {
   uint64_t tid;
   BasePage *root_page_;
   uint64_t current_version_;
-  unordered_map<PageKey, list<pair<PageKey, BasePage *>>::iterator, PageKey::Hash> lru_cache_;                                //  use a hash map as lru cache
+  unordered_map<PageKey, list<pair<PageKey, BasePage *>>::iterator, PageKey::Hash> lru_cache_;  //  use a hash map as lru cache
   list<pair<PageKey, BasePage *>> pagekeys_;  // list to maintain cache order
   const size_t max_cache_size_ = 32;             // maximum pages in cache
   unordered_map<string, DeltaPage> active_deltapages_;  // deltapage of all pages, delta pages are indexed by pid
@@ -737,7 +824,6 @@ class DMMTrie {
     lru_cache_[pagekey] = pagekeys_.begin();
   }
 };
-
 
 
 #endif

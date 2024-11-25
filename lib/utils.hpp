@@ -100,11 +100,11 @@ public:
         return pagekey_;
     }
 
-    virtual size_t GetSerializedSize() = 0;
+    // virtual size_t GetSerializedSize() = 0;
 
-    virtual void SerializeTo(std::ostream& out) = 0;
+    virtual void SerializeTo() = 0;
 
-    virtual void Deserialize(std::istream& in) = 0;
+    // virtual void Deserialize(std::istream& in) = 0;
 
     void SetPageKey(const PageKey& key) {
         pagekey_ = key;
