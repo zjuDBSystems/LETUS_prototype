@@ -13,9 +13,10 @@
 
 namespace fs = std::filesystem;
 // 假设： 同一个版本 同一个k只有一个v
-// 可能的优化：#120可能在DMM-Trie的cache里面 #121就很容易replay但是在LSVPSreplay就需要#100basepage+21个deltapage
+// 可能的优化：#120可能在DMM-Trie的cache里面
+// #121就很容易replay但是在LSVPSreplay就需要#100basepage+21个deltapage
 
-class DMMTrie;
+// class DMMTrie;
 
 // 页面块类型枚举
 enum class PageBlockType { BasePage, DeltaPage };
@@ -48,7 +49,8 @@ struct IndexBlock {
   };
 
   // 计算一个4KB的块能存储多少个映射
-  static constexpr size_t MAPPINGS_PER_BLOCK = (OS_PAGE_SIZE - sizeof(size_t)) / sizeof(Mapping);
+  static constexpr size_t MAPPINGS_PER_BLOCK =
+      (OS_PAGE_SIZE - sizeof(size_t)) / sizeof(Mapping);
 
   IndexBlock() { mappings_.reserve(MAPPINGS_PER_BLOCK); }
 
@@ -72,7 +74,8 @@ struct IndexBlock {
     // 写入所有映射
     for (const auto &mapping : mappings_) {
       mapping.pagekey.SerializeTo(out);
-      out.write(reinterpret_cast<const char *>(&mapping.location), sizeof(mapping.location));
+      out.write(reinterpret_cast<const char *>(&mapping.location),
+                sizeof(mapping.location));
     }
 
     // 填充剩余空间以对齐到4KB
@@ -93,7 +96,8 @@ struct IndexBlock {
     for (size_t i = 0; i < count; ++i) {
       Mapping mapping;
       mapping.pagekey.Deserialize(in);
-      in.read(reinterpret_cast<char *>(&mapping.location), sizeof(mapping.location));
+      in.read(reinterpret_cast<char *>(&mapping.location),
+              sizeof(mapping.location));
       mappings_.push_back(mapping);
     }
 
@@ -121,10 +125,12 @@ struct LookupBlock {
   // Serialization function
   void SerializeTo(std::ostream &out) const {
     size_t entriesSize = entries.size();
-    out.write(reinterpret_cast<const char *>(&entriesSize), sizeof(entriesSize));
+    out.write(reinterpret_cast<const char *>(&entriesSize),
+              sizeof(entriesSize));
     for (const auto &entry : entries) {
       entry.first.SerializeTo(out);
-      out.write(reinterpret_cast<const char *>(&entry.second), sizeof(entry.second));
+      out.write(reinterpret_cast<const char *>(&entry.second),
+                sizeof(entry.second));
     }
   }
 
@@ -174,7 +180,9 @@ class LSVPS : public LSVPSInterface {
     }
   }
 
-  void AddIndexFile(const IndexFile &index_file) { indexFiles_.push_back(index_file); }
+  void AddIndexFile(const IndexFile &index_file) {
+    indexFiles_.push_back(index_file);
+  }
 
   int GetNumOfIndexFile() { return indexFiles_.size(); }
 
@@ -185,16 +193,19 @@ class LSVPS : public LSVPSInterface {
   Page PageLookup(const PageKey &pagekey) {
     // 步骤1：在内存索引表中查找
     const auto &buffer = table_.getBuffer();
-    auto it =
-        std::find_if(buffer.begin(), buffer.end(), [&](const Page &page) { return page.GetPageKey() == pagekey; });
+    auto it = std::find_if(buffer.begin(), buffer.end(), [&](const Page &page) {
+      return page.GetPageKey() == pagekey;
+    });
 
     if (it != buffer.end()) {
       return *it;  // 在内存中找到页面
     }
 
     // 步骤2：根据索引文件查找
-    auto fileIt = std::find_if(indexFiles_.begin(), indexFiles_.end(),
-                               [&](const IndexFile &file) { return file.minKP <= pagekey && pagekey <= file.maxKP; });
+    auto fileIt = std::find_if(
+        indexFiles_.begin(), indexFiles_.end(), [&](const IndexFile &file) {
+          return file.minKP <= pagekey && pagekey <= file.maxKP;
+        });
 
     if (fileIt == indexFiles_.end()) {
       throw std::runtime_error("Page not found in any index file.");
@@ -210,7 +221,8 @@ class LSVPS : public LSVPSInterface {
   }
 
   // 读取索引文件中的页面（需要实现）
-  std::vector<Page> readPagesFromIndexFile(const IndexFile &index_file, const PageKey &pagekey) {
+  std::vector<Page> readPagesFromIndexFile(const IndexFile &index_file,
+                                           const PageKey &pagekey) {
     // 实现读取基础页和增量页的逻辑
     // 要根据index结构读取对应的页面
     Page page = readPageFromIndexFile(index_file, pagekey);
@@ -218,7 +230,8 @@ class LSVPS : public LSVPSInterface {
   }
 
   // 从索引文件中读取页面
-  Page readPageFromIndexFile(const IndexFile &index_file, const PageKey &pagekey) {
+  Page readPageFromIndexFile(const IndexFile &index_file,
+                             const PageKey &pagekey) {
     std::ifstream inFile(index_file.filepath, std::ios::binary);
     if (!inFile) {
       throw std::runtime_error("Error opening index file.");
@@ -226,11 +239,13 @@ class LSVPS : public LSVPSInterface {
 
     // Step 1: Use the lookup block to find the IndexBlock location
     LookupBlock lookup_blocks;
-    inFile.seekg(-static_cast<std::streamoff>(sizeof(LookupBlock)), std::ios::end);
+    inFile.seekg(-static_cast<std::streamoff>(sizeof(LookupBlock)),
+                 std::ios::end);
     lookup_blocks.Deserialize(inFile);
 
     // Step 2: Find IndexBlock location using lookup block
-    size_t index_block_location = findIndexBlockLocation(lookup_blocks, pagekey, inFile);
+    size_t index_block_location =
+        findIndexBlockLocation(lookup_blocks, pagekey, inFile);
 
     // Step 3: Read IndexBlock
     inFile.seekg(index_block_location);
@@ -240,7 +255,9 @@ class LSVPS : public LSVPSInterface {
     // Step 4: Read PageBlock using location from IndexBlock
     auto mappings = indexBlock.GetMappings();
     auto mapping = std::find_if(mappings.begin(), mappings.end(),
-                                [&pagekey](const IndexBlock::Mapping &m) { return m.pagekey == pagekey; });
+                                [&pagekey](const IndexBlock::Mapping &m) {
+                                  return m.pagekey == pagekey;
+                                });
     if (mapping == mappings.end()) {
       throw std::runtime_error("Page not found in index block.");
     }
@@ -252,10 +269,11 @@ class LSVPS : public LSVPSInterface {
   }
 
   // Helper function to find IndexBlock location
-  size_t findIndexBlockLocation(const LookupBlock &lookup_blocks, const PageKey &pagekey, std::ifstream &inFile) {
-    // Implement binary search over lookup_blocks.entries to find the right IndexBlock
-    // Return the location of the IndexBlock in the file
-    // For simplification, here's a linear search example:
+  size_t findIndexBlockLocation(const LookupBlock &lookup_blocks,
+                                const PageKey &pagekey, std::ifstream &inFile) {
+    // Implement binary search over lookup_blocks.entries to find the right
+    // IndexBlock Return the location of the IndexBlock in the file For
+    // simplification, here's a linear search example:
     size_t index_block_location = 0;
     for (const auto &entry : lookup_blocks.entries) {
       if (entry.first >= pagekey) {
@@ -296,8 +314,10 @@ class LSVPS : public LSVPSInterface {
   }
 
   // 写入二级存储
-  void writeToStorage(const std::vector<PageBlock> &page_blocks, const std::vector<IndexBlock> &index_blocks,
-                      const LookupBlock &lookup_blocks, const fs::path &filepath) {
+  void writeToStorage(const std::vector<PageBlock> &page_blocks,
+                      const std::vector<IndexBlock> &index_blocks,
+                      const LookupBlock &lookup_blocks,
+                      const fs::path &filepath) {
     std::ofstream outFile(filepath, std::ios::binary);
     if (!outFile) {
       std::cerr << "Error opening file for writing." << std::endl;
@@ -308,7 +328,8 @@ class LSVPS : public LSVPSInterface {
 
     // Write page blocks
     for (const auto &pageBlock : page_blocks) {
-      outFile.write(reinterpret_cast<const char *>(&pageBlock.type), sizeof(pageBlock.type));
+      outFile.write(reinterpret_cast<const char *>(&pageBlock.type),
+                    sizeof(pageBlock.type));
       pageBlock.data.SerializeTo(outFile);
       offset += sizeof(pageBlock.type) + pageBlock.data.GetSerializedSize();
     }
@@ -317,8 +338,10 @@ class LSVPS : public LSVPSInterface {
     for (const auto &indexBlock : index_blocks) {
       for (const auto &mapping : indexBlock.GetMappings()) {
         mapping.pagekey.SerializeTo(outFile);
-        outFile.write(reinterpret_cast<const char *>(&mapping.location), sizeof(mapping.location));
-        offset += sizeof(int) + sizeof(int) + sizeof(bool) + sizeof(size_t) + mapping.pagekey.pid.size();  // PageKey
+        outFile.write(reinterpret_cast<const char *>(&mapping.location),
+                      sizeof(mapping.location));
+        offset += sizeof(int) + sizeof(int) + sizeof(bool) + sizeof(size_t) +
+                  mapping.pagekey.pid.size();  // PageKey
       }
     }
 
@@ -356,7 +379,8 @@ class LSVPS : public LSVPSInterface {
         PageBlock block;
         block.data = page;
         // Determine if it's BasePage or DeltaPage based on version
-        block.type = isBasePage(page) ? PageBlockType::BasePage : PageBlockType::DeltaPage;
+        block.type = isBasePage(page) ? PageBlockType::BasePage
+                                      : PageBlockType::DeltaPage;
         page_blocks.push_back(block);
       }
 
@@ -372,7 +396,8 @@ class LSVPS : public LSVPSInterface {
         }
 
         currentBlock.AddMapping(buffer_[i].GetPageKey(), currentLocation);
-        currentLocation += sizeof(PageBlockType) + buffer_[i].GetSerializedSize();
+        currentLocation +=
+            sizeof(PageBlockType) + buffer_[i].GetSerializedSize();
       }
 
       // Add the last index block if it contains any mappings
@@ -385,14 +410,18 @@ class LSVPS : public LSVPSInterface {
       uint64_t indexBlockOffset = currentLocation;
       for (const auto &block : index_blocks) {
         if (!block.GetMappings().empty()) {
-          lookup_blocks.entries.push_back({block.GetMappings()[0].pagekey, indexBlockOffset});
-          indexBlockOffset += block.GetMappings().size() * sizeof(IndexBlock::Mapping);
+          lookup_blocks.entries.push_back(
+              {block.GetMappings()[0].pagekey, indexBlockOffset});
+          indexBlockOffset +=
+              block.GetMappings().size() * sizeof(IndexBlock::Mapping);
         }
       }
-      std::string filepath = "index_" + std::to_string(parentLSVPS_.GetNumOfIndexFile()) + ".dat";
+      std::string filepath =
+          "index_" + std::to_string(parentLSVPS_.GetNumOfIndexFile()) + ".dat";
 
       // Write to storage
-      parentLSVPS_.writeToStorage(page_blocks, index_blocks, lookup_blocks, filepath);
+      parentLSVPS_.writeToStorage(page_blocks, index_blocks, lookup_blocks,
+                                  filepath);
 
       // Clear buffer
       buffer_.clear();
@@ -400,7 +429,8 @@ class LSVPS : public LSVPSInterface {
 
    private:
     std::vector<Page> buffer_;
-    const size_t maxSize_ = 256 * 1024 * 1024 / sizeof(Page);  // 假设最大大小为256MB
+    const size_t maxSize_ =
+        256 * 1024 * 1024 / sizeof(Page);  // 假设最大大小为256MB
 
     PageKey minKP_;
     PageKey maxKP_;
