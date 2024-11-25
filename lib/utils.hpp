@@ -85,7 +85,7 @@ struct PageKey {
 class Page {//设置成抽象类 序列化 反序列化 getPageKey setPageKey 子类 DMMTriePage DeltaPage
 
 private:
-    char data_[PAGE_SIZE]{};
+    alignas(4096) char data_[PAGE_SIZE]{};
     PageKey pagekey_;
 
 public:
@@ -102,21 +102,27 @@ public:
 
     // virtual size_t GetSerializedSize() = 0;
 
-    virtual void SerializeTo() = 0;
+    virtual void SerializeTo(){};
 
-    // virtual void Deserialize(std::istream& in) = 0;
+    virtual void Deserialize(std::istream& in) {
+        in.read(data_, PAGE_SIZE);
+    };
 
     void SetPageKey(const PageKey& key) {
         pagekey_ = key;
     }
 
-    char* GetData() const {
+    const char* GetData() const {
+        return data_;
+    }
+
+    char* GetData() {
         return data_;
     }
 };
 class LSVPSInterface{
     public:
     virtual Page* LoadPage(const PageKey& pagekey) = 0;
-    virtual void StorePage(const Page& page) = 0;
+    virtual void StorePage(Page* page) = 0;
 };
 #endif

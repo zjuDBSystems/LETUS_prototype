@@ -136,7 +136,8 @@ class LSVPS : public LSVPSInterface {
   // 加载页面函数
   Page *LoadPage(const PageKey& pagekey) {
     // 获取最近的 basepage
-    PageKey base_pagekey = GetLatestBasePageKey(pagekey);
+    PageKey base_pagekey = trie_->GetLatestBasePageKey(pagekey);
+  
     
     // 如果找不到基础页面，返回 nullptr
     if (base_pagekey.version == 0) {
@@ -144,33 +145,33 @@ class LSVPS : public LSVPSInterface {
     }
 
     // 加载 basepage
-    Page* result = PageLookup(base_pagekey);
-    if (!result) {
+    BasePage* basepage = dynamic_cast<BasePage*>(PageLookup(base_pagekey));
+    if (!basepage) {
         return nullptr;
     }
 
     // 先收集所有需要的 delta pages
-    std::vector<Page*> delta_pages;
+    std::vector<const DeltaPage*> delta_pages;
     PageKey current_delta = base_pagekey;
-
-    delta_pages.push_back(trie_->GetDeltaPage(pagekey.pid));//get the active_delta_page
-    while (current_pagekey != pagekey) {
-        Page* delta = PageLookup(current_delta);
-        if (delta) {
-            delta_pages.push_back(delta);
-            current_pagekey = delta->GetLastPageKey();  // 获取上一个 delta page
+    const DeltaPage* active_deltapage = trie_->GetDeltaPage(pagekey.pid);
+    delta_pages.push_back(active_deltapage);//get the active_delta_page
+    auto current_pagekey = active_deltapage->GetLastPageKey();
+    while (current_pagekey != base_pagekey) {
+        DeltaPage* delta_page = dynamic_cast<DeltaPage*>(PageLookup(current_pagekey));
+        if (delta_page) {
+            delta_pages.push_back(delta_page);
+            current_pagekey = delta_page->GetLastPageKey();  // 获取上一个 delta page
         } else {
             break;
         }
     }
 
     // 按照时间顺序（从旧到新）应用 delta pages
-    for (const auto& delta : delta_pages) {
-        
-        ApplyDelta(result, delta, pagekey);
+    for (const auto& delta : delta_pages) { 
+        ApplyDelta(basepage, delta, pagekey);
     }
 
-    return result;
+    return basepage;
   }
 
   // 存储页面函数
@@ -187,7 +188,7 @@ class LSVPS : public LSVPSInterface {
 
   int GetNumOfIndexFile() { return indexFiles_.size(); }
 
-  void RegisterTrie(const DMMTrie *DMM_trie) { trie_ = DMM_trie; }
+  void RegisterTrie(DMMTrie *DMM_trie) { trie_ = DMM_trie; }
 
  private:
   // 页面查找函数
@@ -253,20 +254,18 @@ class LSVPS : public LSVPSInterface {
     
     temp_page.Deserialize(in_file);//反序列化函数，先从文件中读出数据流存入data_，后面可以利用data_反序列化构造出BasePage或者DeltaPage对象
     Page* page = (pagekey.type) ? 
-                 (new BasePage(trie_, temp_page->GetData())) : 
-                 (new DeltaPage(trie_, temp_page->GetData()));
+                 static_cast<Page*>(new BasePage(trie_, temp_page.GetData())) : 
+                 static_cast<Page*>(new DeltaPage(temp_page.GetData()));
 
     return page;
   }
 
   // 添加辅助方法来应用deltapage
-  void ApplyDelta(Page *basepage, Page *deltapage, PageKey pagekey) {
-    BasePage* base_page = dynamic_cast<BasePage*>(basepage);//cast
-    DeltaPage* delta_page = dynamic_cast<DeltaPage*>(deltapage);//cast
-    for(auto deltapage_item : delta_page->GetDeltaItems()){  
+  void ApplyDelta(BasePage *basepage, const DeltaPage *deltapage, PageKey pagekey) {
+    for(auto deltapage_item : deltapage->GetDeltaItems()){  
       //check if version is beyond the needed pagekey (active delta page)
       if(deltapage_item.version > pagekey.version) break;
-      base_page->UpdateDeltaItem(deltapage_item);
+      basepage->UpdateDeltaItem(deltapage_item);
     }
   }
 
@@ -408,7 +407,7 @@ class LSVPS : public LSVPSInterface {
 
   blockCache cache_;
   memIndexTable table_;
-  const DMMTrie *trie_;
+  DMMTrie *trie_;
 
   std::vector<IndexFile> indexFiles_;
 };

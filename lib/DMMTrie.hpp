@@ -11,9 +11,8 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
-#include <openssl/sha.h>
-#include <openssl/evp.h>
-#include "LSVPS.hpp"
+// #include <openssl/sha.h>
+// #include <openssl/evp.h>
 #include "VDLS.hpp"
 #include "utils.hpp"
 
@@ -25,306 +24,44 @@ using namespace std;
 struct PageKey;
 class Page;
 class LSVPS;
-
-
-string HashFunction(const string &input) {  // hash function SHA-256
-  EVP_MD_CTX *ctx = EVP_MD_CTX_new(); // create SHA-256 context
-  if (ctx == nullptr) {
-      throw runtime_error("Failed to create EVP_MD_CTX");
-  }
-
-  if (EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr) != 1) {  // initialize SHA-256 hash computation
-      EVP_MD_CTX_free(ctx);
-      throw runtime_error("Failed to initialize SHA-256");
-  }
-
-  if (EVP_DigestUpdate(ctx, input.c_str(), input.size()) != 1) {  // update the hash with input string
-      EVP_MD_CTX_free(ctx);
-      throw runtime_error("Failed to update SHA-256");
-  }
-
-  unsigned char hash[EVP_MAX_MD_SIZE];
-  unsigned int hash_len = 0;
-  if (EVP_DigestFinal_ex(ctx, hash, &hash_len) != 1) {
-      EVP_MD_CTX_free(ctx);
-      throw runtime_error("Failed to finalize SHA-256");
-  }
-
-  EVP_MD_CTX_free(ctx);
-
-  stringstream ss;
-  for (unsigned int i = 0; i < hash_len; i++) {
-      ss << hex << setw(2) << setfill('0') << (int)hash[i];  // convert the resulting hash to a hexadecimal string
-  }
-  return ss.str();
+class LeafNode;
+class DMMTrie;
+//For Test
+string HashFunction(const string & input){
+  string str(32, 'a');
+  return str;
 }
+// string HashFunction(const string &input) {  // hash function SHA-256
+//   EVP_MD_CTX *ctx = EVP_MD_CTX_new(); // create SHA-256 context
+//   if (ctx == nullptr) {
+//       throw runtime_error("Failed to create EVP_MD_CTX");
+//   }
 
-class Node {
- public:
-  virtual ~Node() noexcept = default;
-  string hash_;  // merkle hash of the node
-  uint64_t version_;
+//   if (EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr) != 1) {  // initialize SHA-256 hash computation
+//       EVP_MD_CTX_free(ctx);
+//       throw runtime_error("Failed to initialize SHA-256");
+//   }
 
-  virtual void CalculateHash() {};
-  virtual void SerializeTo(char *buffer, size_t &current_size, bool is_root) const = 0;
-  virtual void DeserializeFrom(char *buffer, size_t &current_size, bool is_root) = 0;
-  virtual void AddChild(int index, Node* child, uint64_t version, const string& hash)  {};
-  virtual Node* GetChild(int index) { return nullptr; };
-  virtual bool HasChild(int index) {};
-  virtual void SetChild(int index, uint64_t version, string hash) {};
-  virtual void UpdateNode() {};
-  virtual void SetLocation(tuple<uint64_t, uint64_t, uint64_t> location) {};
+//   if (EVP_DigestUpdate(ctx, input.c_str(), input.size()) != 1) {  // update the hash with input string
+//       EVP_MD_CTX_free(ctx);
+//       throw runtime_error("Failed to update SHA-256");
+//   }
 
-  string GetHash() { return hash_; }
-  uint64_t GetVersion() { return version_; }
-  virtual void SetVersion(uint64_t version) { version_ = version; };
-  virtual void SetHash(string hash) { hash_ = hash; };
-};
+//   unsigned char hash[EVP_MAX_MD_SIZE];
+//   unsigned int hash_len = 0;
+//   if (EVP_DigestFinal_ex(ctx, hash, &hash_len) != 1) {
+//       EVP_MD_CTX_free(ctx);
+//       throw runtime_error("Failed to finalize SHA-256");
+//   }
 
-class IndexNode : public Node {
- public:
-  IndexNode(uint64_t V = 0, const string &h = "", uint16_t b = 0)
-      : version_(V), hash_(h), bitmap_(b) {
-    for (size_t i = 0; i < DMM_NODE_FANOUT; i++) {
-      children_[i] =
-          make_tuple(0, "", nullptr);  // initialize children to default
-    }
-  }
+//   EVP_MD_CTX_free(ctx);
 
-  IndexNode(uint64_t version, const string &hash, uint16_t bitmap, const array<tuple<uint64_t, string, Node *>, DMM_NODE_FANOUT> &children)
-      : version_(version), hash_(hash), bitmap_(bitmap), children_(children) {}
-
-  ~IndexNode() noexcept override = default;
-
-  void CalculateHash() override {
-    string concatenated_hash;
-    for (int i = 0; i < DMM_NODE_FANOUT; i++) {
-      concatenated_hash += get<1>(children_[i]);
-    }
-    hash_ = HashFunction(concatenated_hash);
-  }
-
-  /* serialized index node format (size in bytes):
-     | is_leaf_node (1) | version (8) | hash (32) | bitmap (2) | Vc (8) | Hc
-     (32) | Vc (8) | Hc (32) | ... | child 1 | child 2 | ... the function
-     doesn't serialize pointer and doesn't serialize empty child nodes
-  */
-  void SerializeTo(char *buffer, size_t &current_size,
-                   bool is_root) const override {
-    bool is_leaf_node = false;
-    memcpy(buffer + current_size, &is_leaf_node,
-           sizeof(bool));  // false means that the node is indexnode
-    current_size += sizeof(bool);
-
-    memcpy(buffer + current_size, &version_, sizeof(uint64_t));
-    current_size += sizeof(uint64_t);
-
-    memcpy(buffer + current_size, hash_.c_str(), hash_.size());
-    current_size += hash_.size();
-
-    memcpy(buffer + current_size, &bitmap_, sizeof(uint16_t));
-    current_size += sizeof(uint16_t);
-
-    for (int i = 0; i < DMM_NODE_FANOUT; i++) {
-      uint64_t child_version = get<0>(children_[i]);
-      string child_hash = get<1>(children_[i]);
-
-      memcpy(buffer + current_size, &child_version, sizeof(uint64_t));
-      current_size += sizeof(uint64_t);
-      memcpy(buffer + current_size, child_hash.c_str(), child_hash.size());
-      current_size += child_hash.size();
-    }
-
-    if (is_root) {  // if an index node is the root node of a page, serialize
-                    // its children
-      for (int i = 0; i < DMM_NODE_FANOUT; i++) {
-        if (bitmap_ & (1 << i)) {  // only serialize children that exists
-          Node *child = get<2>(children_[i]);
-          child->SerializeTo(buffer, current_size, false);
-        }
-      }
-    }
-  }
-
-  void DeserializeFrom(char *buffer, size_t &current_size, bool is_root) override {
-    version_ = *(reinterpret_cast<uint64_t *>(buffer + current_size));
-    current_size += sizeof(uint64_t);
-
-    hash_ = string(buffer + current_size, HASH_SIZE);
-    current_size += HASH_SIZE;
-
-    bitmap_ = *(reinterpret_cast<uint16_t *>(buffer + current_size));
-    current_size += sizeof(uint16_t);
-
-    for (int i = 0; i < DMM_NODE_FANOUT; i++) {
-      uint64_t child_version = *(reinterpret_cast<uint64_t *>(buffer + current_size));
-      current_size += sizeof(uint64_t);
-      string child_hash(buffer + current_size, HASH_SIZE);
-      current_size += HASH_SIZE;
-
-      children_[i] = make_tuple(child_version, child_hash, nullptr);
-    }
-
-    if(!is_root) {  // indexnode is in second level of a page, return
-      return;
-    }
-
-    for (int i = 0; i < DMM_NODE_FANOUT; i++) {
-      if (bitmap_ & (1 << i)) {  // serialized data only stores children that exists
-        bool child_is_leaf_node = *(reinterpret_cast<bool *>(buffer + current_size));
-        current_size += sizeof(bool);
-
-        if(child_is_leaf_node) {  // second level of page is leafnode
-          Node* child = new LeafNode();
-          child->DeserializeFrom(buffer, current_size, false);
-          this->AddChild(i, child);  // add pointer to children in indexnode
-        } else {  // second level of page is indexnode
-          Node* child = new IndexNode();
-          child->DeserializeFrom(buffer, current_size, false);
-          this->AddChild(i, child);
-        }
-      }
-    }
-  }
-
-  void UpdateNode(uint64_t version, int index, const string &child_hash, bool is_root, DeltaPage* deltapage) {
-    version_ = version;
-    bitmap_ |= (1 << index);
-    get<0>(children_[index]) = version;
-    get<1>(children_[index]) = child_hash;
-
-    string concatenated_hash;
-    for (int i = 0; i < DMM_NODE_FANOUT; i++) {
-      concatenated_hash += get<1>(children_[i]);
-    }
-    hash_ = HashFunction(concatenated_hash);
-
-    uint8_t location_in_page = is_root ? 0 : index + 1;
-    deltapage->AddIndexNodeUpdate(location_in_page, version, hash_, index, child_hash);
-  }
-
-  void AddChild(int index, Node *child, uint64_t version = 0, const string &hash = "") override {
-    if (index >= 0 && index < DMM_NODE_FANOUT) {
-      children_[index] = make_tuple(version, hash, child);
-      bitmap_ |= (1 << index);  // update bitmap
-    }
-    throw runtime_error("AddChild out of range.");
-  }
-
-  Node *GetChild(int index) override {
-    if (index >= 0 && index < DMM_NODE_FANOUT) {
-      if(bitmap_ & (1 << index)) {
-        return get<2>(children_[index]);
-      }
-      throw runtime_error("GetChild: child doesn't exist");
-    }
-    throw runtime_error("GetChild out of range.");
-  }
-
-  bool HasChild(int index) override {
-    return bitmap_ & (1 << index) ? true : false;
-  }
-
-  void SetChild(int index, uint64_t version, string hash) {
-    if (index >= 0 && index < DMM_NODE_FANOUT) {
-      get<0>(children_[index]) = version;
-      get<1>(children_[index]) = hash;
-      bitmap_ |= (1 << index);  // update bitmap
-    }
-    throw runtime_error("SetChild out of range.");
-  }
-
- private:
-  uint64_t version_;
-  string hash_;
-  uint16_t bitmap_;  // bitmap for children
-  array<tuple<uint64_t, string, Node *>, DMM_NODE_FANOUT> children_;  // trie
-};
-
-class LeafNode : public Node {
- public:
-  LeafNode(uint64_t V = 0, const string &k = "", const tuple<uint64_t, uint64_t, uint64_t> &l = {}, const string &h = "")
-      : version_(V), key_(k), location_(l), hash_(h) {}
-
-  void CalculateHash(const string &value) {
-    hash_ = HashFunction(key_ + value);
-  }
-
-  /* serialized leaf node format (size in bytes):
-     | is_leaf_node (1) | version (8) | key_size (8 in 64-bit system) | key
-     (key_size) | location(8, 8, 8) | hash (32) |
-  */
-  void SerializeTo(char *buffer, size_t &current_size,
-                   bool is_root) const override {
-    bool is_leaf_node = true;
-    memcpy(buffer + current_size, &is_leaf_node,
-           sizeof(bool));  // true means that the node is leafnode
-    current_size += sizeof(bool);
-
-    memcpy(buffer + current_size, &version_, sizeof(uint64_t));
-    current_size += sizeof(uint64_t);
-
-    size_t key_size = key_.size();
-    memcpy(buffer + current_size, &key_size, sizeof(key_size));  // key size
-    current_size += sizeof(key_size);
-    memcpy(buffer + current_size, key_.c_str(), key_size);  // key
-    current_size += key_size;
-
-    memcpy(buffer + current_size, &get<0>(location_),
-           sizeof(uint64_t));  // fileID
-    current_size += sizeof(uint64_t);
-    memcpy(buffer + current_size, &get<1>(location_),
-           sizeof(uint64_t));  // offset
-    current_size += sizeof(uint64_t);
-    memcpy(buffer + current_size, &get<2>(location_),
-           sizeof(uint64_t));  // size
-    current_size += sizeof(uint64_t);
-
-    memcpy(buffer + current_size, hash_.c_str(), hash_.size());
-    current_size += hash_.size();
-  }
-
-  void DeserializeFrom(char *buffer, size_t &current_size, bool is_root) override {
-    version_ = *(reinterpret_cast<uint64_t *>(buffer + current_size));  // deserialize leafnode version
-    current_size += sizeof(uint64_t);
-
-    size_t key_size = *(reinterpret_cast<size_t *>(buffer + current_size));  // deserialize key_size
-    current_size += sizeof(key_size);
-    key_ = string(buffer + current_size, key_size);  // deserialize key
-    current_size += key_size;
-
-    uint64_t fileID = *(reinterpret_cast<uint64_t *>(buffer + current_size));  // deserialize fileID
-    current_size += sizeof(uint64_t);
-    uint64_t offset = *(reinterpret_cast<uint64_t *>(buffer + current_size));  // deserialize offset
-    current_size += sizeof(uint64_t);
-    uint64_t size = *(reinterpret_cast<uint64_t *>(buffer + current_size));  // deserialize size
-    current_size += sizeof(uint64_t);
-    location_ = make_tuple(fileID, offset, size);
-
-    hash_ = string (buffer + current_size, HASH_SIZE);  // deserialize hash
-    current_size += HASH_SIZE;
-  }
-
-  void UpdateNode(uint64_t version, const tuple<uint64_t, uint64_t, uint64_t> &location, const string &value, int index, bool is_root, DeltaPage* deltapage) {
-    version_ = version;
-    location_ = location;
-    hash_ = HashFunction(key_ + value);
-    
-    uint8_t location_in_page = is_root ? 0 : index + 1;
-    deltapage->AddLeafNodeUpdate(location_in_page, version, hash_, get<0>(location), get<1>(location), get<2>(location));
-  }
-
-  tuple<uint64_t, uint64_t, uint64_t> GetLocation() const { return location_; }
-
-  void SetLocation(tuple<uint64_t, uint64_t, uint64_t> location) {location_ = location;}
-
- private:
-  uint64_t version_;
-  string key_;
-  tuple<uint64_t, uint64_t, uint64_t>
-      location_;  // location tuple (fileID, offset, size)
-  string hash_;
-};
+//   stringstream ss;
+//   for (unsigned int i = 0; i < hash_len; i++) {
+//       ss << hex << setw(2) << setfill('0') << (int)hash[i];  // convert the resulting hash to a hexadecimal string
+//   }
+//   return ss.str();
+// }
 
 class DeltaPage : public Page {
  public:
@@ -487,12 +224,283 @@ class DeltaPage : public Page {
   uint16_t update_count_;
 };
 
+
+class Node {
+ public:
+  virtual ~Node() noexcept = default;
+  string hash_;  // merkle hash of the node
+  uint64_t version_;
+
+  virtual void CalculateHash() {};
+  virtual void SerializeTo(char *buffer, size_t &current_size, bool is_root) const = 0;
+  virtual void DeserializeFrom(char *buffer, size_t &current_size, bool is_root) = 0;
+  virtual void AddChild(int index, Node* child, uint64_t version, const string& hash)  {};
+  virtual Node* GetChild(int index) { return nullptr; };
+  virtual bool HasChild(int index) {return false;};
+  virtual void SetChild(int index, uint64_t version, string hash) {};
+  virtual void UpdateNode() {};
+  virtual void SetLocation(tuple<uint64_t, uint64_t, uint64_t> location) {};
+
+  string GetHash() { return hash_; }
+  uint64_t GetVersion() { return version_; }
+  virtual void SetVersion(uint64_t version) { version_ = version; };
+  virtual void SetHash(string hash) { hash_ = hash; };
+};
+
+
+class LeafNode : public Node {
+ public:
+  LeafNode(uint64_t V = 0, const string &k = "", const tuple<uint64_t, uint64_t, uint64_t> &l = {}, const string &h = "")
+      : version_(V), key_(k), location_(l), hash_(h) {}
+
+  void CalculateHash(const string &value) {
+    hash_ = HashFunction(key_ + value);
+  }
+
+  /* serialized leaf node format (size in bytes):
+     | is_leaf_node (1) | version (8) | key_size (8 in 64-bit system) | key
+     (key_size) | location(8, 8, 8) | hash (32) |
+  */
+  void SerializeTo(char *buffer, size_t &current_size,
+                   bool is_root) const override {
+    bool is_leaf_node = true;
+    memcpy(buffer + current_size, &is_leaf_node,
+           sizeof(bool));  // true means that the node is leafnode
+    current_size += sizeof(bool);
+
+    memcpy(buffer + current_size, &version_, sizeof(uint64_t));
+    current_size += sizeof(uint64_t);
+
+    size_t key_size = key_.size();
+    memcpy(buffer + current_size, &key_size, sizeof(key_size));  // key size
+    current_size += sizeof(key_size);
+    memcpy(buffer + current_size, key_.c_str(), key_size);  // key
+    current_size += key_size;
+
+    memcpy(buffer + current_size, &get<0>(location_),
+           sizeof(uint64_t));  // fileID
+    current_size += sizeof(uint64_t);
+    memcpy(buffer + current_size, &get<1>(location_),
+           sizeof(uint64_t));  // offset
+    current_size += sizeof(uint64_t);
+    memcpy(buffer + current_size, &get<2>(location_),
+           sizeof(uint64_t));  // size
+    current_size += sizeof(uint64_t);
+
+    memcpy(buffer + current_size, hash_.c_str(), hash_.size());
+    current_size += hash_.size();
+  }
+
+  void DeserializeFrom(char *buffer, size_t &current_size, bool is_root) override {
+    version_ = *(reinterpret_cast<uint64_t *>(buffer + current_size));  // deserialize leafnode version
+    current_size += sizeof(uint64_t);
+
+    size_t key_size = *(reinterpret_cast<size_t *>(buffer + current_size));  // deserialize key_size
+    current_size += sizeof(key_size);
+    key_ = string(buffer + current_size, key_size);  // deserialize key
+    current_size += key_size;
+
+    uint64_t fileID = *(reinterpret_cast<uint64_t *>(buffer + current_size));  // deserialize fileID
+    current_size += sizeof(uint64_t);
+    uint64_t offset = *(reinterpret_cast<uint64_t *>(buffer + current_size));  // deserialize offset
+    current_size += sizeof(uint64_t);
+    uint64_t size = *(reinterpret_cast<uint64_t *>(buffer + current_size));  // deserialize size
+    current_size += sizeof(uint64_t);
+    location_ = make_tuple(fileID, offset, size);
+
+    hash_ = string (buffer + current_size, HASH_SIZE);  // deserialize hash
+    current_size += HASH_SIZE;
+  }
+
+  void UpdateNode(uint64_t version, const tuple<uint64_t, uint64_t, uint64_t> &location, const string &value, int index, bool is_root, DeltaPage* deltapage) {
+    version_ = version;
+    location_ = location;
+    hash_ = HashFunction(key_ + value);
+    
+    uint8_t location_in_page = is_root ? 0 : index + 1;
+    deltapage->AddLeafNodeUpdate(location_in_page, version, hash_, get<0>(location), get<1>(location), get<2>(location));
+  }
+
+  tuple<uint64_t, uint64_t, uint64_t> GetLocation() const { return location_; }
+
+  void SetLocation(tuple<uint64_t, uint64_t, uint64_t> location) override {location_ = location;}
+
+ private:
+  uint64_t version_;
+  string key_;
+  tuple<uint64_t, uint64_t, uint64_t>
+      location_;  // location tuple (fileID, offset, size)
+  string hash_;
+};
+
+
+class IndexNode : public Node {
+ public:
+  IndexNode(uint64_t V = 0, const string &h = "", uint16_t b = 0)
+      : version_(V), hash_(h), bitmap_(b) {
+    for (size_t i = 0; i < DMM_NODE_FANOUT; i++) {
+      children_[i] =
+          make_tuple(0, "", nullptr);  // initialize children to default
+    }
+  }
+
+  IndexNode(uint64_t version, const string &hash, uint16_t bitmap, const array<tuple<uint64_t, string, Node *>, DMM_NODE_FANOUT> &children)
+      : version_(version), hash_(hash), bitmap_(bitmap), children_(children) {}
+
+  ~IndexNode() noexcept override = default;
+
+  void CalculateHash() override {
+    string concatenated_hash;
+    for (int i = 0; i < DMM_NODE_FANOUT; i++) {
+      concatenated_hash += get<1>(children_[i]);
+    }
+    hash_ = HashFunction(concatenated_hash);
+  }
+
+  /* serialized index node format (size in bytes):
+     | is_leaf_node (1) | version (8) | hash (32) | bitmap (2) | Vc (8) | Hc
+     (32) | Vc (8) | Hc (32) | ... | child 1 | child 2 | ... the function
+     doesn't serialize pointer and doesn't serialize empty child nodes
+  */
+  void SerializeTo(char *buffer, size_t &current_size,
+                   bool is_root) const override {
+    bool is_leaf_node = false;
+    memcpy(buffer + current_size, &is_leaf_node,
+           sizeof(bool));  // false means that the node is indexnode
+    current_size += sizeof(bool);
+
+    memcpy(buffer + current_size, &version_, sizeof(uint64_t));
+    current_size += sizeof(uint64_t);
+
+    memcpy(buffer + current_size, hash_.c_str(), hash_.size());
+    current_size += hash_.size();
+
+    memcpy(buffer + current_size, &bitmap_, sizeof(uint16_t));
+    current_size += sizeof(uint16_t);
+
+    for (int i = 0; i < DMM_NODE_FANOUT; i++) {
+      uint64_t child_version = get<0>(children_[i]);
+      string child_hash = get<1>(children_[i]);
+
+      memcpy(buffer + current_size, &child_version, sizeof(uint64_t));
+      current_size += sizeof(uint64_t);
+      memcpy(buffer + current_size, child_hash.c_str(), child_hash.size());
+      current_size += child_hash.size();
+    }
+
+    if (is_root) {  // if an index node is the root node of a page, serialize
+                    // its children
+      for (int i = 0; i < DMM_NODE_FANOUT; i++) {
+        if (bitmap_ & (1 << i)) {  // only serialize children that exists
+          Node *child = get<2>(children_[i]);
+          child->SerializeTo(buffer, current_size, false);
+        }
+      }
+    }
+  }
+
+  void DeserializeFrom(char *buffer, size_t &current_size, bool is_root) override {
+    version_ = *(reinterpret_cast<uint64_t *>(buffer + current_size));
+    current_size += sizeof(uint64_t);
+
+    hash_ = string(buffer + current_size, HASH_SIZE);
+    current_size += HASH_SIZE;
+
+    bitmap_ = *(reinterpret_cast<uint16_t *>(buffer + current_size));
+    current_size += sizeof(uint16_t);
+
+    for (int i = 0; i < DMM_NODE_FANOUT; i++) {
+      uint64_t child_version = *(reinterpret_cast<uint64_t *>(buffer + current_size));
+      current_size += sizeof(uint64_t);
+      string child_hash(buffer + current_size, HASH_SIZE);
+      current_size += HASH_SIZE;
+
+      children_[i] = make_tuple(child_version, child_hash, nullptr);
+    }
+
+    if(!is_root) {  // indexnode is in second level of a page, return
+      return;
+    }
+
+    for (int i = 0; i < DMM_NODE_FANOUT; i++) {
+      if (bitmap_ & (1 << i)) {  // serialized data only stores children that exists
+        bool child_is_leaf_node = *(reinterpret_cast<bool *>(buffer + current_size));
+        current_size += sizeof(bool);
+
+        if(child_is_leaf_node) {  // second level of page is leafnode
+          Node* child = new LeafNode();
+          child->DeserializeFrom(buffer, current_size, false);
+          this->AddChild(i, child);  // add pointer to children in indexnode
+        } else {  // second level of page is indexnode
+          Node* child = new IndexNode();
+          child->DeserializeFrom(buffer, current_size, false);
+          this->AddChild(i, child);
+        }
+      }
+    }
+  }
+
+  void UpdateNode(uint64_t version, int index, const string &child_hash, bool is_root, DeltaPage* deltapage) {
+    version_ = version;
+    bitmap_ |= (1 << index);
+    get<0>(children_[index]) = version;
+    get<1>(children_[index]) = child_hash;
+
+    string concatenated_hash;
+    for (int i = 0; i < DMM_NODE_FANOUT; i++) {
+      concatenated_hash += get<1>(children_[i]);
+    }
+    hash_ = HashFunction(concatenated_hash);
+
+    uint8_t location_in_page = is_root ? 0 : index + 1;
+    deltapage->AddIndexNodeUpdate(location_in_page, version, hash_, index, child_hash);
+  }
+
+  void AddChild(int index, Node *child, uint64_t version = 0, const string &hash = "") override {
+    if (index >= 0 && index < DMM_NODE_FANOUT) {
+      children_[index] = make_tuple(version, hash, child);
+      bitmap_ |= (1 << index);  // update bitmap
+    }
+    else throw runtime_error("AddChild out of range.");
+  }
+
+  Node *GetChild(int index) override {
+    if (index >= 0 && index < DMM_NODE_FANOUT) {
+      if(bitmap_ & (1 << index)) {
+        return get<2>(children_[index]);
+      }
+      else throw runtime_error("GetChild: child doesn't exist");
+    }
+    else throw runtime_error("GetChild out of range.");
+  }
+
+  bool HasChild(int index) override {
+    return bitmap_ & (1 << index) ? true : false;
+  }
+
+  void SetChild(int index, uint64_t version, string hash) override {
+    if (index >= 0 && index < DMM_NODE_FANOUT) {
+      get<0>(children_[index]) = version;
+      get<1>(children_[index]) = hash;
+      bitmap_ |= (1 << index);  // update bitmap
+    }
+    else throw runtime_error("SetChild out of range.");
+  }
+
+ private:
+  uint64_t version_;
+  string hash_;
+  uint16_t bitmap_;  // bitmap for children
+  array<tuple<uint64_t, string, Node *>, DMM_NODE_FANOUT> children_;  // trie
+};
+
+
 class BasePage : public Page {
  public:
   BasePage(DMMTrie* trie = nullptr, Node *root = nullptr, const string &pid = "", uint16_t d_update_count = 0, uint16_t b_update_count = 0)
             : trie_(trie), root_(root), pid_(pid), d_update_count_(d_update_count), b_update_count_(b_update_count) {}
 
-  BasePage(DMMTrie* trie, char *buffer) {
+  BasePage(DMMTrie* trie, char *buffer) : trie_(trie) {
     size_t current_size = 0;
 
     uint64_t version = *(reinterpret_cast<uint64_t *>(
@@ -532,14 +540,6 @@ class BasePage : public Page {
     }
   }
 
-  // bool AddChildToPage(int index, Node* child, uint64_t childVersion, const
-  // string& child_hash) {
-  //     if (root_) {
-  //         root_->AddChild(index, childVersion, child_hash, child);
-  //         return true;
-  //     }
-  //     return false;
-  // }
 
   /* serialized BasePage format (size in bytes):
      | version (8) | tid (8) | tp (1) | pid_size (8 in 64-bit system) | pid
@@ -578,45 +578,7 @@ class BasePage : public Page {
 
   void UpdatePage(uint64_t version, tuple<uint64_t, uint64_t, uint64_t> location, const string &value,
                   const string &nibbles, const string &child_hash, DeltaPage* deltapage,
-                  PageKey pagekey) {  // parameter "nibbles" are the first two nibbles after pid
-    if (nibbles.size() == 0) {        // page has one leafnode, eg. page "abcdef" for key "abcdef"
-      static_cast<LeafNode *>(root_)->UpdateNode(version, location, value, 0, true, deltapage);
-    } else if (nibbles.size() == 1) {  // page has one indexnode and one level of leafnodes, eg. page "abcd" for key "abcde"
-      int index = nibbles[0] - '0';
-      static_cast<LeafNode *>(root_->GetChild(index))->UpdateNode(version, location, value, index, true, deltapage);
-
-      string child_hash_2 = root_->GetChild(index)->GetHash();
-      static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash_2, false, deltapage);
-    } else {  // page has two levels of indexnodes , eg. page "ab" for key "abcdef"
-      int index = nibbles[0] - '0';
-      static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash, true, deltapage);
-
-      index = nibbles[1] - '0';
-      string child_hash_2 = root_->GetChild(index)->GetHash();
-      static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash_2, false, deltapage);
-    }
-    
-    PageKey deltapage_pagekey = {version, 0, true, pid_};
-    if (++d_update_count_ >= Td_) {  // When a DeltaPage accumulates 𝑇𝑑 updates, it is frozen and a new active one is initiated
-      d_update_count_ = 0;
-      // PageKey deltapage_pagekey = {version, 0, true, pid_};
-      deltapage->SerializeTo();
-      trie_->GetPageStore()->StorePage(*deltapage);  // send deltapage to LSVPS
-      deltapage->ClearDeltaPage();  // delete all DeltaItems in DeltaPage
-      deltapage->SetLastPageKey(deltapage_pagekey); // record the PageKey of DeltaPage that is passed to LSVPS
-    }
-    if(++b_update_count_ >= Tb_) {  // Each page generates a checkpoint as BasePage after every 𝑇𝑏 updates
-      b_update_count_ = 0;
-      this->SerializeTo();
-      trie_->GetPageStore()->StorePage(*this);  // send basepage to LSVPS
-      trie_->UpdatePageVersion(pagekey, version, version);
-      deltapage->SetLastPageKey(deltapage_pagekey);
-      return;
-    }
-
-    pair<uint64_t, uint64_t> page_version = trie_->GetPageVersion(pagekey);
-    trie_->UpdatePageVersion(pagekey, version, page_version.second);
-  }
+                  PageKey pagekey) ;
 
   void UpdateDeltaItem(DeltaPage::DeltaItem deltaitem) {  // add one update from deltapage to basepage 
     Node* node = nullptr;
@@ -662,6 +624,9 @@ class BasePage : public Page {
   const uint16_t Td_ = 32;  // update threshold of DeltaPage
   const uint16_t Tb_ = 64;  // update threshold of BasePage
 };
+
+
+
 
 class DMMTrie {
  public:
@@ -749,6 +714,17 @@ class DMMTrie {
 
   string CalcRootHash(uint64_t tid, uint64_t version) { return ""; }
 
+  const DeltaPage* GetDeltaPage(const string& pid) const {
+    auto it = active_deltapages_.find(pid);
+    if (it != active_deltapages_.end()) {
+        return &it->second;  // return deltapage if it exiests
+    } else {
+        // DeltaPage new_page;
+        // active_deltapages_[pid] = new_page;
+        // return &active_deltapages_[pid];
+        return nullptr;
+    }
+  }
   DeltaPage* GetDeltaPage(const string& pid) {
     auto it = active_deltapages_.find(pid);
     if (it != active_deltapages_.end()) {
@@ -768,11 +744,12 @@ class DMMTrie {
     return {0, 0};
   }
 
-  PageKey GetLatestBasePageKey(PageKey pagekey) {
+  PageKey GetLatestBasePageKey(PageKey pagekey) const {
     auto it = page_versions_.find(pagekey);
     if (it != page_versions_.end()) {
       return {it->second.second, pagekey.tid, true, pagekey.pid};
     }
+    return PageKey{0, 0, false, ""};
   }
 
   void UpdatePageVersion(PageKey pagekey, uint64_t current_version, uint64_t latest_basepage_version) {
@@ -825,5 +802,48 @@ class DMMTrie {
   }
 };
 
+void BasePage::UpdatePage(uint64_t version, tuple<uint64_t, uint64_t, uint64_t> location, const string &value,
+                  const string &nibbles, const string &child_hash, DeltaPage* deltapage,
+                  PageKey pagekey) {  // parameter "nibbles" are the first two nibbles after pid
+    if (nibbles.size() == 0) {        // page has one leafnode, eg. page "abcdef" for key "abcdef"
+      static_cast<LeafNode *>(root_)->UpdateNode(version, location, value, 0, true, deltapage);
+    } else if (nibbles.size() == 1) {  // page has one indexnode and one level of leafnodes, eg. page "abcd" for key "abcde"
+      int index = nibbles[0] - '0';
+      static_cast<LeafNode *>(root_->GetChild(index))->UpdateNode(version, location, value, index, true, deltapage);
+
+      string child_hash_2 = root_->GetChild(index)->GetHash();
+      static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash_2, false, deltapage);
+    } else {  // page has two levels of indexnodes , eg. page "ab" for key "abcdef"
+      int index = nibbles[0] - '0';
+      static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash, true, deltapage);
+
+      index = nibbles[1] - '0';
+      string child_hash_2 = root_->GetChild(index)->GetHash();
+      static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash_2, false, deltapage);
+    }
+    
+    PageKey deltapage_pagekey = {version, 0, true, pid_};
+    if (++d_update_count_ >= Td_) {  // When a DeltaPage accumulates 𝑇𝑑 updates, it is frozen and a new active one is initiated
+      d_update_count_ = 0;
+      // PageKey deltapage_pagekey = {version, 0, true, pid_};
+      deltapage->SerializeTo();
+      trie_->GetPageStore()->StorePage(deltapage);  // send deltapage to LSVPS
+      deltapage->ClearDeltaPage();  // delete all DeltaItems in DeltaPage
+      deltapage->SetLastPageKey(deltapage_pagekey); // record the PageKey of DeltaPage that is passed to LSVPS
+    }
+    if(++b_update_count_ >= Tb_) {  // Each page generates a checkpoint as BasePage after every 𝑇𝑏 updates
+      b_update_count_ = 0;
+      this->SerializeTo();
+      trie_->GetPageStore()->StorePage(this);  // send basepage to LSVPS
+      trie_->UpdatePageVersion(pagekey, version, version);
+      deltapage->SetLastPageKey(deltapage_pagekey);
+      return;
+    }
+
+    pair<uint64_t, uint64_t> page_version = trie_->GetPageVersion(pagekey);
+    trie_->UpdatePageVersion(pagekey, version, page_version.second);
+  }
+
+  
 
 #endif

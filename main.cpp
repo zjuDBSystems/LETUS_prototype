@@ -8,6 +8,6 @@ int main(){
     DMMTrie* trie = new DMMTrie(0, page_store, value_store);
     page_store->RegisterTrie(trie);
     trie->Put(0,1,"12345","aaa");
-    cout << trie->Get(0,1,"11111") << endl;
+    std::cout << trie->Get(0,1,"11111") << std::endl;
     return 0;
 }
