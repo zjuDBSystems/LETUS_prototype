@@ -311,7 +311,11 @@ class LSVPS : public LSVPSInterface {
           indexBlockOffset += block.GetMappings().size() * sizeof(IndexBlock::Mapping);
         }
       }
-      std::string filepath = "index_" + std::to_string(parentLSVPS_.GetNumOfIndexFile()) + ".dat";
+      const std::string dir_path = "IndexFile";
+      if (!std::filesystem::exists(dir_path)) {
+          std::filesystem::create_directory(dir_path);
+      }
+      std::string filepath = dir_path + "/index_" + std::to_string(parentLSVPS_.GetNumOfIndexFile()) + ".dat";
 
       // Write to storage
       this->writeToStorage(index_blocks, lookup_blocks, filepath);
