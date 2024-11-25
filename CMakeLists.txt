@@ -23,6 +23,7 @@ target_link_libraries(trace_replay jsoncpp)
 add_executable(get_put "workload/exes/get_put.cc")
 # add_executable(get_put "workload/exes/get_put.cc" ${letus_lib} ${workload_lib})
 
+add_executable(simple "workload/exes/simple.cc")
 
 # set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
