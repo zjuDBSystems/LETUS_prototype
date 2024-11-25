@@ -11,10 +11,8 @@
 #include <unordered_map>
 #include <vector>
 // #include <openssl/sha.h>
-#include "LSVPS.hpp"
 #include "VDLS.hpp"
 #include "utils.hpp"
-
 #define HASH_SIZE 32  // SHA256 result size in bytes
 
 static constexpr size_t DMM_NODE_FANOUT = 10;
@@ -22,7 +20,6 @@ static constexpr size_t DMM_NODE_FANOUT = 10;
 using namespace std;
 struct PageKey;
 class Page;
-class LSVPS;
 string HashFunction(const string &input) {  // hash function SHA-256
   // unsigned char hash[HASH_SIZE];
   // SHA256_CTX sha256_ctx;
