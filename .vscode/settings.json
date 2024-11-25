@@ -56,7 +56,11 @@
     "set": "cpp",
     "bit": "cpp",
     "cwctype": "cpp",
-    "mutex": "cpp"
+    "mutex": "cpp",
+    "codecvt": "cpp",
+    "condition_variable": "cpp",
+    "ctime": "cpp",
+    "thread": "cpp"
   },
   "clang-format.fallbackStyle": "Google",
   "editor.formatOnSave": true,

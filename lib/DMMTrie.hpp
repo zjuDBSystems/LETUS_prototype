@@ -238,6 +238,7 @@ class Node {
   virtual Node* GetChild(int index) { return nullptr; };
   virtual bool HasChild(int index) {return false;};
   virtual void SetChild(int index, uint64_t version, string hash) {};
+  virtual uint16_t GetBitmap() {};
   virtual void UpdateNode() {};
   virtual void SetLocation(tuple<uint64_t, uint64_t, uint64_t> location) {};
 
@@ -487,6 +488,10 @@ class IndexNode : public Node {
     else throw runtime_error("SetChild out of range.");
   }
 
+  uint16_t GetBitmap(){
+    return bitmap_;
+  }
+
  private:
   uint64_t version_;
   string hash_;
@@ -676,6 +681,7 @@ class DMMTrie {
 
           index = nibbles[0] - '0';
           root_node->AddChild(index, child_node, 0, "");
+          // std::cout << (root_node->GetBitmap());
           page = new BasePage(this, root_node, nibble_path.substr(0, i), 0, 0);
         }
         PutPage(pagekey, page);  // add the newly generated page into cache
@@ -814,10 +820,10 @@ void BasePage::UpdatePage(uint64_t version, tuple<uint64_t, uint64_t, uint64_t> 
       string child_hash_2 = root_->GetChild(index)->GetHash();
       static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash_2, false, deltapage);
     } else {  // page has two levels of indexnodes , eg. page "ab" for key "abcdef"
-      int index = nibbles[0] - '0';
-      static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash, true, deltapage);
+      int index = nibbles[0] - '0', child_index = nibbles[1] - '0';
+      static_cast<IndexNode *>(root_->GetChild(index))->UpdateNode(version, child_index, child_hash, true, deltapage);
 
-      index = nibbles[1] - '0';
+      // index = nibbles[0] - '0';
       string child_hash_2 = root_->GetChild(index)->GetHash();
       static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash_2, false, deltapage);
     }
