@@ -148,12 +148,13 @@ class LSVPS : public LSVPSInterface {
     // 先收集所有需要的 delta pages
     std::vector<Page*> delta_pages;
     PageKey current_delta = base_pagekey;
-    delta_pages.push_back(active_deltapage);//!!!active_delta_page
-    while (current_delta < pagekey) {
+
+    delta_pages.push_back(trie_->GetDeltaPage(pagekey.pid));//get the active_delta_page
+    while (current_pagekey != pagekey) {
         Page* delta = PageLookup(current_delta);
         if (delta) {
             delta_pages.push_back(delta);
-            current_delta = delta->GetNextPageKey();  // 获取上一个 delta page
+            current_pagekey = delta->GetLastPageKey();  // 获取上一个 delta page
         } else {
             break;
         }
@@ -161,7 +162,8 @@ class LSVPS : public LSVPSInterface {
 
     // 按照时间顺序（从旧到新）应用 delta pages
     for (const auto& delta : delta_pages) {
-        ApplyDelta(result, delta);
+        
+        ApplyDelta(result, delta, pagekey);
     }
 
     return result;
@@ -184,7 +186,7 @@ class LSVPS : public LSVPSInterface {
  private:
   // 页面查找函数
   Page* PageLookup(const PageKey &pagekey) {
-    // 步骤1：在内存索引表中查找
+    // 步骤1：在内存中查找
     auto &buffer = table_.getBuffer();
     for(const auto& page : buffer){
       if(page->GetPageKey() == pagekey){
@@ -192,7 +194,7 @@ class LSVPS : public LSVPSInterface {
       }
     }
 
-    // 步骤2：根据索引文件查找
+    // 步骤2：查找page所在的索引文件
     auto file_iterator = std::find_if(indexFiles_.begin(), indexFiles_.end(),
                                [&pagekey](const IndexFile &file) { return file.min_pagekey <= pagekey && pagekey <= file.max_pagekey; });
 
@@ -200,7 +202,7 @@ class LSVPS : public LSVPSInterface {
       throw std::runtime_error("Page not found in any index file.");
     }
     
-    // 步骤3：读取基础页和增量页
+    // 步骤3：在对应的索引文件中查找page
     Page* page = readPageFromIndexFile(*file_iterator, pagekey);
   
     return page;
@@ -241,21 +243,24 @@ class LSVPS : public LSVPSInterface {
 
     // Read the actual page data
     in_file.seekg(mapping->location);
+    Page temp_page;
+    
+    temp_page.Deserialize(in_file);//反序列化函数，先从文件中读出数据流存入data_，后面可以利用data_反序列化构造出BasePage或者DeltaPage对象
     Page* page = (pagekey.type) ? 
-                 static_cast<Page*>(new BasePage()) : 
-                 static_cast<Page*>(new DeltaPage());
-    page->Deserialize(in_file);//反序列化函数
+                 (new BasePage(trie_, temp_page->GetData())) : 
+                 (new DeltaPage(trie_, temp_page->GetData()));
 
     return page;
   }
 
   // 添加辅助方法来应用deltapage
-  void ApplyDelta(Page *basepage, Page *deltapage) {
+  void ApplyDelta(Page *basepage, Page *deltapage, PageKey pagekey) {
     BasePage* base_page = dynamic_cast<BasePage*>(basepage);//cast
     DeltaPage* delta_page = dynamic_cast<DeltaPage*>(deltapage);//cast
-    for(auto deltapage_item : *delta_page){  //!!!!GetDelataPageItemVector
-    //check if version is beyond the needed pagekey (active delta page)
-      base_page->update(deltapage_item);
+    for(auto deltapage_item : delta_page->GetDeltaItems()){  
+      //check if version is beyond the needed pagekey (active delta page)
+      if(deltapage_item.version > pagekey.version) break;
+      base_page->UpdateDeltaItem(deltapage_item);
     }
   }
 
