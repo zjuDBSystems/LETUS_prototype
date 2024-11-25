@@ -10,25 +10,27 @@
 
 using namespace std;
 
+// log stream format: fileID,offset,size\n
 class VDLS {
 public:
     VDLS() : current_fileID_(0), current_offset_(0) {}
 
-    tuple<uint64_t, uint64_t, uint64_t> WriteValue(uint64_t version, const string& key, const string& value) {   // append a new record to the log stream
-        size_t record_size = sizeof(version) + key.size() + value.size() + 4;
+    tuple<uint64_t, uint64_t, uint64_t> WriteValue(uint64_t version, const string& key, const string& value) { // append a new record to the log stream
+        string version_str = to_string(version);
+        size_t record_size = version_str.size() + key.size() + value.size() + 3;
         if (current_offset_ + record_size > MaxFileSize) { 
             current_fileID_++;
             current_offset_ = 0;
         }
 
-        ofstream file("data_file_" + to_string(current_fileID_), ios::app);// create or open the file for appending
+        ofstream file("data/data_file_" + to_string(current_fileID_), ios::app); // create or open the file for appending
         if (!file) {
-            throw std::runtime_error("Cannot open the VDLS file");
+            throw std::runtime_error("Cannot open file ");
         }
 
-        file << "(" << version << "," << key << "," << value << ")" << endl;
+        file << version_str << "," << key << "," << value << "\n";
 
-        tuple<uint64_t, uint64_t, uint64_t> location(current_fileID_, current_offset_, record_size);  // record location as a tuple (fileID, offset, size)
+        tuple<uint64_t, uint64_t, uint64_t> location(current_fileID_, current_offset_, record_size);
 
         current_offset_ += record_size;   // update current offset
 
@@ -41,24 +43,24 @@ public:
         uint64_t fileID, offset, size;
         tie(fileID, offset, size) = location;
 
-        ifstream file("data_file_" + to_string(fileID));  // open the file where the record is located
+        ifstream file("data/data_file_" + to_string(fileID)); 
         if (!file) {
-            cerr << "Error opening file for reading" << endl;
-            return "";
+            throw runtime_error("Cannot open file");
         }
         
-        file.seekg(offset, ios::beg);  // go to the correct offset
+        file.seekg(offset, ios::beg);  // locate the correct offset
 
         string line;
         getline(file, line);
-        file.close();
 
         stringstream ss(line);
         string temp, value;
 
-        getline(ss, temp, ',');    //skip to the first ","
-        getline(ss, temp, ',');    //skip to the second ","
-        getline(ss, value);    // remaining part of the line is the value
+        getline(ss, temp, ',');
+        getline(ss, temp, ',');
+        getline(ss, value);
+
+        file.close();
 
         return value;
     }
