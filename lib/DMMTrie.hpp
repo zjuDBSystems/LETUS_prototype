@@ -24,7 +24,9 @@ using namespace std;
 
 struct PageKey;
 class Page;
+
 class LSVPS;
+
 
 string HashFunction(const string &input) {  // hash function SHA-256
   EVP_MD_CTX *ctx = EVP_MD_CTX_new(); // create SHA-256 context
