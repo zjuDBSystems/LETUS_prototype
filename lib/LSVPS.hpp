@@ -50,7 +50,8 @@ struct IndexBlock {
     // 写入所有映射
     for (const auto &mapping : mappings_) {
       mapping.pagekey.SerializeTo(out);
-      out.write(reinterpret_cast<const char *>(&mapping.location), sizeof(mapping.location));
+      out.write(reinterpret_cast<const char *>(&mapping.location),
+                sizeof(mapping.location));
     }
 
     // 填充剩余空间以对齐到4KB
@@ -71,7 +72,8 @@ struct IndexBlock {
     for (size_t i = 0; i < count; ++i) {
       Mapping mapping;
       mapping.pagekey.Deserialize(in);
-      in.read(reinterpret_cast<char *>(&mapping.location), sizeof(mapping.location));
+      in.read(reinterpret_cast<char *>(&mapping.location),
+              sizeof(mapping.location));
       mappings_.push_back(mapping);
     }
 
@@ -99,10 +101,12 @@ struct LookupBlock {
   // Serialization function
   void SerializeTo(std::ostream &out) const {
     size_t entriesSize = entries.size();
-    out.write(reinterpret_cast<const char *>(&entriesSize), sizeof(entriesSize));
+    out.write(reinterpret_cast<const char *>(&entriesSize),
+              sizeof(entriesSize));
     for (const auto &entry : entries) {
       entry.first.SerializeTo(out);
-      out.write(reinterpret_cast<const char *>(&entry.second), sizeof(entry.second));
+      out.write(reinterpret_cast<const char *>(&entry.second),
+                sizeof(entry.second));
     }
   }
 
@@ -177,7 +181,9 @@ class LSVPS : public LSVPSInterface {
     }
   }
 
-  void AddIndexFile(const IndexFile &index_file) { indexFiles_.push_back(index_file); }
+  void AddIndexFile(const IndexFile &index_file) {
+    indexFiles_.push_back(index_file);
+  }
 
   int GetNumOfIndexFile() { return indexFiles_.size(); }
 
@@ -307,8 +313,10 @@ class LSVPS : public LSVPSInterface {
       uint64_t indexBlockOffset = current_location;
       for (const auto &block : index_blocks) {
         if (!block.GetMappings().empty()) {
-          lookup_blocks.entries.push_back({block.GetMappings()[0].pagekey, indexBlockOffset});
-          indexBlockOffset += block.GetMappings().size() * sizeof(IndexBlock::Mapping);
+          lookup_blocks.entries.push_back(
+              {block.GetMappings()[0].pagekey, indexBlockOffset});
+          indexBlockOffset +=
+              block.GetMappings().size() * sizeof(IndexBlock::Mapping);
         }
       }
       const std::string dir_path = "IndexFile";

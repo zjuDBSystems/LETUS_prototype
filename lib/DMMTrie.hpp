@@ -85,9 +85,11 @@ class Node {
 
 class IndexNode : public Node {
  public:
-  IndexNode(uint64_t V = 0, const string &h = "", uint16_t b = 0) : version_(V), hash_(h), bitmap_(b) {
+  IndexNode(uint64_t V = 0, const string &h = "", uint16_t b = 0)
+      : version_(V), hash_(h), bitmap_(b) {
     for (size_t i = 0; i < DMM_NODE_FANOUT; i++) {
-      children_[i] = make_tuple(0, "", nullptr);  // initialize children to default
+      children_[i] =
+          make_tuple(0, "", nullptr);  // initialize children to default
     }
   }
 
@@ -105,13 +107,15 @@ class IndexNode : public Node {
   }
 
   /* serialized index node format (size in bytes):
-     | is_leaf_node (1) | version (8) | hash (32) | bitmap (2) | Vc (8) | Hc (32) | Vc (8) | Hc (32) | ...
-     | child 1 | child 2 | ...
-     the function doesn't serialize pointer and doesn't serialize empty child nodes
+     | is_leaf_node (1) | version (8) | hash (32) | bitmap (2) | Vc (8) | Hc
+     (32) | Vc (8) | Hc (32) | ... | child 1 | child 2 | ... the function
+     doesn't serialize pointer and doesn't serialize empty child nodes
   */
-  void SerializeTo(char *buffer, size_t &current_size, bool is_root) const override {
+  void SerializeTo(char *buffer, size_t &current_size,
+                   bool is_root) const override {
     bool is_leaf_node = false;
-    memcpy(buffer + current_size, &is_leaf_node, sizeof(bool));  // false means that the node is indexnode
+    memcpy(buffer + current_size, &is_leaf_node,
+           sizeof(bool));  // false means that the node is indexnode
     current_size += sizeof(bool);
 
     memcpy(buffer + current_size, &version_, sizeof(uint64_t));
@@ -133,7 +137,8 @@ class IndexNode : public Node {
       current_size += child_hash.size();
     }
 
-    if (is_root) {  // if an index node is the root node of a page, serialize its children
+    if (is_root) {  // if an index node is the root node of a page, serialize
+                    // its children
       for (int i = 0; i < DMM_NODE_FANOUT; i++) {
         if (bitmap_ & (1 << i)) {  // only serialize children that exists
           Node *child = get<2>(children_[i]);
@@ -234,24 +239,30 @@ class IndexNode : public Node {
  private:
   uint64_t version_;
   string hash_;
-  uint16_t bitmap_;                                                   // bitmap for children
+  uint16_t bitmap_;  // bitmap for children
   array<tuple<uint64_t, string, Node *>, DMM_NODE_FANOUT> children_;  // trie
 };
 
 class LeafNode : public Node {
  public:
-  LeafNode(uint64_t V = 0, const string &k = "", const tuple<uint64_t, uint64_t, uint64_t> &l = {},
+  LeafNode(uint64_t V = 0, const string &k = "",
+           const tuple<uint64_t, uint64_t, uint64_t> &l = {},
            const string &h = "")
       : version_(V), key_(k), location_(l), hash_(h) {}
 
-  void CalculateHash(const string &value) { hash_ = HashFunction(key_ + value); }
+  void CalculateHash(const string &value) {
+    hash_ = HashFunction(key_ + value);
+  }
 
   /* serialized leaf node format (size in bytes):
-     | is_leaf_node (1) | version (8) | key_size (8 in 64-bit system) | key (key_size) | location(8, 8, 8) | hash (32) |
+     | is_leaf_node (1) | version (8) | key_size (8 in 64-bit system) | key
+     (key_size) | location(8, 8, 8) | hash (32) |
   */
-  void SerializeTo(char *buffer, size_t &current_size, bool is_root) const override {
+  void SerializeTo(char *buffer, size_t &current_size,
+                   bool is_root) const override {
     bool is_leaf_node = true;
-    memcpy(buffer + current_size, &is_leaf_node, sizeof(bool));  // true means that the node is leafnode
+    memcpy(buffer + current_size, &is_leaf_node,
+           sizeof(bool));  // true means that the node is leafnode
     current_size += sizeof(bool);
 
     memcpy(buffer + current_size, &version_, sizeof(uint64_t));
@@ -263,11 +274,14 @@ class LeafNode : public Node {
     memcpy(buffer + current_size, key_.c_str(), key_size);  // key
     current_size += key_size;
 
-    memcpy(buffer + current_size, &get<0>(location_), sizeof(uint64_t));  // fileID
+    memcpy(buffer + current_size, &get<0>(location_),
+           sizeof(uint64_t));  // fileID
     current_size += sizeof(uint64_t);
-    memcpy(buffer + current_size, &get<1>(location_), sizeof(uint64_t));  // offset
+    memcpy(buffer + current_size, &get<1>(location_),
+           sizeof(uint64_t));  // offset
     current_size += sizeof(uint64_t);
-    memcpy(buffer + current_size, &get<2>(location_), sizeof(uint64_t));  // size
+    memcpy(buffer + current_size, &get<2>(location_),
+           sizeof(uint64_t));  // size
     current_size += sizeof(uint64_t);
 
     memcpy(buffer + current_size, hash_.c_str(), hash_.size());
@@ -311,7 +325,8 @@ class LeafNode : public Node {
  private:
   uint64_t version_;
   string key_;
-  tuple<uint64_t, uint64_t, uint64_t> location_;  // location tuple (fileID, offset, size)
+  tuple<uint64_t, uint64_t, uint64_t>
+      location_;  // location tuple (fileID, offset, size)
   string hash_;
 };
 
@@ -403,23 +418,29 @@ class BasePage : public Page {
   BasePage(DMMTrie* trie, char *buffer) {
     size_t current_size = 0;
 
-    uint64_t version = *(reinterpret_cast<uint64_t *>(buffer + current_size));  // deserialize version
+    uint64_t version = *(reinterpret_cast<uint64_t *>(
+        buffer + current_size));  // deserialize version
     current_size += sizeof(uint64_t);
 
-    uint64_t tid = *(reinterpret_cast<uint64_t *>(buffer + current_size));  // deserialize DMMTrie id
+    uint64_t tid = *(reinterpret_cast<uint64_t *>(
+        buffer + current_size));  // deserialize DMMTrie id
     current_size += sizeof(uint64_t);
 
-    bool page_type = *(reinterpret_cast<bool *>(buffer + current_size));  // deserialize page type (1 byte)
+    bool page_type = *(reinterpret_cast<bool *>(
+        buffer + current_size));  // deserialize page type (1 byte)
     current_size += sizeof(bool);
 
     size_t pid_size = *(reinterpret_cast<size_t *>(buffer + current_size));  // deserialize pid_size (8 bytes for size_t)
     current_size += sizeof(pid_size);
-    pid_ = string(buffer + current_size, pid_size);  // deserialize pid (pid_size bytes)
+    pid_ = string(buffer + current_size,
+                  pid_size);  // deserialize pid (pid_size bytes)
     current_size += pid_size;
 
-    d_update_count_ = *(reinterpret_cast<uint16_t *>(buffer + current_size));  // deserialize d_update_count (2 bytes)
+    d_update_count_ = *(reinterpret_cast<uint16_t *>(
+        buffer + current_size));  // deserialize d_update_count (2 bytes)
     current_size += sizeof(uint16_t);
-    b_update_count_ = *(reinterpret_cast<uint16_t *>(buffer + current_size));  // deserialize b_update_count (2 bytes)
+    b_update_count_ = *(reinterpret_cast<uint16_t *>(
+        buffer + current_size));  // deserialize b_update_count (2 bytes)
     current_size += sizeof(uint16_t);
 
     bool is_leaf_node = *(reinterpret_cast<bool *>(buffer + current_size));
@@ -434,7 +455,8 @@ class BasePage : public Page {
     }
   }
 
-  // bool AddChildToPage(int index, Node* child, uint64_t childVersion, const string& child_hash) {
+  // bool AddChildToPage(int index, Node* child, uint64_t childVersion, const
+  // string& child_hash) {
   //     if (root_) {
   //         root_->AddChild(index, childVersion, child_hash, child);
   //         return true;
@@ -443,8 +465,9 @@ class BasePage : public Page {
   // }
 
   /* serialized BasePage format (size in bytes):
-     | version (8) | tid (8) | tp (1) | pid_size (8 in 64-bit system) | pid (pid_size) |
-     | deltapage update count (2) | basepage update count (2) | root node |
+     | version (8) | tid (8) | tp (1) | pid_size (8 in 64-bit system) | pid
+     (pid_size) | | deltapage update count (2) | basepage update count (2) |
+     root node |
   */
   void SerializeTo(char* buffer) const {
     size_t current_size = 0;
@@ -569,10 +592,12 @@ class DMMTrie {
     page_versions_.clear();
   }
 
-  bool Put(uint64_t tid, uint64_t version, const string &key, const string &value) {
+  bool Put(uint64_t tid, uint64_t version, const string &key,
+           const string &value) {
     string nibble_path = key;  // saved interface for potential change of nibble
     if (version < current_version_) {
-      cout << "Version " << version << " is outdated!" << endl;  // version invalid
+      cout << "Version " << version << " is outdated!"
+           << endl;  // version invalid
       return false;
     }
     current_version_ = version;
@@ -638,7 +663,8 @@ class DMMTrie {
     return value;
   }
 
-  // bool GeneratePage(Page* page, uint64_t version);//generate and pass Deltapage to LSVPS
+  // bool GeneratePage(Page* page, uint64_t version);//generate and pass
+  // Deltapage to LSVPS
 
   string CalcRootHash(uint64_t tid, uint64_t version) { return ""; }
 
@@ -661,7 +687,8 @@ class DMMTrie {
     return {0, 0};
   }
 
-  void UpdatePageVersion(PageKey pagekey, uint64_t current_version, uint64_t latest_basepage_version) {
+  void UpdatePageVersion(PageKey pagekey, uint64_t current_version,
+                         uint64_t latest_basepage_version) {
     page_versions_[pagekey] = {current_version, latest_basepage_version};
   }
 
@@ -682,9 +709,10 @@ class DMMTrie {
 
   BasePage *GetPage(const PageKey &pagekey) {  // get a page by its pagekey
     auto it = lru_cache_.find(pagekey);
-    if (it != lru_cache_.end()) {                                  // page is in cache
-      pagekeys_.splice(pagekeys_.begin(), pagekeys_, it->second);  // move the accessed page to the front
-      it->second = pagekeys_.begin();                              // update iterator
+    if (it != lru_cache_.end()) {  // page is in cache
+      pagekeys_.splice(pagekeys_.begin(), pagekeys_,
+                       it->second);    // move the accessed page to the front
+      it->second = pagekeys_.begin();  // update iterator
       return it->second->second;
     }
 
@@ -700,7 +728,8 @@ class DMMTrie {
   void PutPage(const PageKey &pagekey, BasePage *page) {  // add page to cache
     if (lru_cache_.size() >= max_cache_size_) {              // cache is full
       PageKey last_key = pagekeys_.back().first;
-      lru_cache_.erase(last_key);  // remove the page whose pagekey is at the tail of list
+      lru_cache_.erase(
+          last_key);  // remove the page whose pagekey is at the tail of list
       pagekeys_.pop_back();
     }
 
