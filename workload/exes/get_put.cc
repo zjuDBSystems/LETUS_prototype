@@ -31,7 +31,8 @@ std::string BuildKeyName(uint64_t key_num, int key_len) {
   std::string key_num_str = std::to_string(key_num);
   int zeros = key_len - key_num_str.length();
   zeros = std::max(0, zeros);
-  return std::string("user").append(zeros, '0').append(key_num_str);
+  std::string key_name = "";
+  return key_name.append(zeros, '0').append(key_num_str);
 }
 
 int taskGenerator(int tlen, int key_len, int value_len, Task& put_task,
@@ -89,6 +90,8 @@ int main(int argc, char** argv) {
     for (int i = 0; i < keys.size(); i++) {
       string key = keys[i];
       string value = values[i];
+      std::cout << "Hello" << std::endl;
+      std::cout << "PUT:" << key << "," << value << std::endl;
       trie->Put(0, 1, key, value);
     }
     auto end = chrono::system_clock::now();
@@ -102,6 +105,7 @@ int main(int argc, char** argv) {
     start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
+      std::cout << "GET:" << key << std::endl;
       trie->Get(0, 1, key);
     }
     end = chrono::system_clock::now();
