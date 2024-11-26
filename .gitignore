@@ -34,3 +34,5 @@
 build/
 IndexFile/
 bak/
+main
+test

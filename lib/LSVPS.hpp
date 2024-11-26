@@ -146,17 +146,18 @@ class LSVPS : public LSVPSInterface {
 
     // 加载 basepage
     BasePage* basepage = dynamic_cast<BasePage*>(pageLookup(base_pagekey));
-    if (!basepage) {
-        return nullptr;
+    if (!basepage) {//初始化过程中basepage还没有传给LSVPS
+        basepage = new BasePage(trie_, nullptr, pagekey.pid);//trie, root, pid
     }
 
     // 先收集所有需要的 delta pages
     std::vector<const DeltaPage*> delta_pages;
     PageKey current_delta = base_pagekey;
     const DeltaPage* active_deltapage = trie_->GetDeltaPage(pagekey.pid);
+    if(!active_deltapage) return basepage;
     delta_pages.push_back(active_deltapage);//get the active_delta_page
     auto current_pagekey = active_deltapage->GetLastPageKey();
-    while (current_pagekey != base_pagekey) {
+    while (current_pagekey != base_pagekey) {//basepage后面的deltapage的lastpagekey是basepage的pagekey
         DeltaPage* delta_page = dynamic_cast<DeltaPage*>(pageLookup(current_pagekey));
         if (delta_page) {
             delta_pages.push_back(delta_page);
