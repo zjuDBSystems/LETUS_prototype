@@ -145,7 +145,7 @@ class LSVPS : public LSVPSInterface {
     }
 
     // 加载 basepage
-    BasePage* basepage = dynamic_cast<BasePage*>(PageLookup(base_pagekey));
+    BasePage* basepage = dynamic_cast<BasePage*>(pageLookup(base_pagekey));
     if (!basepage) {
         return nullptr;
     }
@@ -157,7 +157,7 @@ class LSVPS : public LSVPSInterface {
     delta_pages.push_back(active_deltapage);//get the active_delta_page
     auto current_pagekey = active_deltapage->GetLastPageKey();
     while (current_pagekey != base_pagekey) {
-        DeltaPage* delta_page = dynamic_cast<DeltaPage*>(PageLookup(current_pagekey));
+        DeltaPage* delta_page = dynamic_cast<DeltaPage*>(pageLookup(current_pagekey));
         if (delta_page) {
             delta_pages.push_back(delta_page);
             current_pagekey = delta_page->GetLastPageKey();  // 获取上一个 delta page
@@ -168,7 +168,7 @@ class LSVPS : public LSVPSInterface {
 
     // 按照时间顺序（从旧到新）应用 delta pages
     for (const auto& delta : delta_pages) { 
-        ApplyDelta(basepage, delta, pagekey);
+        applyDelta(basepage, delta, pagekey);
     }
 
     return basepage;
@@ -176,9 +176,9 @@ class LSVPS : public LSVPSInterface {
 
   // 存储页面函数
   void StorePage(Page* page) {
-    table_.store(page);
+    table_.Store(page);
     if (table_.IsFull()) {
-      table_.flush();
+      table_.Flush();
     }
   }
 
@@ -192,9 +192,9 @@ class LSVPS : public LSVPSInterface {
 
  private:
   // 页面查找函数
-  Page* PageLookup(const PageKey &pagekey) {
+  Page* pageLookup(const PageKey &pagekey) {
     // 步骤1：在内存中查找
-    auto &buffer = table_.getBuffer();
+    auto &buffer = table_.GetBuffer();
     for(const auto& page : buffer){
       if(page->GetPageKey() == pagekey){
         return page;
@@ -261,7 +261,7 @@ class LSVPS : public LSVPSInterface {
   }
 
   // 添加辅助方法来应用deltapage
-  void ApplyDelta(BasePage *basepage, const DeltaPage *deltapage, PageKey pagekey) {
+  void applyDelta(BasePage *basepage, const DeltaPage *deltapage, PageKey pagekey) {
     for(auto deltapage_item : deltapage->GetDeltaItems()){  
       //check if version is beyond the needed pagekey (active delta page)
       if(deltapage_item.version > pagekey.version) break;
@@ -275,17 +275,17 @@ class LSVPS : public LSVPSInterface {
   };
 
   // 内存索引表类
-  class memIndexTable {
+  class MemIndexTable {
    public:
-    memIndexTable(LSVPS &parent) : parentLSVPS_(parent) {}
+    MemIndexTable(LSVPS &parent) : parentLSVPS_(parent) {}
 
-    const std::vector<Page*> &getBuffer() const { return buffer_; }
+    const std::vector<Page*> &GetBuffer() const { return buffer_; }
 
-    void store(Page* page) { buffer_.push_back(page); }
+    void Store(Page* page) { buffer_.push_back(page); }
 
     bool IsFull() const { return buffer_.size() >= maxSize_; }
 
-    void flush() {
+    void Flush() {
       if (buffer_.empty()) return;
       // Create index blocks
       std::vector<IndexBlock> index_blocks;
@@ -336,11 +336,6 @@ class LSVPS : public LSVPSInterface {
     }
 
    private:
-   // 辅助函数：判断页面是否为基础页
-    bool isBasePage(const Page &page) {
-      // 根据页面的属性判断
-      return true;  // 占位实现
-    }
     // 写入二级存储
     void writeToStorage(const std::vector<IndexBlock> &index_blocks,
                       const LookupBlock &lookup_blocks, const fs::path &filepath) {
@@ -392,21 +387,11 @@ class LSVPS : public LSVPSInterface {
 
     std::vector<Page*> buffer_;
     const size_t maxSize_ = 20000; /*256 * 1024 * 1024 / sizeof(Page);   假设最大大小为256MB*/
-
-
     LSVPS &parentLSVPS_;
-
-    
-  
   };
 
-  // // B树索引类（占位）
-  // class BTreeIndex {
-  //     // 实现B树索引的逻辑
-  // };
-
   blockCache cache_;
-  memIndexTable table_;
+  MemIndexTable table_;
   DMMTrie *trie_;
 
   std::vector<IndexFile> indexFiles_;
