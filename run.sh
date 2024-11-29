@@ -1,2 +1,2 @@
-# rm -rf data/*;
+rm -rf data/*;
 ./build/bin/get_put

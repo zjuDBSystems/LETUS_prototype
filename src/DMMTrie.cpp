@@ -771,9 +771,9 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
   }
 
   string value = value_store_->ReadValue(leafnode->GetLocation());
-  // cout << "Key " << key << " has value " << value << " at version " <<
-  // version
-  //      << endl;
+  cout << "Key " << key << " has value " << value << " at version " <<
+  version
+       << endl;
   return value;
 }
 
@@ -872,8 +872,8 @@ void DMMTrie::UpdatePageKey(
     BasePage *basepage =
         it->second->second;  // save the basepage indexed by old pagekey
 
-    lru_cache_.erase(it);
     pagekeys_.erase(it->second);  // delete old pagekey item
+    lru_cache_.erase(it);
 
     pagekeys_.push_front(make_pair(new_pagekey, basepage));
     lru_cache_[new_pagekey] = pagekeys_.begin();

@@ -59,8 +59,8 @@ int taskGenerator(int tlen, int key_len, int value_len, Task& put_task,
 }
 
 int main(int argc, char** argv) {
-  int batch_size = 500;  //
-  int n_test = 10;
+  int batch_size = 5000;  //
+  int n_test = 1;
   int key_len = 5;    // 32
   int value_len = 256;  // 256, 512, 1024, 2048
   // init tasks
