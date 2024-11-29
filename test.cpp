@@ -55,17 +55,20 @@
 // }
 
 int main() {
-    VDLS vdls;
+    // VDLS vdls;
 
-    tuple<uint64_t, uint64_t, uint64_t> location = vdls.WriteValue(1, "alice", "50");
-    cout << get<0>(location) << " "<< get<1>(location) << " " << get<2>(location) << endl;
-    cout << vdls.ReadValue(location) <<endl;
+    // tuple<uint64_t, uint64_t, uint64_t> location = vdls.WriteValue(1, "alice", "50");
+    // cout << get<0>(location) << " "<< get<1>(location) << " " << get<2>(location) << endl;
+    // cout << vdls.ReadValue(location) <<endl;
 
-    for(int i = 0;i < 6000;i++){
-        vdls.WriteValue(1, "alice", "75");
+    // for(int i = 0;i < 6000;i++){
+    //     vdls.WriteValue(1, "alice", "75");
+    // }
+
+    // tuple<uint64_t, uint64_t, uint64_t> location2 = vdls.WriteValue(2, "alice", "100");
+    // cout << get<0>(location2) << " "<< get<1>(location2) << " " << get<2>(location2) << endl;
+    // cout << vdls.ReadValue(location2)<<endl;
+    for(int i = 1;i <= 50; i++) {
+        cout << "trie->Put(0," << i << ",\"12345\",\"" << i << "\");" << endl;
     }
-
-    tuple<uint64_t, uint64_t, uint64_t> location2 = vdls.WriteValue(2, "alice", "100");
-    cout << get<0>(location2) << " "<< get<1>(location2) << " " << get<2>(location2) << endl;
-    cout << vdls.ReadValue(location2)<<endl;
 }
