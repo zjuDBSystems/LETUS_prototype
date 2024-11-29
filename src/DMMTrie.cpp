@@ -1,4 +1,4 @@
-#include "../lib/DMMTrie.hpp"
+#include "DMMTrie.hpp"
 
 #include <openssl/evp.h>
 #include <openssl/sha.h>
@@ -70,9 +70,9 @@ uint64_t Node::GetVersion() { return version_; }
 void Node::SetVersion(uint64_t version) { version_ = version; }
 void Node::SetHash(string hash) { hash_ = hash; }
 
-LeafNode::LeafNode(uint64_t V = 0, const string &k = "",
-                   const tuple<uint64_t, uint64_t, uint64_t> &l = {},
-                   const string &h = "")
+LeafNode::LeafNode(uint64_t V, const string &k,
+                   const tuple<uint64_t, uint64_t, uint64_t> &l,
+                   const string &h)
     : version_(V), key_(k), location_(l), hash_(h) {}
 
 void LeafNode::CalculateHash(const string &value) {
@@ -84,7 +84,7 @@ void LeafNode::CalculateHash(const string &value) {
    (key_size) | location(8, 8, 8) | hash (32) |
 */
 void LeafNode::SerializeTo(char *buffer, size_t &current_size,
-                           bool is_root) const override {
+                           bool is_root) const {
   bool is_leaf_node = true;
   memcpy(buffer + current_size, &is_leaf_node,
          sizeof(bool));  // true means that the node is leafnode
@@ -114,7 +114,7 @@ void LeafNode::SerializeTo(char *buffer, size_t &current_size,
 }
 
 void LeafNode::DeserializeFrom(char *buffer, size_t &current_size,
-                               bool is_root) override {
+                               bool is_root) {
   version_ = *(reinterpret_cast<uint64_t *>(
       buffer + current_size));  // deserialize leafnode version
   current_size += sizeof(uint64_t);
@@ -158,12 +158,11 @@ tuple<uint64_t, uint64_t, uint64_t> LeafNode::GetLocation() const {
   return location_;
 }
 
-void LeafNode::SetLocation(
-    tuple<uint64_t, uint64_t, uint64_t> location) override {
+void LeafNode::SetLocation(tuple<uint64_t, uint64_t, uint64_t> location) {
   location_ = location;
 }
 
-IndexNode::IndexNode(uint64_t V = 0, const string &h = "", uint16_t b = 0)
+IndexNode::IndexNode(uint64_t V, const string &h, uint16_t b)
     : version_(V), hash_(h), bitmap_(b) {
   for (size_t i = 0; i < DMM_NODE_FANOUT; i++) {
     children_[i] =
@@ -176,9 +175,7 @@ IndexNode::IndexNode(
     const array<tuple<uint64_t, string, Node *>, DMM_NODE_FANOUT> &children)
     : version_(version), hash_(hash), bitmap_(bitmap), children_(children) {}
 
-IndexNode::~IndexNode() noexcept override = default;
-
-void IndexNode::CalculateHash() override {
+void IndexNode::CalculateHash() {
   string concatenated_hash;
   for (int i = 0; i < DMM_NODE_FANOUT; i++) {
     concatenated_hash += get<1>(children_[i]);
@@ -192,7 +189,7 @@ void IndexNode::CalculateHash() override {
    doesn't serialize pointer and doesn't serialize empty child nodes
 */
 void IndexNode::SerializeTo(char *buffer, size_t &current_size,
-                            bool is_root) const override {
+                            bool is_root) const {
   bool is_leaf_node = false;
   memcpy(buffer + current_size, &is_leaf_node,
          sizeof(bool));  // false means that the node is indexnode
@@ -229,7 +226,7 @@ void IndexNode::SerializeTo(char *buffer, size_t &current_size,
 }
 
 void IndexNode::DeserializeFrom(char *buffer, size_t &current_size,
-                                bool is_root) override {
+                                bool is_root) {
   version_ = *(reinterpret_cast<uint64_t *>(buffer + current_size));
   current_size += sizeof(uint64_t);
 
@@ -292,8 +289,8 @@ void IndexNode::UpdateNode(uint64_t version, int index,
                                 child_hash);
 }
 
-void IndexNode::AddChild(int index, Node *child, uint64_t version = 0,
-                         const string &hash = "") override {
+void IndexNode::AddChild(int index, Node *child, uint64_t version,
+                         const string &hash) {
   if (index >= 0 && index < DMM_NODE_FANOUT) {
     children_[index] = make_tuple(version, hash, child);
     bitmap_ |= (1 << index);  // update bitmap
@@ -301,7 +298,7 @@ void IndexNode::AddChild(int index, Node *child, uint64_t version = 0,
     throw runtime_error("AddChild out of range.");
 }
 
-Node *IndexNode::GetChild(int index) override {
+Node *IndexNode::GetChild(int index) {
   if (index >= 0 && index < DMM_NODE_FANOUT) {
     if (bitmap_ & (1 << index)) {
       return get<2>(children_[index]);
@@ -311,11 +308,11 @@ Node *IndexNode::GetChild(int index) override {
     throw runtime_error("GetChild out of range.");
 }
 
-bool IndexNode::HasChild(int index) override {
+bool IndexNode::HasChild(int index) {
   return bitmap_ & (1 << index) ? true : false;
 }
 
-void IndexNode::SetChild(int index, uint64_t version, string hash) override {
+void IndexNode::SetChild(int index, uint64_t version, string hash) {
   if (index >= 0 && index < DMM_NODE_FANOUT) {
     get<0>(children_[index]) = version;
     get<1>(children_[index]) = hash;
@@ -325,9 +322,8 @@ void IndexNode::SetChild(int index, uint64_t version, string hash) override {
 }
 
 DeltaPage::DeltaItem::DeltaItem(uint8_t loc, bool leaf, uint64_t ver,
-                                const string &h, uint64_t fID = 0,
-                                uint64_t off = 0, uint64_t sz = 0,
-                                uint8_t idx = 0, const string &ch_hash = "")
+                                const string &h, uint64_t fID, uint64_t off,
+                                uint64_t sz, uint8_t idx, const string &ch_hash)
     : location_in_page(loc),
       is_leaf_node(leaf),
       version(ver),
@@ -393,8 +389,7 @@ void DeltaPage::DeltaItem::SerializeTo(char *buffer,
   }
 }
 
-DeltaPage::DeltaPage(PageKey last_pagekey = {0, 0, true, ""},
-                     uint16_t update_count = 0)
+DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count)
     : last_pagekey_(last_pagekey), update_count_(update_count){};
 
 DeltaPage::DeltaPage(char *buffer) {
@@ -476,9 +471,8 @@ PageKey DeltaPage::GetLastPageKey() const { return last_pagekey_; }
 
 void DeltaPage::SetLastPageKey(PageKey pagekey) { last_pagekey_ = pagekey; }
 
-BasePage::BasePage(DMMTrie *trie = nullptr, Node *root = nullptr,
-                   const string &pid = "", uint16_t d_update_count = 0,
-                   uint16_t b_update_count = 0)
+BasePage::BasePage(DMMTrie *trie, Node *root, const string &pid,
+                   uint16_t d_update_count, uint16_t b_update_count)
     : trie_(trie),
       root_(root),
       pid_(pid),
@@ -699,7 +693,7 @@ void BasePage::UpdateDeltaItem(
 Node *BasePage::GetRoot() const { return root_; }
 
 DMMTrie::DMMTrie(uint64_t tid, LSVPSInterface *page_store, VDLS *value_store,
-                 uint64_t current_version = 0)
+                 uint64_t current_version)
     : tid(tid),
       page_store_(page_store),
       value_store_(value_store),
@@ -777,8 +771,9 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
   }
 
   string value = value_store_->ReadValue(leafnode->GetLocation());
-  cout << "Key " << key << " has value " << value << " at version " << version
-       << endl;
+  // cout << "Key " << key << " has value " << value << " at version " <<
+  // version
+  //      << endl;
   return value;
 }
 
@@ -787,7 +782,7 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
 
 string DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) { return ""; }
 
-const DMMTrie::DeltaPage *GetDeltaPage(
+const DeltaPage *DMMTrie::GetDeltaPage(
     const string &pid) const {  // GetDeltaPage interface for LSVPS
   auto it = active_deltapages_.find(pid);
   if (it != active_deltapages_.end()) {
@@ -829,7 +824,7 @@ void DMMTrie::UpdatePageVersion(PageKey pagekey, uint64_t current_version,
   page_versions_[pagekey.pid] = {current_version, latest_basepage_version};
 }
 
-LSVPSInterface *GetPageStore() { return page_store_; }
+LSVPSInterface *DMMTrie::GetPageStore() { return page_store_; }
 
 BasePage *DMMTrie::GetPage(
     const PageKey &pagekey) {  // get a page by its pagekey

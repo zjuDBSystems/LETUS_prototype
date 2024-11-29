@@ -24,7 +24,7 @@ include_directories(workload/lib/)
 # add_executable(trace_replay "workload/exes/trace_replay.cc" ${letus_lib})
 # target_link_libraries(trace_replay jsoncpp)
 
-add_executable(get_put "workload/exes/get_put.cc")
+add_executable(get_put "workload/exes/get_put.cc" src/DMMTrie.cpp src/LSVPS.cpp)
 target_link_libraries(get_put OpenSSL::SSL OpenSSL::Crypto)
 
 # add_executable(simple "workload/exes/simple.cc")

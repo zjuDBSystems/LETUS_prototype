@@ -16,7 +16,6 @@
 #include "LSVPS.hpp"
 #include "generator.hpp"
 
-
 // common values
 uint64_t MAX_KEY = 99999;
 ZipfianGenerator key_generator(1, MAX_KEY);
@@ -60,10 +59,10 @@ int taskGenerator(int tlen, int key_len, int value_len, Task& put_task,
 }
 
 int main(int argc, char** argv) {
-  int batch_size = 80;  //
-  int n_test = 10;
+  int batch_size = 5000;  //
+  int n_test = 1;
   int key_len = 5;    // 32
-  int value_len = 3;  // 256, 512, 1024, 2048
+  int value_len = 5;  // 256, 512, 1024, 2048
   // init tasks
   Task* put_tasks = new Task[n_test];
   Task* get_tasks = new Task[n_test];
@@ -92,8 +91,7 @@ int main(int argc, char** argv) {
     for (int i = 0; i < keys.size(); i++) {
       string key = keys[i];
       string value = values[i];
-      std::cout << "Hello" << std::endl;
-      std::cout << "PUT:" << key << "," << value << std::endl;
+      std::cout << i << " PUT:" << key << "," << value << std::endl;
       trie->Put(0, 1, key, value);
       // std::cout << i << "PUT:" << key << "," << value << std::endl;
     }
@@ -109,7 +107,7 @@ int main(int argc, char** argv) {
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
       // std::cout<<"trie->Get(0,1,\""<<key<<"\");"<<std::endl;
-      std::cout << i << "GET:" << key << std::endl;
+      std::cout << i << " GET:" << key << std::endl;
       trie->Get(0, 1, key);
     }
     end = chrono::system_clock::now();
