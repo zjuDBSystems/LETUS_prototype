@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
   int batch_size = 500;  //
   int n_test = 10;
   int key_len = 5;    // 32
-  int value_len = 5;  // 256, 512, 1024, 2048
+  int value_len = 256;  // 256, 512, 1024, 2048
   // init tasks
   Task* put_tasks = new Task[n_test];
   Task* get_tasks = new Task[n_test];
