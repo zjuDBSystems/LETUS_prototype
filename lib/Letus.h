@@ -2,17 +2,9 @@
 #define _LETUS_H_
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct  DMMTrie DMMTrie;
-DMMTrie* OpenLetus();
-void LetusPut(DMMTrie* trie);
-char* LetusGet(DMMTrie* trie);
-
-#ifdef __cplusplus
-} /* end extern "C" */
-#endif
+typedef struct  Letus Letus;
+Letus* OpenLetus();
+void LetusPut(Letus* p);
+char* LetusGet(Letus* p);
 
 #endif // _LETUS_H_
