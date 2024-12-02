@@ -6,6 +6,7 @@ extern "C" {
 }
 
 #include <iostream>
+#include <string>
 #include "LSVPS.hpp"
 #include "VDLS.hpp"
 #include "DMMTrie.hpp"
@@ -24,18 +25,21 @@ struct Letus *OpenLetus(){
     return p;
 }
 
-void LetusPut(Letus* p){
-    p->trie->Put(0,1,"12345","aaa");
-    std::cout << "aaa" << std::endl;
+void LetusPut(Letus* p, const char* key_c, const char* value_c){
+    std::string key(key_c);
+    std::string value(value_c);
+    // std::cout << key << ", " << value << std::endl;
+    p->trie->Put(0, 1, key, value);
 }
 
-char* LetusGet(Letus* p){
-    string res_string = p->trie->Get(0,1,"12345");
-    size_t res_size = res_string.size(); 
-    char* res = new char [res_size+1];
-    res_string.copy(res, res_size, 0);
-    res[res_size] = '\0';
-    return res;
+char* LetusGet(Letus* p, const char* key_c){
+    std::string key(key_c);
+    std::string value = p->trie->Get(0, 1, key);
+    size_t value_size = value.size(); 
+    char* value_c = new char [value_size+1];
+    value.copy(value_c, value_size, 0);
+    value_c[value_size] = '\0';
+    return value_c;
 } 
 
 #endif // _LETUS_CPP_
