@@ -3,7 +3,7 @@
 
 
 typedef struct  Letus Letus;
-Letus* OpenLetus();
+extern struct Letus *OpenLetus();
 void LetusPut(Letus* p);
 char* LetusGet(Letus* p);
 
