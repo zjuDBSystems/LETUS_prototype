@@ -34,15 +34,12 @@ func (s *LetusKVStroage) Put(key []byte, value []byte) error {
 
 func (s *LetusKVStroage) Get(key []byte) ([]byte, error) {
     // 假设LetusGet函数返回的是一个C.char*类型的指针
-    res := (*C.char)(C.LetusGet(s.c, (*C.char)(unsafe.Pointer(&key[0]))))
+    res := C.LetusGet(s.c, (*C.char)(unsafe.Pointer(&key[0])))
     if res == nil {
         return nil, fmt.Errorf("key not found")
     }
-	fmt.Printf("Type of res: %T\n", res)
-    // 将C.char*转换为[]byte
-    resBytes := C.GoBytes(unsafe.Pointer(res), C.int(C.strlen(res)))
-    return nil, nil
-    // return resBytes, nil
+	// fmt.Println(C.GoString(res))
+    return []byte(C.GoString(res)), nil
 }
 
 func (s *LetusKVStroage) Delete(key []byte) error { 

@@ -21,7 +21,7 @@ func main() {
    batch.Write(db)
    // db get operations
    res , _ := db.Get([]byte("11111"))
-   if res != nil{
+   if res == nil{
       panic("Failed to delete")
    }
    fmt.Println(string(res))
