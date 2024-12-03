@@ -17,7 +17,7 @@ type KVStorage interface {
 	Close() error
 
 	// NewBatch return a storage batch.
-	// [TODO] NewBatch() (Batch, error)
+	NewBatch() (Batch, error)
 	// NewBatchWithEngine return a storage batch.
 	// [TODO] NewBatchWithEngine() (Batch, error)
 	
