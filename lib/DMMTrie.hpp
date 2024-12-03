@@ -31,8 +31,8 @@ class DeltaPage;
 class Node {
  public:
   virtual ~Node() noexcept = default;
-  string hash_;  // merkle hash of the node
-  uint64_t version_;
+  // string hash_;  // merkle hash of the node
+  // uint64_t version_;
 
   virtual void CalculateHash();
   virtual void SerializeTo(char *buffer, size_t &current_size,
@@ -47,10 +47,10 @@ class Node {
   virtual void UpdateNode();
   virtual void SetLocation(tuple<uint64_t, uint64_t, uint64_t> location);
 
-  string GetHash();
-  uint64_t GetVersion();
-  virtual void SetVersion(uint64_t version);
-  virtual void SetHash(string hash);
+  virtual string GetHash() = 0;
+  virtual uint64_t GetVersion() = 0;
+  virtual void SetVersion(uint64_t version) = 0;
+  virtual void SetHash(string hash) = 0;
 };
 
 class LeafNode : public Node {
@@ -65,10 +65,14 @@ class LeafNode : public Node {
                        bool is_root) override;
   void UpdateNode(uint64_t version,
                   const tuple<uint64_t, uint64_t, uint64_t> &location,
-                  const string &value, int index, bool is_root,
+                  const string &value, uint8_t location_in_page,
                   DeltaPage *deltapage);
   tuple<uint64_t, uint64_t, uint64_t> GetLocation() const;
   void SetLocation(tuple<uint64_t, uint64_t, uint64_t> location) override;
+  string GetHash();
+  uint64_t GetVersion();
+  void SetVersion(uint64_t version);
+  void SetHash(string hash);
 
  private:
   uint64_t version_;
@@ -91,12 +95,16 @@ class IndexNode : public Node {
   void DeserializeFrom(char *buffer, size_t &current_size,
                        bool is_root) override;
   void UpdateNode(uint64_t version, int index, const string &child_hash,
-                  bool is_root, DeltaPage *deltapage);
+                  uint8_t location_in_page, DeltaPage *deltapage);
   void AddChild(int index, Node *child, uint64_t version = 0,
                 const string &hash = "") override;
   Node *GetChild(int index) override;
   bool HasChild(int index) override;
   void SetChild(int index, uint64_t version, string hash) override;
+  string GetHash();
+  uint64_t GetVersion();
+  void SetVersion(uint64_t version);
+  void SetHash(string hash);
 
  private:
   uint64_t version_;
@@ -129,7 +137,8 @@ class DeltaPage : public Page {
     void SerializeTo(char *buffer, size_t &current_size) const;
   };
 
-  DeltaPage(PageKey last_pagekey = {0, 0, true, ""}, uint16_t update_count = 0);
+  DeltaPage(PageKey last_pagekey = {0, 0, true, ""}, uint16_t update_count = 0,
+            uint16_t b_update_count = 0);
   DeltaPage(char *buffer);
   void AddIndexNodeUpdate(uint8_t location, uint64_t version,
                           const string &hash, uint8_t index,
@@ -141,11 +150,15 @@ class DeltaPage : public Page {
   vector<DeltaItem> GetDeltaItems() const;
   PageKey GetLastPageKey() const;
   void SetLastPageKey(PageKey pagekey);
+  uint16_t GetDeltaPageUpdateCount();
+  uint16_t GetBasePageUpdateCount();
+  void ClearBasePageUpdateCount();
 
  private:
   vector<DeltaItem> deltaitems_;
   PageKey last_pagekey_;
   uint16_t update_count_;
+  uint16_t b_update_count_;
 };
 
 class BasePage : public Page {
@@ -155,6 +168,7 @@ class BasePage : public Page {
            uint16_t b_update_count = 0);
   BasePage(DMMTrie *trie, char *buffer);
   BasePage(DMMTrie *trie, string key, string pid, string nibbles);
+  // ~BasePage();
   void SerializeTo();
   void UpdatePage(uint64_t version,
                   tuple<uint64_t, uint64_t, uint64_t> location,
@@ -202,7 +216,7 @@ class DMMTrie {
                 PageKey::Hash>
       lru_cache_;                             //  use a hash map as lru cache
   list<pair<PageKey, BasePage *>> pagekeys_;  // list to maintain cache order
-  const size_t max_cache_size_ = 5000;        // maximum pages in cache
+  const size_t max_cache_size_ = 32;          // maximum pages in cache
   unordered_map<string, DeltaPage>
       active_deltapages_;  // deltapage of all pages, delta pages are indexed by
                            // pid

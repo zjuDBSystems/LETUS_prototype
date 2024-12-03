@@ -91,40 +91,37 @@ Page *LSVPS::PageQuery(uint64_t version) {
 }
 
 Page *LSVPS::LoadPage(const PageKey &pagekey) {
-  PageKey base_pagekey = trie_->GetLatestBasePageKey(pagekey);
-
-  if (base_pagekey.version == 0) {
-    return nullptr;
-  }
-
-  BasePage *basepage = dynamic_cast<BasePage *>(pageLookup(base_pagekey));
-  if (!basepage) {
-    basepage = new BasePage(trie_, nullptr, pagekey.pid);
-  }
-
   std::vector<const DeltaPage *> delta_pages;
-  PageKey current_delta = base_pagekey;
-  const DeltaPage *active_deltapage = trie_->GetDeltaPage(pagekey.pid);
-  if (!active_deltapage) return basepage;
-
-  delta_pages.push_back(active_deltapage);
-  auto current_pagekey = active_deltapage->GetLastPageKey();
-
-  while (current_pagekey != base_pagekey) {
-    DeltaPage *delta_page =
-        dynamic_cast<DeltaPage *>(pageLookup(current_pagekey));
-    if (delta_page) {
-      delta_pages.push_back(delta_page);
-      current_pagekey = delta_page->GetLastPageKey();
-    } else {
-      break;
+  BasePage *basepage;
+  DeltaPage *delta_page = dynamic_cast<DeltaPage *>(pageLookup(pagekey));
+  if (delta_page == nullptr) {
+    const DeltaPage *active_deltapage = trie_->GetDeltaPage(pagekey.pid);
+    if (!active_deltapage) return nullptr;
+    // if(active_deltapage->GetPageKey().version < pagekey.version) return
+    // nullptr; //not exist
+    delta_pages.push_back(active_deltapage);
+    basepage = new BasePage(trie_, nullptr, pagekey.pid);
+  } else {
+    auto current_pagekey = delta_page->GetPageKey();
+    while (current_pagekey.type) {
+      DeltaPage *delta_page =
+          dynamic_cast<DeltaPage *>(pageLookup(current_pagekey));
+      if (delta_page) {
+        delta_pages.push_back(delta_page);
+        current_pagekey = delta_page->GetLastPageKey();
+      } else {
+        break;
+      }
     }
+    if (current_pagekey.version == 0)
+      basepage = new BasePage(trie_, nullptr, pagekey.pid);
+    else
+      basepage = dynamic_cast<BasePage *>(pageLookup(current_pagekey));
   }
-
-  for (const auto &delta : delta_pages) {
-    applyDelta(basepage, delta, pagekey);
+  for (auto it = delta_pages.rbegin(); it != delta_pages.rend(); ++it) {
+    applyDelta(basepage, *it, pagekey);
   }
-
+  cout << basepage->GetPageKey().pid << endl;
   return basepage;
 }
 
@@ -158,7 +155,7 @@ Page *LSVPS::pageLookup(const PageKey &pagekey) {
                                     });
 
   if (file_iterator == index_files_.end()) {
-    throw std::runtime_error("Page not found in any index file.");
+    return nullptr;
   }
 
   return readPageFromIndexFile(*file_iterator, pagekey);
@@ -188,13 +185,18 @@ Page *LSVPS::readPageFromIndexFile(const IndexFile &file,
   index_block.Deserialize(in_file);
 
   auto mapping = std::find_if(
-      index_block.GetMappings().begin(), index_block.GetMappings().end(),
-      [&pagekey](const auto &m) { return m.pagekey == pagekey; });
+      index_block.GetMappings().rbegin(), index_block.GetMappings().rend(),
+      [&pagekey](const auto &m) { return m.pagekey <= pagekey; });
 
-  if (mapping == index_block.GetMappings().end()) {
+  if (mapping ==
+      index_block.GetMappings().rend()) {  //所有的版本都大于输入的版本
     return nullptr;
   }
-
+  if (mapping ==
+      index_block.GetMappings().rbegin()) {  //所有的版本都小于输入的版本
+    return nullptr;
+  }
+  --mapping;
   in_file.seekg(mapping->location);
   Page temp_page;
 
