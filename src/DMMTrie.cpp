@@ -16,11 +16,6 @@
 
 using namespace std;
 
-// For Test
-// string HashFunction(const string & input){
-//   string str(32, 'a');
-//   return str;
-// }
 string HashFunction(const string &input) {  // hash function SHA-256
   EVP_MD_CTX *ctx = EVP_MD_CTX_new();       // create SHA-256 context
   if (ctx == nullptr) {
@@ -65,10 +60,10 @@ void Node::SetChild(int index, uint64_t version, string hash) {}
 void Node::UpdateNode() {}
 void Node::SetLocation(tuple<uint64_t, uint64_t, uint64_t> location) {}
 
-string Node::GetHash() { return hash_; }
-uint64_t Node::GetVersion() { return version_; }
-void Node::SetVersion(uint64_t version) { version_ = version; }
-void Node::SetHash(string hash) { hash_ = hash; }
+// string Node::GetHash() { return hash_; }
+// uint64_t Node::GetVersion() { return version_; }
+// void Node::SetVersion(uint64_t version) { version_ = version; }
+// void Node::SetHash(string hash) { hash_ = hash; }
 
 LeafNode::LeafNode(uint64_t V, const string &k,
                    const tuple<uint64_t, uint64_t, uint64_t> &l,
@@ -142,13 +137,13 @@ void LeafNode::DeserializeFrom(char *buffer, size_t &current_size,
 
 void LeafNode::UpdateNode(uint64_t version,
                           const tuple<uint64_t, uint64_t, uint64_t> &location,
-                          const string &value, int index, bool is_root,
+                          const string &value, uint8_t location_in_page,
                           DeltaPage *deltapage) {
   version_ = version;
   location_ = location;
   hash_ = HashFunction(key_ + value);
 
-  uint8_t location_in_page = is_root ? 0 : index + 1;
+  // uint8_t location_in_page = is_root ? 0 : index + 1;
   deltapage->AddLeafNodeUpdate(location_in_page, version, hash_,
                                get<0>(location), get<1>(location),
                                get<2>(location));
@@ -161,6 +156,16 @@ tuple<uint64_t, uint64_t, uint64_t> LeafNode::GetLocation() const {
 void LeafNode::SetLocation(tuple<uint64_t, uint64_t, uint64_t> location) {
   location_ = location;
 }
+
+string LeafNode::GetHash() { return hash_; }
+uint64_t LeafNode::GetVersion() { return version_; }
+void LeafNode::SetVersion(uint64_t version) { version_ = version; }
+void LeafNode::SetHash(string hash) { hash_ = hash; }
+
+string IndexNode::GetHash() { return hash_; }
+uint64_t IndexNode::GetVersion() { return version_; }
+void IndexNode::SetVersion(uint64_t version) { version_ = version; }
+void IndexNode::SetHash(string hash) { hash_ = hash; }
 
 IndexNode::IndexNode(uint64_t V, const string &h, uint16_t b)
     : version_(V), hash_(h), bitmap_(b) {
@@ -271,7 +276,7 @@ void IndexNode::DeserializeFrom(char *buffer, size_t &current_size,
 }
 
 void IndexNode::UpdateNode(uint64_t version, int index,
-                           const string &child_hash, bool is_root,
+                           const string &child_hash, uint8_t location_in_page,
                            DeltaPage *deltapage) {
   version_ = version;
   bitmap_ |= (1 << index);
@@ -284,7 +289,7 @@ void IndexNode::UpdateNode(uint64_t version, int index,
   }
   hash_ = HashFunction(concatenated_hash);
 
-  uint8_t location_in_page = is_root ? 0 : index + 1;
+  // uint8_t location_in_page = is_root ? 0 : index + 1;
   deltapage->AddIndexNodeUpdate(location_in_page, version, hash_, index,
                                 child_hash);
 }
@@ -383,16 +388,18 @@ void DeltaPage::DeltaItem::SerializeTo(char *buffer,
   } else {
     memcpy(buffer + current_size, &index, sizeof(index));
     current_size += sizeof(index);
-
     memcpy(buffer + current_size, child_hash.c_str(), HASH_SIZE);
     current_size += HASH_SIZE;
   }
 }
 
-DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count)
-    : last_pagekey_(last_pagekey), update_count_(update_count){};
+DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count,
+                     uint16_t b_update_count)
+    : last_pagekey_(last_pagekey),
+      update_count_(update_count),
+      b_update_count_(b_update_count){};
 
-DeltaPage::DeltaPage(char *buffer) {
+DeltaPage::DeltaPage(char *buffer) : b_update_count_(0) {
   size_t current_size = 0;
 
   last_pagekey_.version =
@@ -422,6 +429,7 @@ void DeltaPage::AddIndexNodeUpdate(uint8_t location, uint64_t version,
   deltaitems_.push_back(
       DeltaItem(location, false, version, hash, 0, 0, 0, index, child_hash));
   ++update_count_;
+  ++b_update_count_;
 }
 
 void DeltaPage::AddLeafNodeUpdate(uint8_t location, uint64_t version,
@@ -430,6 +438,7 @@ void DeltaPage::AddLeafNodeUpdate(uint8_t location, uint64_t version,
   deltaitems_.push_back(
       DeltaItem(location, true, version, hash, fileID, offset, size));
   ++update_count_;
+  ++b_update_count_;
 }
 
 void DeltaPage::SerializeTo() {
@@ -471,13 +480,20 @@ PageKey DeltaPage::GetLastPageKey() const { return last_pagekey_; }
 
 void DeltaPage::SetLastPageKey(PageKey pagekey) { last_pagekey_ = pagekey; }
 
+uint16_t DeltaPage::GetDeltaPageUpdateCount() { return update_count_; }
+
+uint16_t DeltaPage::GetBasePageUpdateCount() { return b_update_count_; }
+
+void DeltaPage::ClearBasePageUpdateCount() { b_update_count_ = 0; }
+
 BasePage::BasePage(DMMTrie *trie, Node *root, const string &pid,
                    uint16_t d_update_count, uint16_t b_update_count)
     : trie_(trie),
       root_(root),
       pid_(pid),
       d_update_count_(d_update_count),
-      b_update_count_(b_update_count) {}
+      b_update_count_(b_update_count),
+      Page({0, 0, false, pid}) {}
 
 BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
   size_t current_size = 0;
@@ -521,7 +537,7 @@ BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
 }
 
 BasePage::BasePage(DMMTrie *trie, string key, string pid, string nibbles)
-    : trie_(trie), pid_(pid) {
+    : trie_(trie), pid_(pid), Page({0, 0, false, pid}) {
   if (nibbles.size() == 0) {  // leafnode
     root_ = new LeafNode(0, key, {}, "");
   } else if (nibbles.size() == 1) {  // indexnode->leafnode
@@ -541,6 +557,10 @@ BasePage::BasePage(DMMTrie *trie, string key, string pid, string nibbles)
     root_->AddChild(index, child_node, 0, "");
   }
 }
+
+// BasePage::~BasePage() {
+//   for
+// }
 
 /* serialized BasePage format (size in bytes):
    | version (8) | tid (8) | tp (1) | pid_size (8 in 64-bit system) | pid
@@ -586,7 +606,7 @@ void BasePage::UpdatePage(uint64_t version,
   if (nibbles.size() ==
       0) {  // page has one leafnode, eg. page "abcdef" for key "abcdef"
     static_cast<LeafNode *>(root_)->UpdateNode(version, location, value, 0,
-                                               true, deltapage);
+                                               deltapage);
   } else if (nibbles.size() ==
              1) {  // page has one indexnode and one level of leafnodes, eg.
                    // page "abcd" for key "abcde"
@@ -596,11 +616,11 @@ void BasePage::UpdatePage(uint64_t version,
       root_->AddChild(index, child_node, 0, "");
     }
     static_cast<LeafNode *>(root_->GetChild(index))
-        ->UpdateNode(version, location, value, index, true, deltapage);
+        ->UpdateNode(version, location, value, index + 1, deltapage);
 
     string child_hash_2 = root_->GetChild(index)->GetHash();
-    static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash_2,
-                                                false, deltapage);
+    static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash_2, 0,
+                                                deltapage);
   } else {  // page has two levels of indexnodes , eg. page "ab" for key
             // "abcdef"
     int index = nibbles[0] - '0', child_index = nibbles[1] - '0';
@@ -609,38 +629,46 @@ void BasePage::UpdatePage(uint64_t version,
       root_->AddChild(index, child_node, 0, "");
     }
     static_cast<IndexNode *>(root_->GetChild(index))
-        ->UpdateNode(version, child_index, child_hash, true, deltapage);
+        ->UpdateNode(version, child_index, child_hash, index + 1, deltapage);
 
-    // index = nibbles[0] - '0';
     string child_hash_2 = root_->GetChild(index)->GetHash();
-    static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash_2,
-                                                false, deltapage);
+    static_cast<IndexNode *>(root_)->UpdateNode(version, index, child_hash_2, 0,
+                                                deltapage);
   }
 
-  PageKey deltapage_pagekey = {version, 0, true, pid_};
-  if (++d_update_count_ >=
+  PageKey deltapage_pagekey = {version, 0, true, pagekey.pid};
+  deltapage->SetPageKey(deltapage_pagekey);
+  this->SetPageKey(pagekey);
+  if (deltapage->GetDeltaPageUpdateCount() >=
       Td_) {  // When a DeltaPage accumulates 𝑇𝑑 updates, it is frozen and a new
               // active one is initiated
-    d_update_count_ = 0;
-    // PageKey deltapage_pagekey = {version, 0, true, pid_};
-    deltapage->SerializeTo();
-    trie_->GetPageStore()->StorePage(deltapage);  // send deltapage to LSVPS
+
+    DeltaPage *deltapage_copy = new DeltaPage(*deltapage);
+    deltapage_copy->SerializeTo();
+    trie_->GetPageStore()->StorePage(deltapage_copy);
+
+    // deltapage->SerializeTo();
+    // trie_->GetPageStore()->StorePage(deltapage);  // send deltapage to LSVPS
     deltapage->ClearDeltaPage();  // delete all DeltaItems in DeltaPage
     deltapage->SetLastPageKey(
         deltapage_pagekey);  // record the PageKey of DeltaPage that is passed
                              // to LSVPS
   }
-  if (++b_update_count_ >= Tb_) {  // Each page generates a checkpoint as
-                                   // BasePage after every 𝑇𝑏 updates
-    b_update_count_ = 0;
-    this->SerializeTo();
-    trie_->GetPageStore()->StorePage(this);  // send basepage to LSVPS
+  if (deltapage->GetBasePageUpdateCount() >=
+      Tb_) {  // Each page generates a checkpoint as
+              // BasePage after every 𝑇𝑏 updates
+    // this->SerializeTo();
+
+    BasePage *basepage_copy = new BasePage(*this);
+    basepage_copy->SerializeTo();
+    trie_->GetPageStore()->StorePage(basepage_copy);  // send basepage to LSVPS
+
+    // trie_->GetPageStore()->StorePage(this);  // send basepage to LSVPS
     trie_->UpdatePageVersion(pagekey, version, version);
-    deltapage->SetLastPageKey(deltapage_pagekey);
+    deltapage->ClearBasePageUpdateCount();
+    deltapage->SetLastPageKey(pagekey);
     return;
   }
-  cout << pagekey.pid << ":" << d_update_count_ << " " << b_update_count_
-       << endl;
 
   pair<uint64_t, uint64_t> page_version = trie_->GetPageVersion(pagekey);
   trie_->UpdatePageVersion(pagekey, version, page_version.second);
@@ -650,12 +678,17 @@ void BasePage::UpdateDeltaItem(
     DeltaPage::DeltaItem
         deltaitem) {  // add one update from deltapage to basepage
   Node *node = nullptr;
-  if (deltaitem.is_leaf_node) {
-    if (root_ == nullptr) {  // create root if replay function in LSVPS has no
-                             // basepage to start from
-      root_ = new LeafNode();
-    }
 
+  if (root_ == nullptr) {  // create root if replay function in LSVPS has no
+                           // basepage to start from
+    if (deltaitem.location_in_page == 0 && deltaitem.is_leaf_node == true) {
+      root_ = new LeafNode();
+    } else {
+      root_ = new IndexNode();
+    }
+  }
+
+  if (deltaitem.is_leaf_node) {
     if (deltaitem.location_in_page == 0) {
       node = root_;
     } else if (!root_->HasChild(deltaitem.location_in_page - 1)) {
@@ -670,10 +703,6 @@ void BasePage::UpdateDeltaItem(
         make_tuple(deltaitem.fileID, deltaitem.offset, deltaitem.size));
     node->SetHash(deltaitem.hash);
   } else {
-    if (root_ == nullptr) {
-      root_ = new IndexNode();
-    }
-
     if (deltaitem.location_in_page == 0) {
       node = root_;
     } else if (!root_->HasChild(deltaitem.location_in_page - 1)) {
@@ -683,10 +712,13 @@ void BasePage::UpdateDeltaItem(
       node = root_->GetChild(deltaitem.location_in_page - 1);
     }
 
+    if (node == nullptr) {
+      node = new IndexNode();
+    }
+
     node->SetVersion(deltaitem.version);
     node->SetHash(deltaitem.hash);
-    node->SetChild(deltaitem.location_in_page - 1, deltaitem.version,
-                   deltaitem.child_hash);
+    node->SetChild(deltaitem.index, deltaitem.version, deltaitem.child_hash);
   }
 }
 
@@ -757,9 +789,11 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
   BasePage *page = GetPage(pagekey);
 
   if (page == nullptr) {
-    cout << "Key " << key << " not found at version" << version << endl;
+    cout << "Key " << key << " not found at version " << version << endl;
     return "";
   }
+
+  cout << page->GetPageKey().pid << endl;
 
   LeafNode *leafnode = nullptr;
   if (dynamic_cast<IndexNode *>(
@@ -771,14 +805,12 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
   }
 
   string value = value_store_->ReadValue(leafnode->GetLocation());
-  // cout << "Key " << key << " has value " << value << " at version " <<
-  // version
-  //      << endl;
+  tuple<uint64_t, uint64_t, uint64_t> l = leafnode->GetLocation();
+  cout << get<0>(l) << " " << get<1>(l) << " " << get<2>(l) << endl;
+  cout << "Key " << key << " has value " << value << " at version " << version
+       << endl;
   return value;
 }
-
-// bool GeneratePage(Page* page, uint64_t version);  //generate and pass
-// Deltapage to LSVPS
 
 string DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) { return ""; }
 
@@ -798,6 +830,7 @@ DeltaPage *DMMTrie::GetDeltaPage(const string &pid) {
     return &it->second;  // return deltapage if it exiests
   } else {
     DeltaPage new_page;
+    new_page.SetLastPageKey(PageKey{0, 0, false, pid});
     active_deltapages_[pid] = new_page;
     return &active_deltapages_[pid];
   }
@@ -814,9 +847,9 @@ pair<uint64_t, uint64_t> DMMTrie::GetPageVersion(PageKey pagekey) {
 PageKey DMMTrie::GetLatestBasePageKey(PageKey pagekey) const {
   auto it = page_versions_.find(pagekey.pid);
   if (it != page_versions_.end()) {
-    return {it->second.second, pagekey.tid, true, pagekey.pid};
+    return {it->second.second, pagekey.tid, false, pagekey.pid};
   }
-  return PageKey{0, 0, false, ""};
+  return PageKey{0, 0, false, pagekey.pid};
 }
 
 void DMMTrie::UpdatePageVersion(PageKey pagekey, uint64_t current_version,
@@ -836,14 +869,18 @@ BasePage *DMMTrie::GetPage(
     return it->second->second;
   }
 
-  Page *page = page_store_->LoadPage(
-      pagekey);  // page is not in cache, fetch it from LSVPS
-  if (!page) {   // page is not found in disk
+  BasePage *page = static_cast<BasePage *>(page_store_->LoadPage(
+      pagekey));  // page is not in cache, fetch it from LSVPS
+  if (!page) {    // page is not found in disk
     return nullptr;
   }
-  BasePage *trie_page = new BasePage(this, page->GetData());
-  PutPage(pagekey, trie_page);
-  return trie_page;
+  if (!page->GetRoot()) {  // page is not found in disk
+    return nullptr;
+  }
+  // BasePage *trie_page = new BasePage(this, page->GetData());
+  // PutPage(pagekey, trie_page);
+  PutPage(pagekey, page);
+  return page;
 }
 
 void DMMTrie::PutPage(const PageKey &pagekey,
@@ -851,7 +888,7 @@ void DMMTrie::PutPage(const PageKey &pagekey,
   if (lru_cache_.size() >= max_cache_size_) {  // cache is full
     PageKey last_key = pagekeys_.back().first;
     auto last_iter = lru_cache_.find(last_key);
-    delete last_iter->second->second;  // release memory of basepage
+    // delete last_iter->second->second;  // release memory of basepage
 
     lru_cache_.erase(
         last_key);  // remove the page whose pagekey is at the tail of list
@@ -872,8 +909,8 @@ void DMMTrie::UpdatePageKey(
     BasePage *basepage =
         it->second->second;  // save the basepage indexed by old pagekey
 
-    lru_cache_.erase(it);
     pagekeys_.erase(it->second);  // delete old pagekey item
+    lru_cache_.erase(it);
 
     pagekeys_.push_front(make_pair(new_pagekey, basepage));
     lru_cache_[new_pagekey] = pagekeys_.begin();
