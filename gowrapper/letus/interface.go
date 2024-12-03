@@ -46,6 +46,16 @@ type KVStorage interface {
 	// [TODO] FSync(seq uint64) error
 }
 
+// Batch is a write batch interface for KVStorage.
+type Batch interface {
+	Put(key, value []byte) error
+	Delete(key []byte) error
+	// Persist batch content
+	Write(interface{}) error
+	Hash(uint64) error
+	Len() uint64
+	Release() error
+}
 
 type Iterator interface {
 	// LedgerIterator
