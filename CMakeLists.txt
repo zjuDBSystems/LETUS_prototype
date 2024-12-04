@@ -4,6 +4,9 @@ PROJECT(letus_prototype)
 
 find_library(jsoncpp REQUIRED)
 find_package(OpenSSL 1.1 REQUIRED)
+# 查找glibc
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GNUC standard glibc >= 2.34)
 
 include_directories(${OPENSSL_INCLUDE_DIR})
 
@@ -26,7 +29,7 @@ include_directories(workload/lib/)
 # target_link_libraries(trace_replay jsoncpp)
 
 add_executable(get_put "workload/exes/get_put.cc" ${letus_src})
-target_link_libraries(get_put OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(get_put OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
 
 # add_executable(simple "workload/exes/simple.cc")
 

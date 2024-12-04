@@ -7,6 +7,7 @@
 
 #include <sys/time.h>
 
+#include <unistd.h>
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -63,6 +64,56 @@ int main(int argc, char** argv) {
   int n_test = 1;
   int key_len = 5;    // 32
   int value_len = 5;  // 256, 512, 1024, 2048
+
+  int opt;
+  while ((opt = getopt(argc, argv, "b:n:k:v:")) != -1) {
+    switch (opt) {
+      case 'b':  // batch size
+      {
+        char* strtolPtr;
+        batch_size = strtoul(optarg, &strtolPtr, 10);
+        if ((*optarg == '\0') || (*strtolPtr != '\0') || (batch_size <= 0)) {
+          std::cerr << "option -b requires a numeric arg\n" << std::endl;
+        }
+        break;
+      }
+
+      case 'n':  // n test
+      {
+        char* strtolPtr;
+        n_test = strtoul(optarg, &strtolPtr, 10);
+        if ((*optarg == '\0') || (*strtolPtr != '\0') || (n_test <= 0)) {
+          std::cerr << "option -n requires a numeric arg\n" << std::endl;
+        }
+        break;
+      }
+
+      case 'k':  // length of key.
+      {
+        char* strtolPtr;
+        key_len = strtoul(optarg, &strtolPtr, 10);
+        if ((*optarg == '\0') || (*strtolPtr != '\0') || (key_len <= 0)) {
+          std::cerr << "option -k requires a numeric arg\n" << std::endl;
+        }
+        break;
+      }
+
+      case 'v':  // length of value.
+      {
+        char* strtolPtr;
+        value_len = strtoul(optarg, &strtolPtr, 10);
+        if ((*optarg == '\0') || (*strtolPtr != '\0') || (value_len <= 0)) {
+          std::cerr << "option -v requires a numeric arg\n" << std::endl;
+        }
+        break;
+      }
+
+      default:
+        std::cerr << "Unknown argument " << argv[optind] << std::endl;
+        break;
+    }
+  }
+
   // init tasks
   Task* put_tasks = new Task[n_test];
   Task* get_tasks = new Task[n_test];
@@ -123,9 +174,13 @@ int main(int argc, char** argv) {
     std::cout << "get latency=" << get_latency << " s, ";
     std::cout << std::endl;
   }
-  std::cout << "average: ";
-  std::cout << "put latency=" << put_latency_sum / n_test << " s, ";
-  std::cout << "get latency=" << get_latency_sum / n_test << " s, ";
+  std::cout << "latency: ";
+  std::cout << "put= " << put_latency_sum / n_test << " s, ";
+  std::cout << "get= " << get_latency_sum / n_test << " s, ";
+  std::cout << std::endl;
+  std::cout << "throughput: ";
+  std::cout << "put= " << batch_size / put_latency_sum << " ops, ";
+  std::cout << "get= " << batch_size / get_latency_sum << " ops, ";
   std::cout << std::endl;
 
   return 0;
