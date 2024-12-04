@@ -23,7 +23,7 @@ public:
             current_offset_ = 0;
         }
         
-        ofstream file("/mnt/c/Users/qyf/Desktop/LETUS_prototype/data/data_file_" + to_string(current_fileID_), ios::app); // create or open the file for appending
+        ofstream file("/Users/ldz/Code/miniLETUS/data/data_file_" + to_string(current_fileID_), ios::app); // create or open the file for appending
         if (!file) {
             throw std::runtime_error("Cannot open file ");
         }
@@ -43,7 +43,7 @@ public:
         uint64_t fileID, offset, size;
         tie(fileID, offset, size) = location;
 
-        ifstream file("/mnt/c/Users/qyf/Desktop/LETUS_prototype/data/data_file_" + to_string(fileID)); 
+        ifstream file("/Users/ldz/Code/miniLETUS/data/data_file_" + to_string(fileID)); 
         if (!file) {
             throw runtime_error("Cannot open file");
         }
