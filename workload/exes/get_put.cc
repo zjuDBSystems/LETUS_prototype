@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
       string key = keys[i];
       string value = values[i];
       uint64_t version = versions[i];
-      std::cout << i << " PUT:" << key << "," << value << "," << version
+      std::cout << i << " PUT:" << key << "," << value << ", v" << version
                 << std::endl;
       trie->Put(0, version, key, value);
     }
@@ -163,7 +163,7 @@ int main(int argc, char** argv) {
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
       uint64_t version = versions[i];
-      std::cout << i << " GET:" << key << "," << version << std::endl;
+      std::cout << i << " GET:" << key << ", v" << version << std::endl;
       trie->Get(0, version, key);
     }
     end = chrono::system_clock::now();
