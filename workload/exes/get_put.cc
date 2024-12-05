@@ -7,6 +7,7 @@
 
 #include <sys/time.h>
 
+#include <unistd.h>
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -22,6 +23,7 @@ ZipfianGenerator key_generator(1, MAX_KEY);
 
 struct Task {
   std::vector<int> ops;
+  std::vector<u_int64_t> versions;
   std::vector<std::string> keys;
   std::vector<std::string> values;
 };
@@ -36,8 +38,8 @@ std::string BuildKeyName(uint64_t key_num, int key_len) {
   return key_name.append(zeros, '0').append(key_num_str);
 }
 
-int taskGenerator(int tlen, int key_len, int value_len, Task& put_task,
-                  Task& get_task) {
+int taskGenerator(int tlen, int key_len, int value_len, int task_i,
+                  Task& put_task, Task& get_task) {
   timeval t0;
   gettimeofday(&t0, NULL);
   srand(t0.tv_sec * 10000000000 + t0.tv_usec * 10000);
@@ -46,14 +48,16 @@ int taskGenerator(int tlen, int key_len, int value_len, Task& put_task,
     std::string key = BuildKeyName(key_generator.Next(), key_len);
     std::string val = "";
     val = val.append(value_len, RandomPrintChar());
-    int op, n = 0;
+    uint64_t version = task_i * tlen + j;
 
     put_task.keys.emplace_back(key);
     put_task.values.emplace_back(val);
     put_task.ops.emplace_back(1);
+    put_task.versions.emplace_back(version);
     get_task.keys.emplace_back(key);
     get_task.values.emplace_back(val);
-    get_task.ops.emplace_back(1);
+    get_task.ops.emplace_back(0);
+    get_task.versions.emplace_back(version);
   }
   return 0;
 }
@@ -61,13 +65,63 @@ int taskGenerator(int tlen, int key_len, int value_len, Task& put_task,
 int main(int argc, char** argv) {
   int batch_size = 5000;  //
   int n_test = 1;
-  int key_len = 5;    // 32
+  int key_len = 5;      // 32
   int value_len = 256;  // 256, 512, 1024, 2048
+
+  int opt;
+  while ((opt = getopt(argc, argv, "b:n:k:v:")) != -1) {
+    switch (opt) {
+      case 'b':  // batch size
+      {
+        char* strtolPtr;
+        batch_size = strtoul(optarg, &strtolPtr, 10);
+        if ((*optarg == '\0') || (*strtolPtr != '\0') || (batch_size <= 0)) {
+          std::cerr << "option -b requires a numeric arg\n" << std::endl;
+        }
+        break;
+      }
+
+      case 'n':  // n test
+      {
+        char* strtolPtr;
+        n_test = strtoul(optarg, &strtolPtr, 10);
+        if ((*optarg == '\0') || (*strtolPtr != '\0') || (n_test <= 0)) {
+          std::cerr << "option -n requires a numeric arg\n" << std::endl;
+        }
+        break;
+      }
+
+      case 'k':  // length of key.
+      {
+        char* strtolPtr;
+        key_len = strtoul(optarg, &strtolPtr, 10);
+        if ((*optarg == '\0') || (*strtolPtr != '\0') || (key_len <= 0)) {
+          std::cerr << "option -k requires a numeric arg\n" << std::endl;
+        }
+        break;
+      }
+
+      case 'v':  // length of value.
+      {
+        char* strtolPtr;
+        value_len = strtoul(optarg, &strtolPtr, 10);
+        if ((*optarg == '\0') || (*strtolPtr != '\0') || (value_len <= 0)) {
+          std::cerr << "option -v requires a numeric arg\n" << std::endl;
+        }
+        break;
+      }
+
+      default:
+        std::cerr << "Unknown argument " << argv[optind] << std::endl;
+        break;
+    }
+  }
+
   // init tasks
   Task* put_tasks = new Task[n_test];
   Task* get_tasks = new Task[n_test];
   for (int i = 0; i < n_test; i++) {
-    if (taskGenerator(batch_size, key_len, value_len, put_tasks[i],
+    if (taskGenerator(batch_size, key_len, value_len, i, put_tasks[i],
                       get_tasks[i])) {
       std::cerr << "fail to generate task!" << std::endl;
       return 1;
@@ -87,13 +141,15 @@ int main(int argc, char** argv) {
     // put
     auto keys = put_tasks[j].keys;
     auto values = put_tasks[j].values;
+    auto versions = put_tasks[j].versions;
     auto start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
       string key = keys[i];
       string value = values[i];
-      std::cout << i << " PUT:" << key << "," << value << std::endl;
-      trie->Put(0, 1, key, value);
-      // std::cout << i << "PUT:" << key << "," << value << std::endl;
+      uint64_t version = versions[i];
+      std::cout << i << " PUT:" << key << "," << value << ", v" << version
+                << std::endl;
+      trie->Put(0, version, key, value);
     }
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
@@ -106,9 +162,9 @@ int main(int argc, char** argv) {
     start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
-      // std::cout<<"trie->Get(0,1,\""<<key<<"\");"<<std::endl;
-      std::cout << i << " GET:" << key << std::endl;
-      trie->Get(0, 1, key);
+      uint64_t version = versions[i];
+      std::cout << i << " GET:" << key << ", v" << version << std::endl;
+      trie->Get(0, version, key);
     }
     end = chrono::system_clock::now();
     duration = chrono::duration_cast<chrono::microseconds>(end - start);
@@ -123,9 +179,13 @@ int main(int argc, char** argv) {
     std::cout << "get latency=" << get_latency << " s, ";
     std::cout << std::endl;
   }
-  std::cout << "average: ";
-  std::cout << "put latency=" << put_latency_sum / n_test << " s, ";
-  std::cout << "get latency=" << get_latency_sum / n_test << " s, ";
+  std::cout << "latency: ";
+  std::cout << "put= " << put_latency_sum / n_test << " s, ";
+  std::cout << "get= " << get_latency_sum / n_test << " s, ";
+  std::cout << std::endl;
+  std::cout << "throughput: ";
+  std::cout << "put= " << batch_size / put_latency_sum << " ops, ";
+  std::cout << "get= " << batch_size / get_latency_sum << " ops, ";
   std::cout << std::endl;
 
   return 0;

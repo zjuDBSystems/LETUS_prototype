@@ -1,5 +1,7 @@
-# rm -rf data/*;
+rm -rf build/;
+rm -rf data/;
+mkdir -p build/;
+mkdir -p data/;
 cd build/;
-rm -rf ./*;
 cmake  -DCMAKE_VERBOSE_MAKEFILE=ON ..; 
 make;
