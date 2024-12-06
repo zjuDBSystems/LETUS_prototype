@@ -9,7 +9,7 @@ static constexpr int PAGE_SIZE = 12288;  // 每个页面的大小为12KB
 // PageKey结构体
 struct PageKey {
   uint64_t version;
-  int tid;
+  uint64_t tid;
   bool type;        // basepage(false)或deltapage(true)
   std::string pid;  // nibble，例如"Alice"中的"Al"
 
@@ -51,26 +51,43 @@ struct PageKey {
   };
 
   // 序列化函数
-  void SerializeTo(std::ostream& out) const {
-    out.write(reinterpret_cast<const char*>(&version), sizeof(version));
-    out.write(reinterpret_cast<const char*>(&tid), sizeof(tid));
-    out.write(reinterpret_cast<const char*>(&type), sizeof(type));
+  bool SerializeTo(std::ostream& out) const {
+    try {
+      out.write(reinterpret_cast<const char*>(&version), sizeof(version));
+      out.write(reinterpret_cast<const char*>(&tid), sizeof(tid));
+      out.write(reinterpret_cast<const char*>(&type), sizeof(type));
 
-    size_t pid_size = pid.size();
-    out.write(reinterpret_cast<const char*>(&pid_size), sizeof(pid_size));
-    out.write(pid.data(), pid_size);
+      size_t pid_size = pid.size();
+      out.write(reinterpret_cast<const char*>(&pid_size), sizeof(pid_size));
+      out.write(pid.data(), pid_size);
+      
+      return out.good();
+    } catch (const std::exception&) {
+      return false;
+    }
   }
 
   // 反序列化函数
-  void Deserialize(std::istream& in) {
-    in.read(reinterpret_cast<char*>(&version), sizeof(version));
-    in.read(reinterpret_cast<char*>(&tid), sizeof(tid));
-    in.read(reinterpret_cast<char*>(&type), sizeof(type));
+  bool Deserialize(std::istream& in) {
+    try {
+      in.read(reinterpret_cast<char*>(&version), sizeof(version));
+      in.read(reinterpret_cast<char*>(&tid), sizeof(tid));
+      in.read(reinterpret_cast<char*>(&type), sizeof(type));
 
-    size_t pid_size;
-    in.read(reinterpret_cast<char*>(&pid_size), sizeof(pid_size));
-    pid.resize(pid_size);
-    in.read(&pid[0], pid_size);
+      size_t pid_size;
+      in.read(reinterpret_cast<char*>(&pid_size), sizeof(pid_size));
+      
+      if (pid_size > 256) { //pid maybe ""
+        return false;
+      }
+      
+      pid.resize(pid_size);
+      in.read(&pid[0], pid_size);
+      
+      return in.good();
+    } catch (const std::exception&) {
+      return false;
+    }
   }
 };
 
@@ -99,9 +116,16 @@ class Page {  //设置成抽象类 序列化 反序列化 getPageKey setPageKey 
 
   // virtual size_t GetSerializedSize() = 0;
 
-  virtual void SerializeTo(){};
+  virtual bool SerializeTo(std::ostream& out) const { return true; }
 
-  virtual void Deserialize(std::istream& in) { in.read(data_, PAGE_SIZE); };
+  virtual bool Deserialize(std::istream& in) { 
+    try {
+      in.read(data_, PAGE_SIZE);
+      return in.good();
+    } catch (const std::exception&) {
+      return false;
+    }
+  }
 
   void SetPageKey(const PageKey& key) { pagekey_ = key; }
 

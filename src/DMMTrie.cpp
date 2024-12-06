@@ -109,7 +109,7 @@ void LeafNode::SerializeTo(char *buffer, size_t &current_size,
 }
 
 void LeafNode::DeserializeFrom(char *buffer, size_t &current_size,
-                               bool is_root) {
+                               bool is_root) {                             
   version_ = *(reinterpret_cast<uint64_t *>(
       buffer + current_size));  // deserialize leafnode version
   current_size += sizeof(uint64_t);
@@ -210,13 +210,14 @@ void IndexNode::SerializeTo(char *buffer, size_t &current_size,
   current_size += sizeof(uint16_t);
 
   for (int i = 0; i < DMM_NODE_FANOUT; i++) {
+    if(bitmap_ & (1 << i)){
     uint64_t child_version = get<0>(children_[i]);
     string child_hash = get<1>(children_[i]);
 
     memcpy(buffer + current_size, &child_version, sizeof(uint64_t));
     current_size += sizeof(uint64_t);
     memcpy(buffer + current_size, child_hash.c_str(), child_hash.size());
-    current_size += child_hash.size();
+    current_size += HASH_SIZE;}
   }
 
   if (is_root) {  // if an index node is the root node of a page, serialize
@@ -242,13 +243,14 @@ void IndexNode::DeserializeFrom(char *buffer, size_t &current_size,
   current_size += sizeof(uint16_t);
 
   for (int i = 0; i < DMM_NODE_FANOUT; i++) {
-    uint64_t child_version =
+    if(bitmap_ & 1 << i)
+    {uint64_t child_version =
         *(reinterpret_cast<uint64_t *>(buffer + current_size));
     current_size += sizeof(uint64_t);
     string child_hash(buffer + current_size, HASH_SIZE);
     current_size += HASH_SIZE;
 
-    children_[i] = make_tuple(child_version, child_hash, nullptr);
+    children_[i] = make_tuple(child_version, child_hash, nullptr);}
   }
 
   if (!is_root) {  // indexnode is in second level of a page, return
@@ -400,13 +402,15 @@ DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count,
       b_update_count_(b_update_count){};
 
 DeltaPage::DeltaPage(char *buffer) : b_update_count_(0) {
+  Page({0, 0, true, ""});  // 临时初始化，后面会更新
+
   size_t current_size = 0;
 
   last_pagekey_.version =
       *(reinterpret_cast<uint64_t *>(buffer + current_size));
   current_size += sizeof(uint64_t);
-  last_pagekey_.tid = *(reinterpret_cast<int *>(buffer + current_size));
-  current_size += sizeof(int);
+  last_pagekey_.tid = *(reinterpret_cast<uint64_t *>(buffer + current_size));
+  current_size += sizeof(uint64_t);
   last_pagekey_.type = *(reinterpret_cast<bool *>(buffer + current_size));
   current_size += sizeof(bool);
   size_t pid_size = *(reinterpret_cast<size_t *>(buffer + current_size));
@@ -421,6 +425,10 @@ DeltaPage::DeltaPage(char *buffer) : b_update_count_(0) {
   for (int i = 0; i < update_count_; i++) {
     deltaitems_.push_back(DeltaItem(buffer, current_size));
   }
+
+  // 反序列化完成后，更新 PageKey
+  PageKey pagekey = {last_pagekey_.version, last_pagekey_.tid, true, last_pagekey_.pid};
+  this->SetPageKey(pagekey);
 }
 
 void DeltaPage::AddIndexNodeUpdate(uint8_t location, uint64_t version,
@@ -446,8 +454,8 @@ void DeltaPage::SerializeTo() {
   size_t current_size = 0;
   memcpy(buffer + current_size, &last_pagekey_.version, sizeof(uint64_t));
   current_size += sizeof(uint64_t);
-  memcpy(buffer + current_size, &last_pagekey_.tid, sizeof(int));
-  current_size += sizeof(int);
+  memcpy(buffer + current_size, &last_pagekey_.tid, sizeof(uint64_t));
+  current_size += sizeof(uint64_t);
   memcpy(buffer + current_size, &last_pagekey_.type, sizeof(bool));
   current_size += sizeof(bool);
   size_t pid_size = last_pagekey_.pid.size();
@@ -496,6 +504,8 @@ BasePage::BasePage(DMMTrie *trie, Node *root, const string &pid,
       Page({0, 0, false, pid}) {}
 
 BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
+  Page({0, 0, false, ""});  // 临时初始化，后面会更新
+
   size_t current_size = 0;
 
   uint64_t version = *(reinterpret_cast<uint64_t *>(
@@ -534,6 +544,10 @@ BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
     root_ = new IndexNode();
     root_->DeserializeFrom(buffer, current_size, true);
   }
+
+  // 反序列化完成后，更新 PageKey
+  PageKey pagekey = {version, tid, page_type, pid_};
+  this->SetPageKey(pagekey);
 }
 
 BasePage::BasePage(DMMTrie *trie, string key, string pid, string nibbles)
