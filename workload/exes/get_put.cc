@@ -89,15 +89,13 @@ int main(int argc, char** argv) {
     auto values = put_tasks[j].values;
     auto start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
-      if (i == 2369) {
-        cout << "!!" << endl;
-      }
       string key = keys[i];
       string value = values[i];
       std::cout << i << " PUT:" << key << "," << value << std::endl;
-      trie->Put(0, j * batch_size + i, key, value);
+      trie->Put(0, j + 1, key, value);
       // std::cout << i << "PUT:" << key << "," << value << std::endl;
     }
+    trie->Commit(j + 1);
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
     double put_latency = double(duration.count()) *
@@ -108,14 +106,12 @@ int main(int argc, char** argv) {
     values = get_tasks[j].values;
     start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
-      if (i == 4823) {
-        cout << "!" << endl;
-      }
       std::string key = keys[i];
       // std::cout<<"trie->Get(0,1,\""<<key<<"\");"<<std::endl;
       std::cout << i << " GET:" << key << std::endl;
-      trie->Get(0, j * batch_size + i, key);
+      trie->Get(0, j + 1, key);
     }
+    trie->Commit(j + 1);
     end = chrono::system_clock::now();
     duration = chrono::duration_cast<chrono::microseconds>(end - start);
     double get_latency = double(duration.count()) *

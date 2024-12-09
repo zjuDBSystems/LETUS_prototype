@@ -719,6 +719,9 @@ void BasePage::UpdateDeltaItem(
     node->SetHash(deltaitem.hash);
     node->SetChild(deltaitem.index, deltaitem.version, deltaitem.child_hash);
   }
+  PageKey old_pagekey = GetPageKey();
+  SetPageKey(
+      {deltaitem.version, old_pagekey.tid, old_pagekey.type, old_pagekey.pid});
 }
 
 Node *BasePage::GetRoot() const { return root_; }
@@ -735,48 +738,51 @@ DMMTrie::DMMTrie(uint64_t tid, LSVPSInterface *page_store, VDLS *value_store,
   active_deltapages_.clear();
   page_versions_.clear();
   page_cache_.clear();
+  put_cache_.clear();
 }
 
-bool DMMTrie::Put(uint64_t tid, uint64_t version, const string &key,
+void DMMTrie::Put(uint64_t tid, uint64_t version, const string &key,
                   const string &value) {
-  string nibble_path = key;  // saved interface for potential change of nibble
   if (version < current_version_) {
     cout << "Version " << version << " is outdated!"
          << endl;  // version invalid
-    return false;
+    return;
   }
   current_version_ = version;
 
-  BasePage *page = nullptr;
-  string child_hash;
-  tuple<uint64_t, uint64_t, uint64_t> location =
-      value_store_->WriteValue(version, key, value);
+  put_cache_[key] = value;
 
-  // start from pid of the bottom page, go upward two nibbles(one page) each
-  // round
-  for (int i = nibble_path.size() % 2 == 0 ? nibble_path.size()
-                                           : nibble_path.size() - 1;
-       i >= 0; i -= 2) {
-    string nibbles = nibble_path.substr(i, 2), pid = nibble_path.substr(0, i);
-    uint64_t page_version =
-        GetPageVersion({0, 0, false, pid})
-            .first;  // get the latest version number of a page
-    PageKey pagekey = {current_version_, 0, false, pid},
-            old_pagekey = {page_version, 0, false, pid};
-    page = GetPage(old_pagekey);  // load the page into lru cache
+  // string nibble_path = key;  // saved interface for potential change of
+  // nibble BasePage *page = nullptr; string child_hash; tuple<uint64_t,
+  // uint64_t, uint64_t> location =
+  //     value_store_->WriteValue(version, key, value);
 
-    if (page == nullptr) {  // GetPage returns nullptr means that the pid is new
-      page = new BasePage(this, key, pid, nibbles);  // create a new page
-      PutPage(pagekey, page);  // add the newly generated page into cache
-    }
+  // // start from pid of the bottom page, go upward two nibbles(one page) each
+  // // round
+  // for (int i = nibble_path.size() % 2 == 0 ? nibble_path.size()
+  //                                          : nibble_path.size() - 1;
+  //      i >= 0; i -= 2) {
+  //   string nibbles = nibble_path.substr(i, 2), pid = nibble_path.substr(0,
+  //   i); uint64_t page_version =
+  //       GetPageVersion({0, 0, false, pid})
+  //           .first;  // get the latest version number of a page
+  //   PageKey pagekey = {current_version_, 0, false, pid},
+  //           old_pagekey = {page_version, 0, false, pid};
+  //   page = GetPage(old_pagekey);  // load the page into lru cache
 
-    DeltaPage *deltapage = GetDeltaPage(pid);
-    page->UpdatePage(version, location, value, nibbles, child_hash, deltapage,
-                     pagekey);
-    UpdatePageKey(old_pagekey, pagekey);
-    child_hash = page->GetRoot()->GetHash();
-  }
-  return true;
+  //   if (page == nullptr) {  // GetPage returns nullptr means that the pid is
+  //   new
+  //     page = new BasePage(this, key, pid, nibbles);  // create a new page
+  //     PutPage(pagekey, page);  // add the newly generated page into cache
+  //   }
+
+  //   DeltaPage *deltapage = GetDeltaPage(pid);
+  //   page->UpdatePage(version, location, value, nibbles, child_hash,
+  //   deltapage,
+  //                    pagekey);
+  //   UpdatePageKey(old_pagekey, pagekey);
+  //   child_hash = page->GetRoot()->GetHash();
+  // }
 }
 
 string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
@@ -849,11 +855,51 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
   // return value;
 }
 
-void DMMTrie::Commit() {
+void DMMTrie::Commit(uint64_t version) {
+  if (version != current_version_) {
+    cout << "Commit version incompatible" << endl;
+  }
+  for (auto &it : put_cache_) {
+    string key = it.first, value = it.second;
+    string nibble_path = key;  // saved interface for potential change of nibble
+    BasePage *page = nullptr;
+    string child_hash;
+    tuple<uint64_t, uint64_t, uint64_t> location =
+        value_store_->WriteValue(version, key, value);
+
+    // start from pid of the bottom page, go upward two nibbles(one page) each
+    // round
+    for (int i = nibble_path.size() % 2 == 0 ? nibble_path.size()
+                                             : nibble_path.size() - 1;
+         i >= 0; i -= 2) {
+      string nibbles = nibble_path.substr(i, 2), pid = nibble_path.substr(0, i);
+      uint64_t page_version =
+          GetPageVersion({0, 0, false, pid})
+              .first;  // get the latest version number of a page
+      PageKey pagekey = {version, 0, false, pid},
+              old_pagekey = {page_version, 0, false, pid};
+      page = GetPage(old_pagekey);  // load the page into lru cache
+
+      if (page ==
+          nullptr) {  // GetPage returns nullptr means that the pid is new
+        page = new BasePage(this, key, pid, nibbles);  // create a new page
+        PutPage(pagekey, page);  // add the newly generated page into cache
+      }
+
+      DeltaPage *deltapage = GetDeltaPage(pid);
+      page->UpdatePage(version, location, value, nibbles, child_hash, deltapage,
+                       pagekey);
+      UpdatePageKey(old_pagekey, pagekey);
+      child_hash = page->GetRoot()->GetHash();
+    }
+  }
+
   for (auto &it : page_cache_) {
     page_store_->StorePage(it.second);
   }
   page_cache_.clear();
+  put_cache_.clear();
+  cout << "Version " << version << " committed" << endl;
 }
 
 void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) { return; }

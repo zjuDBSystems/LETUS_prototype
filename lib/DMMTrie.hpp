@@ -211,10 +211,10 @@ class DMMTrie {
  public:
   DMMTrie(uint64_t tid, LSVPSInterface *page_store, VDLS *value_store,
           uint64_t current_version = 0);
-  bool Put(uint64_t tid, uint64_t version, const string &key,
+  void Put(uint64_t tid, uint64_t version, const string &key,
            const string &value);
   string Get(uint64_t tid, uint64_t version, const string &key);
-  void Commit();
+  void Commit(uint64_t version);
   void CalcRootHash(uint64_t tid, uint64_t version);
   string GetRootHash(uint64_t tid, uint64_t version);
   DMMTrieProof GetProof(uint64_t tid, uint64_t version, const string &key);
@@ -243,6 +243,7 @@ class DMMTrie {
   unordered_map<string, pair<uint64_t, uint64_t>>
       page_versions_;  // current version, latest basepage version
   map<PageKey, Page *> page_cache_;
+  map<string, string> put_cache_;  // temporarily store the key of value of Put
 
   BasePage *GetPage(const PageKey &pagekey);
   void PutPage(const PageKey &pagekey, BasePage *page);
