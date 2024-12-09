@@ -6,7 +6,7 @@
 
 int main() {
   LSVPS* page_store = new LSVPS();
-  VDLS* value_store = new VDLS();
+  VDLS* value_store = new VDLS("/Users/ldz/Code/miniLETUS/data/");
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);
 

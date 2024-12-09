@@ -801,7 +801,7 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
   string nibble_path = key;
   uint64_t page_version = version;
   LeafNode *leafnode = nullptr;
-  for (int i = 0; i < key.size(); i++) {
+  for (int i = 0; i < key.size(); i+=2) {
     string pid = nibble_path.substr(0, i);
     BasePage *page =
         GetPage({page_version, 0, false, pid});  // false means basepage
@@ -812,14 +812,14 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
 
     if (!page->GetRoot()->IsLeaf()) {  // first level in page is indexnode
       if (!page->GetRoot()
-               ->GetChild(nibble_path[i])
+               ->GetChild(nibble_path[i]-'0')
                ->IsLeaf()) {  // second level is indexnode
         page_version = page->GetRoot()
-                           ->GetChild(nibble_path[i])
-                           ->GetChildVersion(nibble_path[i + 1]);
+                           ->GetChild(nibble_path[i] - '0')
+                           ->GetChildVersion(nibble_path[i + 1] - '0');
       } else {  // second level is leafnode
         leafnode =
-            static_cast<LeafNode *>(page->GetRoot()->GetChild(nibble_path[i]));
+            static_cast<LeafNode *>(page->GetRoot()->GetChild(nibble_path[i] - '0'));
       }
     } else {  // first level is leafnode
       leafnode = static_cast<LeafNode *>(page->GetRoot());
@@ -926,7 +926,7 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
   string nibble_path = key;
   uint64_t page_version = version;
   LeafNode *leafnode = nullptr;
-  for (int i = 0; i < key.size(); i++) {
+  for (int i = 0; i < key.size(); i+=2) {
     string pid = nibble_path.substr(0, i);
     BasePage *page =
         GetPage({page_version, 0, false, pid});  // false means basepage

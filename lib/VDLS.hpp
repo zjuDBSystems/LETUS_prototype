@@ -14,7 +14,7 @@ using namespace std;
 class VDLS {
  public:
   VDLS(string file_path =
-           "/mnt/c/Users/qyf/Desktop/LETUS_prototype/data/data_file_")
+           "/mnt/c/Users/qyf/Desktop/LETUS_prototype/data/")
       : current_fileID_(0), current_offset_(0), file_path_(file_path) {}
 
   tuple<uint64_t, uint64_t, uint64_t> WriteValue(
@@ -27,7 +27,7 @@ class VDLS {
       current_offset_ = 0;
     }
 
-    ofstream file(file_path_ + to_string(current_fileID_) + ".dat",
+    ofstream file(file_path_ + "data_file_" + to_string(current_fileID_) + ".dat",
                   ios::app);  // create or open the file for appending
     if (!file) {
       throw std::runtime_error("Cannot open file ");
@@ -49,7 +49,7 @@ class VDLS {
     uint64_t fileID, offset, size;
     tie(fileID, offset, size) = location;
 
-    ifstream file(file_path_ + to_string(fileID) + ".dat");
+    ifstream file(file_path_ + "data_file_" + to_string(fileID) + ".dat");
     if (!file) {
       throw runtime_error("Cannot open file");
     }

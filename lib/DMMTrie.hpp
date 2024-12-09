@@ -203,8 +203,8 @@ class BasePage : public Page {
   DMMTrie *trie_;
   Node *root_;              // the root of the page
   string pid_;              // nibble path serves as page id
-  const uint16_t Td_ = 16;  // update threshold of DeltaPage
-  const uint16_t Tb_ = 32;  // update threshold of BasePage
+  const uint16_t Td_ = 128;  // update threshold of DeltaPage
+  const uint16_t Tb_ = 256;  // update threshold of BasePage
 };
 
 class DMMTrie {

@@ -203,13 +203,13 @@ Page *LSVPS::LoadPage(const PageKey &pagekey) {
   /*pid足够了 因为一个LSVPS绑定一个trie也就绑定一个tid*/
   delta_pages.push(active_deltapage);
   if( pagekey.version > trie_->GetLatestBasePageKey(pagekey).version ){
-    current_pagekey = active_deltapage->GetPageKey();
+    current_pagekey = active_deltapage->GetLastPageKey();
   }
   else{
     Page* replay_sentinal = pageLookup(delta_pagekey, false);
     if(replay_sentinal != nullptr) current_pagekey = replay_sentinal->GetPageKey();
     else{
-      current_pagekey = active_deltapage->GetPageKey();
+      current_pagekey = active_deltapage->GetLastPageKey();
     }
   } 
   while (current_pagekey.type) {
@@ -303,7 +303,7 @@ Page *LSVPS::pageLookup(const PageKey &pagekey, bool isPrecise) {
                                             latest_basepage_pagekey <= file.max_pagekey;
                                   });
         if (file_iterator == index_files_.end()) {
-          std::cerr << "Error: Page not found in index file for PageKey: " << pagekey 
+          std::cerr << "Error: LatestBasePage not found in index file for PageKey: " << pagekey 
                         << std::endl;
           return nullptr;
           //there is no indexfile of the demanding version 
