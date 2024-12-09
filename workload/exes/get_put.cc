@@ -89,6 +89,9 @@ int main(int argc, char** argv) {
     auto values = put_tasks[j].values;
     auto start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
+      if (i == 709) {
+        cout << "!!" << endl;
+      }
       string key = keys[i];
       string value = values[i];
       std::cout << i << " PUT:" << key << "," << value << std::endl;
@@ -106,6 +109,9 @@ int main(int argc, char** argv) {
     values = get_tasks[j].values;
     start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
+      if (i == 4986) {
+        cout << "!" << endl;
+      }
       std::string key = keys[i];
       // std::cout<<"trie->Get(0,1,\""<<key<<"\");"<<std::endl;
       std::cout << i << " GET:" << key << std::endl;

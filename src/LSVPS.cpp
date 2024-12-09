@@ -5,7 +5,6 @@
 #include <fstream>
 #include <iostream>
 
-
 std::ostream &operator<<(std::ostream &os, const PageKey &key) {
   os << "PageKey(pid=" << key.pid << ", version=" << key.version
      << ", type=" << key.type << ")";
@@ -474,6 +473,94 @@ Page *LSVPS::readPageFromIndexFile(
   }
   page->SetPageKey(true_pagekey);
 
+  if (it->second >= std::filesystem::file_size(file_it->filepath)) {
+    throw std::runtime_error("Invalid file offset in lookup block");
+  }
+
+  in_file.seekg(it->second);
+  if (!in_file.good()) {
+    throw std::runtime_error("Failed to seek to IndexBlock");
+  }
+
+  IndexBlock index_block;
+  if (!index_block.Deserialize(in_file)) {
+    throw std::runtime_error("Failed to deserialize IndexBlock");
+  }
+
+  // 验证index_block中的映射
+  const auto &mappings = index_block.GetMappings();
+  if (mappings.empty()) {
+    return nullptr;
+  }
+
+  auto mapping = mappings.begin();
+  if (!isPrecise) {
+    mapping = std::find_if(
+        mappings.begin(), mappings.end(), [&pagekey](const auto &m) {
+          // 验证 pid 的合理性
+          if (m.pagekey.pid.size() > 256) {
+            throw std::runtime_error("Invalid PID size in mapping");
+          }
+          return m.pagekey.tid == pagekey.tid && m.pagekey.pid == pagekey.pid &&
+                 m.pagekey.type && m.pagekey > pagekey;
+        });
+
+    if (mapping == mappings.end()) {  //边界
+      for (; file_it != this->index_files_.end(); ++file_it) {
+        Page *page = readPageFromIndexFile(file_it, pagekey, isPrecise);
+        if (page != nullptr) return page;
+      }
+      for (const auto &page : this->table_.GetBuffer()) {
+        auto temp_pagekey = page->GetPageKey();
+        if (temp_pagekey.tid == pagekey.tid &&
+            temp_pagekey.pid == pagekey.pid && temp_pagekey.type &&
+            temp_pagekey.version > pagekey.version)
+          return page;
+      }
+      return nullptr;
+      // throw logic_error("Unreachable code: Previous conditions guarantee
+      // earlier return"); //
+    }
+
+  } else {
+    mapping = std::find_if(
+        mappings.begin(), mappings.end(),
+        [&pagekey](const auto &m) { return m.pagekey == pagekey; });
+
+    if (mapping == mappings.end()) {  // basepage没找到
+      return nullptr;
+    }
+  }
+  true_pagekey = mapping->pagekey;
+  in_file.seekg(mapping->location);
+  if (!in_file.good()) {
+    throw std::runtime_error("Failed to seek to page data");
+  }
+
+  Page temp_page;
+  if (!temp_page.Deserialize(in_file)) {
+    throw std::runtime_error("Failed to deserialize page data");
+  }
+
+  // 验证数据完整性
+  char *data = temp_page.GetData();
+  if (!data) {
+    throw std::runtime_error("Invalid page data after deserialization");
+  }
+
+  // 根据 pagekey.type 创建正确的页面类型
+  Page *page = nullptr;
+  try {
+    if (!pagekey.type) {
+      page = new BasePage(trie_, data);
+    } else {
+      page = new DeltaPage(data);
+    }
+  } catch (const std::exception &e) {
+    throw std::runtime_error(std::string("Failed to create page: ") + e.what());
+  }
+  page->SetPageKey(true_pagekey);
+
   return page;
 }
 
@@ -510,13 +597,13 @@ void LSVPS::MemIndexTable::Flush() {
   IndexBlock current_block;
   uint64_t current_location = 0;
 
-  for (size_t i = 0; i < sen; i++) {
+  for (auto &page : buffer_) {
     if (current_block.IsFull()) {
       index_blocks.push_back(current_block);
       current_block = IndexBlock();
     }
 
-    current_block.AddMapping(buffer_[i]->GetPageKey(), current_location);
+    current_block.AddMapping(page->GetPageKey(), current_location);
     current_location += PAGE_SIZE;
   }
 
@@ -549,7 +636,6 @@ void LSVPS::MemIndexTable::Flush() {
       {buffer_.front()->GetPageKey(), buffer_.back()->GetPageKey(), filepath});
 
   buffer_.clear();
-  buffer_ = std::move(remaining_pages);
 }
 
 void LSVPS::MemIndexTable::writeToStorage(
