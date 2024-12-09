@@ -24,8 +24,8 @@ struct IndexBlock {
   bool AddMapping(const PageKey &pagekey, uint64_t location);
   bool IsFull() const;
   const std::vector<Mapping> &GetMappings() const;
-  void SerializeTo(std::ofstream &out) const;
-  void Deserialize(std::ifstream &in);
+  bool SerializeTo(std::ofstream &out) const;
+  bool Deserialize(std::ifstream &in);
 
  private:
   std::vector<Mapping> mappings_;
@@ -40,9 +40,11 @@ struct IndexFile {
 
 // 查找块结构体
 struct LookupBlock {
+  static const size_t BLOCK_SIZE = 4096;  // 4KB
+  
   std::vector<std::pair<PageKey, size_t>> entries;
-  void SerializeTo(std::ostream &out) const;
-  void Deserialize(std::istream &in);
+  bool SerializeTo(std::ostream &out) const;
+  bool Deserialize(std::istream &in);
 };
 
 // LSVPS类定义
@@ -74,12 +76,12 @@ class LSVPS : public LSVPSInterface {
                         const LookupBlock &lookup_blocks,
                         const std::filesystem::path &filepath);
     std::vector<Page *> buffer_;
-    const size_t max_size_ = 20000;
+    const size_t max_size_ = 2000;//gurantee that max_size >= one version pages
     LSVPS &parent_LSVPS_;
   };
 
-  Page *pageLookup(const PageKey &pagekey);
-  Page *readPageFromIndexFile(const IndexFile &file, const PageKey &pagekey);
+  Page *pageLookup(const PageKey &pagekey, bool isPrecise);
+  Page *readPageFromIndexFile(const IndexFile &file, const PageKey &pagekey, bool isPrecise);
   void applyDelta(BasePage *basepage, const DeltaPage *deltapage,
                   PageKey pagekey);
 

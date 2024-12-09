@@ -416,6 +416,8 @@ DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count,
       b_update_count_(b_update_count){};
 
 DeltaPage::DeltaPage(char *buffer) : b_update_count_(0) {
+  Page({0, 0, true, ""});  // 临时初始化，后面会更新
+
   size_t current_size = 0;
 
   last_pagekey_.version =
@@ -437,6 +439,11 @@ DeltaPage::DeltaPage(char *buffer) : b_update_count_(0) {
   for (int i = 0; i < update_count_; i++) {
     deltaitems_.push_back(DeltaItem(buffer, current_size));
   }
+
+  // 反序列化完成后，更新 PageKey
+  PageKey pagekey = {last_pagekey_.version, last_pagekey_.tid, true,
+                     last_pagekey_.pid};
+  this->SetPageKey(pagekey);
 }
 
 void DeltaPage::AddIndexNodeUpdate(uint8_t location, uint64_t version,
@@ -506,6 +513,8 @@ BasePage::BasePage(DMMTrie *trie, Node *root, const string &pid)
     : trie_(trie), root_(root), pid_(pid), Page({0, 0, false, pid}) {}
 
 BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
+  Page({0, 0, false, ""});  // 临时初始化，后面会更新
+
   size_t current_size = 0;
 
   uint64_t version = *(reinterpret_cast<uint64_t *>(
@@ -537,6 +546,10 @@ BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
     root_ = new IndexNode();
     root_->DeserializeFrom(buffer, current_size, true);
   }
+
+  // 反序列化完成后，更新 PageKey
+  PageKey pagekey = {version, tid, page_type, pid_};
+  this->SetPageKey(pagekey);
 }
 
 BasePage::BasePage(DMMTrie *trie, string key, string pid, string nibbles)
