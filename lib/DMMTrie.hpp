@@ -29,6 +29,17 @@ class LeafNode;
 class DMMTrie;
 class DeltaPage;
 
+struct NodeProof {
+  int index;
+  uint16_t bitmap;
+  vector<string> sibling_hash;
+};
+
+struct DMMTrieProof {
+  string value;
+  vector<NodeProof> proofs;
+};
+
 class Node {
  public:
   virtual ~Node() noexcept = default;
@@ -236,17 +247,6 @@ class DMMTrie {
   BasePage *GetPage(const PageKey &pagekey);
   void PutPage(const PageKey &pagekey, BasePage *page);
   void UpdatePageKey(const PageKey &old_pagekey, const PageKey &new_pagekey);
-};
-
-struct NodeProof {
-  int index;
-  uint16_t bitmap;
-  vector<string> sibling_hash;
-};
-
-struct DMMTrieProof {
-  string value;
-  vector<NodeProof> proofs;
 };
 
 #endif

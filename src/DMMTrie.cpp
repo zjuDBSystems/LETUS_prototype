@@ -884,7 +884,7 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
         GetPage({page_version, 0, false, pid});  // false means basepage
     if (page == nullptr) {
       cout << "Key " << key << " not found at version " << version << endl;
-      return;
+      return merkle_proof;
     }
 
     if (!page->GetRoot()->IsLeaf()) {  // first level in page is indexnode
@@ -910,98 +910,99 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
     merkle_proof.value = value_store_->ReadValue(leafnode->GetLocation());
     return merkle_proof;
   }
+}
 
-  DeltaPage *DMMTrie::GetDeltaPage(const string &pid) {
-    auto it = active_deltapages_.find(pid);
-    if (it != active_deltapages_.end()) {
-      return &it->second;  // return deltapage if it exiests
-    } else {
-      DeltaPage new_page;
-      new_page.SetLastPageKey(PageKey{0, 0, false, pid});
-      active_deltapages_[pid] = new_page;
-      return &active_deltapages_[pid];
-    }
+DeltaPage *DMMTrie::GetDeltaPage(const string &pid) {
+  auto it = active_deltapages_.find(pid);
+  if (it != active_deltapages_.end()) {
+    return &it->second;  // return deltapage if it exiests
+  } else {
+    DeltaPage new_page;
+    new_page.SetLastPageKey(PageKey{0, 0, false, pid});
+    active_deltapages_[pid] = new_page;
+    return &active_deltapages_[pid];
+  }
+}
+
+pair<uint64_t, uint64_t> DMMTrie::GetPageVersion(PageKey pagekey) {
+  auto it = page_versions_.find(pagekey.pid);
+  if (it != page_versions_.end()) {
+    return it->second;
+  }
+  return {0, 0};
+}
+
+PageKey DMMTrie::GetLatestBasePageKey(PageKey pagekey) const {
+  auto it = page_versions_.find(pagekey.pid);
+  if (it != page_versions_.end()) {
+    return {it->second.second, pagekey.tid, false, pagekey.pid};
+  }
+  return PageKey{0, 0, false, pagekey.pid};
+}
+
+void DMMTrie::UpdatePageVersion(PageKey pagekey, uint64_t current_version,
+                                uint64_t latest_basepage_version) {
+  page_versions_[pagekey.pid] = {current_version, latest_basepage_version};
+}
+
+LSVPSInterface *DMMTrie::GetPageStore() { return page_store_; }
+
+void DMMTrie::WritePageCache(PageKey pagekey, Page *page) {
+  page_cache_[pagekey] = page;
+}
+
+BasePage *DMMTrie::GetPage(
+    const PageKey &pagekey) {  // get a page by its pagekey
+  auto it = lru_cache_.find(pagekey);
+  if (it != lru_cache_.end()) {  // page is in cache
+    pagekeys_.splice(pagekeys_.begin(), pagekeys_,
+                     it->second);    // move the accessed page to the front
+    it->second = pagekeys_.begin();  // update iterator
+    return it->second->second;
   }
 
-  pair<uint64_t, uint64_t> DMMTrie::GetPageVersion(PageKey pagekey) {
-    auto it = page_versions_.find(pagekey.pid);
-    if (it != page_versions_.end()) {
-      return it->second;
-    }
-    return {0, 0};
+  BasePage *page = static_cast<BasePage *>(page_store_->LoadPage(
+      pagekey));  // page is not in cache, fetch it from LSVPS
+  if (!page) {    // page is not found in disk
+    return nullptr;
+  }
+  if (!page->GetRoot()) {  // page is not found in disk
+    return nullptr;
+  }
+  PutPage(pagekey, page);
+  return page;
+}
+
+void DMMTrie::PutPage(const PageKey &pagekey,
+                      BasePage *page) {        // add page to cache
+  if (lru_cache_.size() >= max_cache_size_) {  // cache is full
+    PageKey last_key = pagekeys_.back().first;
+    auto last_iter = lru_cache_.find(last_key);
+    // delete last_iter->second->second;  // release memory of basepage
+
+    lru_cache_.erase(
+        last_key);  // remove the page whose pagekey is at the tail of list
+    pagekeys_.pop_back();
   }
 
-  PageKey DMMTrie::GetLatestBasePageKey(PageKey pagekey) const {
-    auto it = page_versions_.find(pagekey.pid);
-    if (it != page_versions_.end()) {
-      return {it->second.second, pagekey.tid, false, pagekey.pid};
-    }
-    return PageKey{0, 0, false, pagekey.pid};
+  pagekeys_.push_front(make_pair(
+      pagekey,
+      page));  // insert the pair of PageKey and BasePage* to the front
+  lru_cache_[pagekey] = pagekeys_.begin();
+}
+
+void DMMTrie::UpdatePageKey(
+    const PageKey &old_pagekey,
+    const PageKey &new_pagekey) {  // update pagekey in lru cache
+  auto it = lru_cache_.find(old_pagekey);
+  if (it != lru_cache_.end()) {
+    BasePage *basepage =
+        it->second->second;  // save the basepage indexed by old pagekey
+
+    pagekeys_.erase(it->second);  // delete old pagekey item
+    lru_cache_.erase(it);
+
+    pagekeys_.push_front(make_pair(new_pagekey, basepage));
+    lru_cache_[new_pagekey] = pagekeys_.begin();
   }
-
-  void DMMTrie::UpdatePageVersion(PageKey pagekey, uint64_t current_version,
-                                  uint64_t latest_basepage_version) {
-    page_versions_[pagekey.pid] = {current_version, latest_basepage_version};
-  }
-
-  LSVPSInterface *DMMTrie::GetPageStore() { return page_store_; }
-
-  void DMMTrie::WritePageCache(PageKey pagekey, Page * page) {
-    page_cache_[pagekey] = page;
-  }
-
-  BasePage *DMMTrie::GetPage(
-      const PageKey &pagekey) {  // get a page by its pagekey
-    auto it = lru_cache_.find(pagekey);
-    if (it != lru_cache_.end()) {  // page is in cache
-      pagekeys_.splice(pagekeys_.begin(), pagekeys_,
-                       it->second);    // move the accessed page to the front
-      it->second = pagekeys_.begin();  // update iterator
-      return it->second->second;
-    }
-
-    BasePage *page = static_cast<BasePage *>(page_store_->LoadPage(
-        pagekey));  // page is not in cache, fetch it from LSVPS
-    if (!page) {    // page is not found in disk
-      return nullptr;
-    }
-    if (!page->GetRoot()) {  // page is not found in disk
-      return nullptr;
-    }
-    PutPage(pagekey, page);
-    return page;
-  }
-
-  void DMMTrie::PutPage(const PageKey &pagekey,
-                        BasePage *page) {        // add page to cache
-    if (lru_cache_.size() >= max_cache_size_) {  // cache is full
-      PageKey last_key = pagekeys_.back().first;
-      auto last_iter = lru_cache_.find(last_key);
-      // delete last_iter->second->second;  // release memory of basepage
-
-      lru_cache_.erase(
-          last_key);  // remove the page whose pagekey is at the tail of list
-      pagekeys_.pop_back();
-    }
-
-    pagekeys_.push_front(make_pair(
-        pagekey,
-        page));  // insert the pair of PageKey and BasePage* to the front
-    lru_cache_[pagekey] = pagekeys_.begin();
-  }
-
-  void DMMTrie::UpdatePageKey(
-      const PageKey &old_pagekey,
-      const PageKey &new_pagekey) {  // update pagekey in lru cache
-    auto it = lru_cache_.find(old_pagekey);
-    if (it != lru_cache_.end()) {
-      BasePage *basepage =
-          it->second->second;  // save the basepage indexed by old pagekey
-
-      pagekeys_.erase(it->second);  // delete old pagekey item
-      lru_cache_.erase(it);
-
-      pagekeys_.push_front(make_pair(new_pagekey, basepage));
-      lru_cache_[new_pagekey] = pagekeys_.begin();
-    }
-  }
+}
