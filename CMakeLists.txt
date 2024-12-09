@@ -1,9 +1,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 
 PROJECT(letus_prototype)
-
-find_library(jsoncpp REQUIRED)
 find_package(OpenSSL 1.1 REQUIRED)
+
 # 查找glibc
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GNUC standard glibc >= 2.34)
@@ -14,12 +13,15 @@ set(CMAKE_CXX_COMPILER "clang++")
 # set(CMAKE_CXX_COMPILER "g++")
 # set(CMAKE_CXX_COMPILER "clang")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O2 -pthread -lssl -Wall -Wno-unused-function -fPIC")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fPIC")
+# 添加 AddressSanitizer 标志
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -g -fPIC -fsanitize=address -fno-omit-frame-pointer")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 aux_source_directory(lib/ letus_lib)
 aux_source_directory(src/ letus_src)
 # aux_source_directory(workload/lib/ workload_lib)
+
 include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(lib/)
 include_directories(workload/lib/)

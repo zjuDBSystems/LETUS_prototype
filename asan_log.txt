@@ -1,0 +1,900 @@
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0000, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=00, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0001, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0002, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0003, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0006, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0007, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0008, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0010, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0016, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0029, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0030, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0043, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0052, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0060, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0066, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0073, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0078, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0090, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0127, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=01, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0163, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0187, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0206, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=02, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0210, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0280, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0438, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=04, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0485, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0688, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=06, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0753, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=07, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=0842, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=08, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=1066, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=10, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=1622, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=16, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=1893, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=18, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=2198, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=21, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=2814, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=28, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=5509, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=55, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=6388, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=63, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=6778, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=67, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=8985, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=89, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=9144, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=91, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=9444, version=0, type=1)
+Error: LatestBasePage not found in index file for PageKey: PageKey(pid=94, version=0, type=1)
+
+=================================================================
+==249==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 1208320 byte(s) in 59 object(s) allocated from:
+    #0 0x000101069c18 in __sanitizer_mz_memalign+0x78 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x55c18)
+    #1 0x0001931a6ecc in _malloc_zone_memalign+0x138 (libsystem_malloc.dylib:arm64+0x2fecc)
+    #2 0x000193193bd4 in _malloc_type_aligned_alloc_outlined+0x68 (libsystem_malloc.dylib:arm64+0x1cbd4)
+    #3 0x00019332945c in operator new(unsigned long, std::align_val_t)+0x4c (libc++abi.dylib:arm64+0x1745c)
+    #4 0x000100528ecc in LSVPS::LoadPage(PageKey const&) LSVPS.cpp:226
+    #5 0x0001004ec958 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1011
+    #6 0x0001004edadc in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:893
+    #7 0x0001004cb198 in main get_put.cc:103
+    #8 0x000192fec270  (<unknown module>)
+
+Direct leak of 1187840 byte(s) in 58 object(s) allocated from:
+    #0 0x000101069c18 in __sanitizer_mz_memalign+0x78 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x55c18)
+    #1 0x0001931a6ecc in _malloc_zone_memalign+0x138 (libsystem_malloc.dylib:arm64+0x2fecc)
+    #2 0x000193193bd4 in _malloc_type_aligned_alloc_outlined+0x68 (libsystem_malloc.dylib:arm64+0x1cbd4)
+    #3 0x00019332945c in operator new(unsigned long, std::align_val_t)+0x4c (libc++abi.dylib:arm64+0x1745c)
+    #4 0x0001004edb04 in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:897
+    #5 0x0001004cb198 in main get_put.cc:103
+    #6 0x000192fec270  (<unknown module>)
+
+Direct leak of 348160 byte(s) in 17 object(s) allocated from:
+    #0 0x000101069c18 in __sanitizer_mz_memalign+0x78 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x55c18)
+    #1 0x0001931a6ecc in _malloc_zone_memalign+0x138 (libsystem_malloc.dylib:arm64+0x2fecc)
+    #2 0x000193193bd4 in _malloc_type_aligned_alloc_outlined+0x68 (libsystem_malloc.dylib:arm64+0x1cbd4)
+    #3 0x00019332945c in operator new(unsigned long, std::align_val_t)+0x4c (libc++abi.dylib:arm64+0x1745c)
+    #4 0x000100528ecc in LSVPS::LoadPage(PageKey const&) LSVPS.cpp:226
+    #5 0x0001004ec958 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1011
+    #6 0x0001004eb8a0 in DMMTrie::Get(unsigned long long, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:807
+    #7 0x0001004cb418 in main get_put.cc:120
+    #8 0x000192fec270  (<unknown module>)
+
+Direct leak of 88 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ffc in _Znam+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ffc)
+    #1 0x0001004ca9f4 in main get_put.cc:67
+    #2 0x000192fec270  (<unknown module>)
+
+Direct leak of 88 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ffc in _Znam+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ffc)
+    #1 0x0001004caaf4 in main get_put.cc:68
+    #2 0x000192fec270  (<unknown module>)
+
+Direct leak of 80 byte(s) in 1 object(s) allocated from:
+    #0 0x000101068de4 in malloc+0x70 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x54de4)
+    #1 0x000193193a8c in _malloc_type_malloc_outlined+0x60 (libsystem_malloc.dylib:arm64+0x1ca8c)
+    #2 0x000193212898 in __Balloc_D2A+0x9c (libsystem_c.dylib:arm64+0x10898)
+    #3 0x000193212728 in __d2b_D2A+0x34 (libsystem_c.dylib:arm64+0x10728)
+    #4 0x0001932119b0 in __dtoa+0xd4 (libsystem_c.dylib:arm64+0xf9b0)
+    #5 0x000193205440 in __vfprintf+0xacc (libsystem_c.dylib:arm64+0x3440)
+    #6 0x000193230458 in _vsnprintf+0xdc (libsystem_c.dylib:arm64+0x2e458)
+    #7 0x00019320ee6c in snprintf_l+0x1c (libsystem_c.dylib:arm64+0xce6c)
+    #8 0x0001932c2d84 in std::__1::ostreambuf_iterator<char, std::__1::char_traits<char>> std::__1::num_put<char, std::__1::ostreambuf_iterator<char, std::__1::char_traits<char>>>::__do_put_floating_point[abi:ne180100]<double>(std::__1::ostreambuf_iterator<char, std::__1::char_traits<char>>, std::__1::ios_base&, char, double, char const*) const+0x8c (libc++.1.dylib:arm64+0x3ed84)
+    #9 0x0001932ae708 in std::__1::basic_ostream<char, std::__1::char_traits<char>>::operator<<(double)+0x158 (libc++.1.dylib:arm64+0x2a708)
+    #10 0x0001004cb604 in main get_put.cc:132
+    #11 0x000192fec270  (<unknown module>)
+
+Direct leak of 72 byte(s) in 1 object(s) allocated from:
+    #0 0x000101068de4 in malloc+0x70 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x54de4)
+    #1 0x000193193a8c in _malloc_type_malloc_outlined+0x60 (libsystem_malloc.dylib:arm64+0x1ca8c)
+    #2 0x000192f9eaf4 in _fetchInitializingClassList(bool)+0x34 (libobjc.A.dylib:arm64+0xaaf4)
+    #3 0x000192f9e9b8 in _setThisThreadIsInitializingClass(objc_class*)+0x1c (libobjc.A.dylib:arm64+0xa9b8)
+    #4 0x000192f9e7d4 in initializeNonMetaClass+0x234 (libobjc.A.dylib:arm64+0xa7d4)
+    #5 0x000192f9e638 in initializeNonMetaClass+0x98 (libobjc.A.dylib:arm64+0xa638)
+    #6 0x000192f9e638 in initializeNonMetaClass+0x98 (libobjc.A.dylib:arm64+0xa638)
+    #7 0x000192f9e638 in initializeNonMetaClass+0x98 (libobjc.A.dylib:arm64+0xa638)
+    #8 0x000192fbca38 in initializeAndMaybeRelock(objc_class*, objc_object*, locker_mixin<lockdebug::lock_mixin<objc_lock_base_t>>&, bool)+0xa0 (libobjc.A.dylib:arm64+0x28a38)
+    #9 0x000192f9df94 in lookUpImpOrForward+0x12c (libobjc.A.dylib:arm64+0x9f94)
+    #10 0x000192f9db80 in _objc_msgSend_uncached+0x40 (libobjc.A.dylib:arm64+0x9b80)
+    #11 0x00019306fd54 in _xpc_collect_images+0xc0 (libxpc.dylib:arm64+0x2d54)
+    #12 0x00019306f1b0 in _libxpc_initializer+0x424 (libxpc.dylib:arm64+0x21b0)
+    #13 0x0001a0e2e634 in libSystem_initializer+0xfc (libSystem.B.dylib:arm64+0x1634)
+    #14 0x000193003d50  (<unknown module>)
+    #15 0x0001930424cc  (<unknown module>)
+    #16 0x000193035c34  (<unknown module>)
+    #17 0x000192fe82d8  (<unknown module>)
+    #18 0x000193034bc8  (<unknown module>)
+    #19 0x000193041fe0  (<unknown module>)
+    #20 0x000193003bb0  (<unknown module>)
+    #21 0x00019300ebe4  (<unknown module>)
+    #22 0x0001930238b4  (<unknown module>)
+    #23 0x000192fed8c4  (<unknown module>)
+    #24 0x000192fecbbc  (<unknown module>)
+    #25 0x000192fec058  (<unknown module>)
+
+Indirect leak of 1691648 byte(s) in 59 object(s) allocated from:
+    #0 0x000101069c18 in __sanitizer_mz_memalign+0x78 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x55c18)
+    #1 0x0001931a6ecc in _malloc_zone_memalign+0x138 (libsystem_malloc.dylib:arm64+0x2fecc)
+    #2 0x000193193bd4 in _malloc_type_aligned_alloc_outlined+0x68 (libsystem_malloc.dylib:arm64+0x1cbd4)
+    #3 0x00019332945c in operator new(unsigned long, std::align_val_t)+0x4c (libc++abi.dylib:arm64+0x1745c)
+    #4 0x0001004d3944 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long, std::align_val_t>(unsigned long, std::align_val_t) new:265
+    #5 0x0001004d38e0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:284
+    #6 0x000100516210 in std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, void*>>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #7 0x000100515fec in std::__1::allocator_traits<std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, void*>>>::allocate[abi:ne190101](std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, void*>>&, unsigned long) allocator_traits.h:280
+    #8 0x000100515a98 in std::__1::unique_ptr<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, void*>, std::__1::__hash_node_destructor<std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, void*>>>> std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>>>::__construct_node_hash<std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>, std::__1::tuple<>>(unsigned long, std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>&&, std::__1::tuple<>&&) __hash_table:1816
+    #9 0x00010051510c in std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>>>::__emplace_unique_key_args<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>, std::__1::tuple<>>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>&&, std::__1::tuple<>&&) __hash_table:1523
+    #10 0x0001004f1dd8 in std::__1::unordered_map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, DeltaPage>>>::operator[](std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) unordered_map:1729
+    #11 0x0001004ef8a8 in DMMTrie::GetDeltaPage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:969
+    #12 0x000100528a34 in LSVPS::LoadPage(PageKey const&) LSVPS.cpp:202
+    #13 0x0001004ec958 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1011
+    #14 0x0001004edadc in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:893
+    #15 0x0001004cb198 in main get_put.cc:103
+    #16 0x000192fec270  (<unknown module>)
+
+Indirect leak of 634880 byte(s) in 31 object(s) allocated from:
+    #0 0x000101069c18 in __sanitizer_mz_memalign+0x78 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x55c18)
+    #1 0x0001931a6ecc in _malloc_zone_memalign+0x138 (libsystem_malloc.dylib:arm64+0x2fecc)
+    #2 0x000193193bd4 in _malloc_type_aligned_alloc_outlined+0x68 (libsystem_malloc.dylib:arm64+0x1cbd4)
+    #3 0x00019332945c in operator new(unsigned long, std::align_val_t)+0x4c (libc++abi.dylib:arm64+0x1745c)
+    #4 0x000100528ecc in LSVPS::LoadPage(PageKey const&) LSVPS.cpp:226
+    #5 0x0001004ec958 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1011
+    #6 0x0001004eb8a0 in DMMTrie::Get(unsigned long long, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:807
+    #7 0x0001004cb418 in main get_put.cc:120
+    #8 0x000192fec270  (<unknown module>)
+
+Indirect leak of 21888 byte(s) in 48 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004e981c in BasePage::UpdateDeltaItem(DeltaPage::DeltaItem) DMMTrie.cpp:698
+    #2 0x00010052a794 in LSVPS::applyDelta(BasePage*, DeltaPage const*, PageKey) LSVPS.cpp:472
+    #3 0x0001005290e8 in LSVPS::LoadPage(PageKey const&) LSVPS.cpp:236
+    #4 0x0001004ec958 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1011
+    #5 0x0001004eb8a0 in DMMTrie::Get(unsigned long long, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:807
+    #6 0x0001004cb418 in main get_put.cc:120
+    #7 0x000192fec270  (<unknown module>)
+
+Indirect leak of 20480 byte(s) in 1 object(s) allocated from:
+    #0 0x000101069c18 in __sanitizer_mz_memalign+0x78 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x55c18)
+    #1 0x0001931a6ecc in _malloc_zone_memalign+0x138 (libsystem_malloc.dylib:arm64+0x2fecc)
+    #2 0x000193193bd4 in _malloc_type_aligned_alloc_outlined+0x68 (libsystem_malloc.dylib:arm64+0x1cbd4)
+    #3 0x00019332945c in operator new(unsigned long, std::align_val_t)+0x4c (libc++abi.dylib:arm64+0x1745c)
+    #4 0x0001004edb04 in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:897
+    #5 0x0001004cb198 in main get_put.cc:103
+    #6 0x000192fec270  (<unknown module>)
+
+Indirect leak of 20352 byte(s) in 5 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x0001004ff658 in std::__1::allocator<DeltaPage::DeltaItem>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x0001004ff4b8 in std::__1::__allocation_result<std::__1::allocator_traits<std::__1::allocator<DeltaPage::DeltaItem>>::pointer> std::__1::__allocate_at_least[abi:ne190101]<std::__1::allocator<DeltaPage::DeltaItem>>(std::__1::allocator<DeltaPage::DeltaItem>&, unsigned long) allocate_at_least.h:41
+    #5 0x000100503228 in std::__1::__split_buffer<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<DeltaPage::DeltaItem>&) __split_buffer:353
+    #6 0x000100502d44 in std::__1::__split_buffer<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<DeltaPage::DeltaItem>&) __split_buffer:349
+    #7 0x000100502a24 in DeltaPage::DeltaItem* std::__1::vector<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>>::__push_back_slow_path<DeltaPage::DeltaItem>(DeltaPage::DeltaItem&&) vector:1498
+    #8 0x0001004e3d54 in std::__1::vector<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>>::push_back[abi:ne190101](DeltaPage::DeltaItem&&) vector:1526
+    #9 0x0001004e0408 in DeltaPage::AddIndexNodeUpdate(unsigned char, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:451
+    #10 0x0001004e0074 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:293
+    #11 0x0001004e82c8 in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:645
+    #12 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #13 0x0001004cb198 in main get_put.cc:103
+    #14 0x000192fec270  (<unknown module>)
+
+Indirect leak of 18240 byte(s) in 40 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004e6308 in BasePage::BasePage(DMMTrie*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) DMMTrie.cpp:560
+    #2 0x0001004e6cc0 in BasePage::BasePage(DMMTrie*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) DMMTrie.cpp:555
+    #3 0x0001004edb64 in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:897
+    #4 0x0001004cb198 in main get_put.cc:103
+    #5 0x000192fec270  (<unknown module>)
+
+Indirect leak of 13992 byte(s) in 53 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004d20d8 in void std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::construct[abi:ne190101]<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) allocator.h:165
+    #4 0x0001004d1bc0 in void std::__1::allocator_traits<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::construct[abi:ne190101]<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&, 0>(std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) allocator_traits.h:319
+    #5 0x0001004d164c in void std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::__construct_one_at_end[abi:ne190101]<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:961
+    #6 0x0001004ca5b4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::emplace_back<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1555
+    #7 0x0001004ca14c in taskGenerator(int, int, int, Task&, Task&) get_put.cc:52
+    #8 0x0001004cac1c in main get_put.cc:70
+    #9 0x000192fec270  (<unknown module>)
+
+Indirect leak of 13992 byte(s) in 53 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004d20d8 in void std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::construct[abi:ne190101]<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) allocator.h:165
+    #4 0x0001004d1bc0 in void std::__1::allocator_traits<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::construct[abi:ne190101]<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&, 0>(std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) allocator_traits.h:319
+    #5 0x0001004d164c in void std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::__construct_one_at_end[abi:ne190101]<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:961
+    #6 0x0001004ca5b4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::emplace_back<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1555
+    #7 0x0001004ca1ac in taskGenerator(int, int, int, Task&, Task&) get_put.cc:55
+    #8 0x0001004cac1c in main get_put.cc:70
+    #9 0x000192fec270  (<unknown module>)
+
+Indirect leak of 13680 byte(s) in 30 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004ea374 in BasePage::UpdateDeltaItem(DeltaPage::DeltaItem) DMMTrie.cpp:720
+    #2 0x00010052a794 in LSVPS::applyDelta(BasePage*, DeltaPage const*, PageKey) LSVPS.cpp:472
+    #3 0x0001005290e8 in LSVPS::LoadPage(PageKey const&) LSVPS.cpp:236
+    #4 0x0001004ec958 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1011
+    #5 0x0001004eb8a0 in DMMTrie::Get(unsigned long long, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:807
+    #6 0x0001004cb418 in main get_put.cc:120
+    #7 0x000192fec270  (<unknown module>)
+
+Indirect leak of 8664 byte(s) in 19 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004e7f9c in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:641
+    #2 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #3 0x0001004cb198 in main get_put.cc:103
+    #4 0x000192fec270  (<unknown module>)
+
+Indirect leak of 8664 byte(s) in 19 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004e66fc in BasePage::BasePage(DMMTrie*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) DMMTrie.cpp:567
+    #2 0x0001004e6cc0 in BasePage::BasePage(DMMTrie*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) DMMTrie.cpp:555
+    #3 0x0001004edb64 in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:897
+    #4 0x0001004cb198 in main get_put.cc:103
+    #5 0x000192fec270  (<unknown module>)
+
+Indirect leak of 8664 byte(s) in 19 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004e67a4 in BasePage::BasePage(DMMTrie*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) DMMTrie.cpp:569
+    #2 0x0001004e6cc0 in BasePage::BasePage(DMMTrie*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) DMMTrie.cpp:555
+    #3 0x0001004edb64 in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:897
+    #4 0x0001004cb198 in main get_put.cc:103
+    #5 0x000192fec270  (<unknown module>)
+
+Indirect leak of 8136 byte(s) in 113 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x00019329cd44 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__grow_by_and_replace(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, char const*)+0xa4 (libc++.1.dylib:arm64+0x18d44)
+    #2 0x00019329e728 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__assign_no_alias<true>(char const*, unsigned long)+0x60 (libc++.1.dylib:arm64+0x1a728)
+    #3 0x0001004e0e88 in IndexNode::SetChild(int, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) DMMTrie.cpp:323
+    #4 0x0001004eaa90 in BasePage::UpdateDeltaItem(DeltaPage::DeltaItem) DMMTrie.cpp:732
+    #5 0x00010052a794 in LSVPS::applyDelta(BasePage*, DeltaPage const*, PageKey) LSVPS.cpp:472
+    #6 0x0001005290e8 in LSVPS::LoadPage(PageKey const&) LSVPS.cpp:236
+    #7 0x0001004ec958 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1011
+    #8 0x0001004eb8a0 in DMMTrie::Get(unsigned long long, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:807
+    #9 0x0001004cb418 in main get_put.cc:120
+    #10 0x000192fec270  (<unknown module>)
+
+Indirect leak of 7200 byte(s) in 100 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004e183c in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:354
+    #4 0x0001004e1a14 in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:359
+    #5 0x0001004e03f8 in DeltaPage::AddIndexNodeUpdate(unsigned char, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:452
+    #6 0x0001004e0074 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:293
+    #7 0x0001004e82c8 in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:645
+    #8 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #9 0x0001004cb198 in main get_put.cc:103
+    #10 0x000192fec270  (<unknown module>)
+
+Indirect leak of 7200 byte(s) in 100 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004e195c in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:359
+    #4 0x0001004e1a14 in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:359
+    #5 0x0001004e03f8 in DeltaPage::AddIndexNodeUpdate(unsigned char, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:452
+    #6 0x0001004e0074 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:293
+    #7 0x0001004e844c in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:648
+    #8 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #9 0x0001004cb198 in main get_put.cc:103
+    #10 0x000192fec270  (<unknown module>)
+
+Indirect leak of 7200 byte(s) in 100 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004e195c in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:359
+    #4 0x0001004e1a14 in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:359
+    #5 0x0001004e03f8 in DeltaPage::AddIndexNodeUpdate(unsigned char, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:452
+    #6 0x0001004e0074 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:293
+    #7 0x0001004e82c8 in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:645
+    #8 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #9 0x0001004cb198 in main get_put.cc:103
+    #10 0x000192fec270  (<unknown module>)
+
+Indirect leak of 7200 byte(s) in 100 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004e183c in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:354
+    #4 0x0001004e1a14 in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:359
+    #5 0x0001004e03f8 in DeltaPage::AddIndexNodeUpdate(unsigned char, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:452
+    #6 0x0001004e0074 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:293
+    #7 0x0001004e844c in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:648
+    #8 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #9 0x0001004cb198 in main get_put.cc:103
+    #10 0x000192fec270  (<unknown module>)
+
+Indirect leak of 6528 byte(s) in 34 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x0001004ff658 in std::__1::allocator<DeltaPage::DeltaItem>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x0001004ff4b8 in std::__1::__allocation_result<std::__1::allocator_traits<std::__1::allocator<DeltaPage::DeltaItem>>::pointer> std::__1::__allocate_at_least[abi:ne190101]<std::__1::allocator<DeltaPage::DeltaItem>>(std::__1::allocator<DeltaPage::DeltaItem>&, unsigned long) allocate_at_least.h:41
+    #5 0x000100503228 in std::__1::__split_buffer<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<DeltaPage::DeltaItem>&) __split_buffer:353
+    #6 0x000100502d44 in std::__1::__split_buffer<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<DeltaPage::DeltaItem>&) __split_buffer:349
+    #7 0x000100502a24 in DeltaPage::DeltaItem* std::__1::vector<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>>::__push_back_slow_path<DeltaPage::DeltaItem>(DeltaPage::DeltaItem&&) vector:1498
+    #8 0x0001004e3d54 in std::__1::vector<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>>::push_back[abi:ne190101](DeltaPage::DeltaItem&&) vector:1526
+    #9 0x0001004e0408 in DeltaPage::AddIndexNodeUpdate(unsigned char, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:451
+    #10 0x0001004e0074 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:293
+    #11 0x0001004e7dac in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:635
+    #12 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #13 0x0001004cb198 in main get_put.cc:103
+    #14 0x000192fec270  (<unknown module>)
+
+Indirect leak of 5616 byte(s) in 78 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x00019329cd44 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__grow_by_and_replace(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, char const*)+0xa4 (libc++.1.dylib:arm64+0x18d44)
+    #2 0x00019329e728 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__assign_no_alias<true>(char const*, unsigned long)+0x60 (libc++.1.dylib:arm64+0x1a728)
+    #3 0x0001004e114c in IndexNode::SetHash(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) DMMTrie.cpp:337
+    #4 0x0001004ea96c in BasePage::UpdateDeltaItem(DeltaPage::DeltaItem) DMMTrie.cpp:731
+    #5 0x00010052a794 in LSVPS::applyDelta(BasePage*, DeltaPage const*, PageKey) LSVPS.cpp:472
+    #6 0x0001005290e8 in LSVPS::LoadPage(PageKey const&) LSVPS.cpp:236
+    #7 0x0001004ec958 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1011
+    #8 0x0001004eb8a0 in DMMTrie::Get(unsigned long long, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:807
+    #9 0x0001004cb418 in main get_put.cc:120
+    #10 0x000192fec270  (<unknown module>)
+
+Indirect leak of 4224 byte(s) in 44 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004e9b5c in BasePage::UpdateDeltaItem(DeltaPage::DeltaItem) DMMTrie.cpp:706
+    #2 0x00010052a794 in LSVPS::applyDelta(BasePage*, DeltaPage const*, PageKey) LSVPS.cpp:472
+    #3 0x0001005290e8 in LSVPS::LoadPage(PageKey const&) LSVPS.cpp:236
+    #4 0x0001004ec958 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1011
+    #5 0x0001004eb8a0 in DMMTrie::Get(unsigned long long, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:807
+    #6 0x0001004cb418 in main get_put.cc:120
+    #7 0x000192fec270  (<unknown module>)
+
+Indirect leak of 4176 byte(s) in 58 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x00019329cd44 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__grow_by_and_replace(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, char const*)+0xa4 (libc++.1.dylib:arm64+0x18d44)
+    #2 0x00019329e728 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__assign_no_alias<true>(char const*, unsigned long)+0x60 (libc++.1.dylib:arm64+0x1a728)
+    #3 0x0001004dff78 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:285
+    #4 0x0001004e82c8 in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:645
+    #5 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #6 0x0001004cb198 in main get_put.cc:103
+    #7 0x000192fec270  (<unknown module>)
+
+Indirect leak of 3840 byte(s) in 40 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004e623c in BasePage::BasePage(DMMTrie*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) DMMTrie.cpp:559
+    #2 0x0001004e6cc0 in BasePage::BasePage(DMMTrie*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) DMMTrie.cpp:555
+    #3 0x0001004edb64 in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:897
+    #4 0x0001004cb198 in main get_put.cc:103
+    #5 0x000192fec270  (<unknown module>)
+
+Indirect leak of 3600 byte(s) in 50 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004e195c in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:359
+    #4 0x0001004e1a14 in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:359
+    #5 0x0001004e03f8 in DeltaPage::AddIndexNodeUpdate(unsigned char, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:452
+    #6 0x0001004e0074 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:293
+    #7 0x0001004e7dac in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:635
+    #8 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #9 0x0001004cb198 in main get_put.cc:103
+    #10 0x000192fec270  (<unknown module>)
+
+Indirect leak of 3600 byte(s) in 50 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004e183c in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:354
+    #4 0x0001004e1a14 in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:359
+    #5 0x0001004e03f8 in DeltaPage::AddIndexNodeUpdate(unsigned char, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:452
+    #6 0x0001004e0074 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:293
+    #7 0x0001004e7dac in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:635
+    #8 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #9 0x0001004cb198 in main get_put.cc:103
+    #10 0x000192fec270  (<unknown module>)
+
+Indirect leak of 3600 byte(s) in 50 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x00019329cd44 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__grow_by_and_replace(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, char const*)+0xa4 (libc++.1.dylib:arm64+0x18d44)
+    #2 0x00019329e728 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__assign_no_alias<true>(char const*, unsigned long)+0x60 (libc++.1.dylib:arm64+0x1a728)
+    #3 0x0001004dff78 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:285
+    #4 0x0001004e7dac in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:635
+    #5 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #6 0x0001004cb198 in main get_put.cc:103
+    #7 0x000192fec270  (<unknown module>)
+
+Indirect leak of 3600 byte(s) in 50 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004e183c in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:354
+    #4 0x0001004e1a14 in DeltaPage::DeltaItem::DeltaItem(unsigned char, bool, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:359
+    #5 0x0001004dd0b0 in DeltaPage::AddLeafNodeUpdate(unsigned char, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long) DMMTrie.cpp:461
+    #6 0x0001004dccdc in LeafNode::UpdateNode(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:143
+    #7 0x0001004e7c28 in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:632
+    #8 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #9 0x0001004cb198 in main get_put.cc:103
+    #10 0x000192fec270  (<unknown module>)
+
+Indirect leak of 3600 byte(s) in 50 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001932a3ed0 in void std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_with_size[abi:ne180100]<char*, char*>(char*, char*, unsigned long)+0x60 (libc++.1.dylib:arm64+0x1fed0)
+    #2 0x0001004db0f0 in std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char>>::str[abi:ne190101]() const sstream:1217
+    #3 0x0001004da690 in HashFunction(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:51
+    #4 0x0001004dcb9c in LeafNode::UpdateNode(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:141
+    #5 0x0001004e7c28 in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:632
+    #6 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #7 0x0001004cb198 in main get_put.cc:103
+    #8 0x000192fec270  (<unknown module>)
+
+Indirect leak of 3456 byte(s) in 6 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x0001004ff658 in std::__1::allocator<DeltaPage::DeltaItem>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x0001004ff4b8 in std::__1::__allocation_result<std::__1::allocator_traits<std::__1::allocator<DeltaPage::DeltaItem>>::pointer> std::__1::__allocate_at_least[abi:ne190101]<std::__1::allocator<DeltaPage::DeltaItem>>(std::__1::allocator<DeltaPage::DeltaItem>&, unsigned long) allocate_at_least.h:41
+    #5 0x000100503228 in std::__1::__split_buffer<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<DeltaPage::DeltaItem>&) __split_buffer:353
+    #6 0x000100502d44 in std::__1::__split_buffer<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<DeltaPage::DeltaItem>&) __split_buffer:349
+    #7 0x000100502a24 in DeltaPage::DeltaItem* std::__1::vector<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>>::__push_back_slow_path<DeltaPage::DeltaItem>(DeltaPage::DeltaItem&&) vector:1498
+    #8 0x0001004e3d54 in std::__1::vector<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>>::push_back[abi:ne190101](DeltaPage::DeltaItem&&) vector:1526
+    #9 0x0001004dd0c4 in DeltaPage::AddLeafNodeUpdate(unsigned char, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long long, unsigned long long, unsigned long long) DMMTrie.cpp:460
+    #10 0x0001004dccdc in LeafNode::UpdateNode(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:143
+    #11 0x0001004e7c28 in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:632
+    #12 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #13 0x0001004cb198 in main get_put.cc:103
+    #14 0x000192fec270  (<unknown module>)
+
+Indirect leak of 3304 byte(s) in 59 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x00010051a584 in std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, void*>>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x00010051a360 in std::__1::allocator_traits<std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, void*>>>::allocate[abi:ne190101](std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, void*>>&, unsigned long) allocator_traits.h:280
+    #5 0x000100519e70 in std::__1::unique_ptr<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, void*>, std::__1::__hash_node_destructor<std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, void*>>>> std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>>>::__construct_node_hash<std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>, std::__1::tuple<>>(unsigned long, std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>&&, std::__1::tuple<>&&) __hash_table:1816
+    #6 0x000100519504 in std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>>>::__emplace_unique_key_args<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>, std::__1::tuple<>>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>&&, std::__1::tuple<>&&) __hash_table:1523
+    #7 0x0001004f2d9c in std::__1::unordered_map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::pair<unsigned long long, unsigned long long>>>>::operator[](std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) unordered_map:1729
+    #8 0x0001004e8eb4 in DMMTrie::UpdatePageVersion(PageKey, unsigned long long, unsigned long long) DMMTrie.cpp:992
+    #9 0x0001004e8a18 in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:686
+    #10 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #11 0x0001004cb198 in main get_put.cc:103
+    #12 0x000192fec270  (<unknown module>)
+
+Indirect leak of 3168 byte(s) in 44 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x00019329cd44 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__grow_by_and_replace(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, char const*)+0xa4 (libc++.1.dylib:arm64+0x18d44)
+    #2 0x00019329e728 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__assign_no_alias<true>(char const*, unsigned long)+0x60 (libc++.1.dylib:arm64+0x1a728)
+    #3 0x0001004dd518 in LeafNode::SetHash(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) DMMTrie.cpp:159
+    #4 0x0001004ea19c in BasePage::UpdateDeltaItem(DeltaPage::DeltaItem) DMMTrie.cpp:715
+    #5 0x00010052a794 in LSVPS::applyDelta(BasePage*, DeltaPage const*, PageKey) LSVPS.cpp:472
+    #6 0x0001005290e8 in LSVPS::LoadPage(PageKey const&) LSVPS.cpp:236
+    #7 0x0001004ec958 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1011
+    #8 0x0001004eb8a0 in DMMTrie::Get(unsigned long long, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:807
+    #9 0x0001004cb418 in main get_put.cc:120
+    #10 0x000192fec270  (<unknown module>)
+
+Indirect leak of 2880 byte(s) in 40 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001932a3ed0 in void std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_with_size[abi:ne180100]<char*, char*>(char*, char*, unsigned long)+0x60 (libc++.1.dylib:arm64+0x1fed0)
+    #2 0x0001004db0f0 in std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char>>::str[abi:ne190101]() const sstream:1217
+    #3 0x0001004da690 in HashFunction(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:51
+    #4 0x0001004e0018 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:291
+    #5 0x0001004e7dac in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:635
+    #6 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #7 0x0001004cb198 in main get_put.cc:103
+    #8 0x000192fec270  (<unknown module>)
+
+Indirect leak of 2736 byte(s) in 38 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001932a3ed0 in void std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_with_size[abi:ne180100]<char*, char*>(char*, char*, unsigned long)+0x60 (libc++.1.dylib:arm64+0x1fed0)
+    #2 0x0001004db0f0 in std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char>>::str[abi:ne190101]() const sstream:1217
+    #3 0x0001004da690 in HashFunction(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:51
+    #4 0x0001004e0018 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:291
+    #5 0x0001004e82c8 in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:645
+    #6 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #7 0x0001004cb198 in main get_put.cc:103
+    #8 0x000192fec270  (<unknown module>)
+
+Indirect leak of 2736 byte(s) in 38 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x00019329cd44 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__grow_by_and_replace(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, char const*)+0xa4 (libc++.1.dylib:arm64+0x18d44)
+    #2 0x00019329e728 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__assign_no_alias<true>(char const*, unsigned long)+0x60 (libc++.1.dylib:arm64+0x1a728)
+    #3 0x0001004dff78 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:285
+    #4 0x0001004e844c in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:648
+    #5 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #6 0x0001004cb198 in main get_put.cc:103
+    #7 0x000192fec270  (<unknown module>)
+
+Indirect leak of 2688 byte(s) in 14 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x0001004ff658 in std::__1::allocator<DeltaPage::DeltaItem>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x0001004ff4b8 in std::__1::__allocation_result<std::__1::allocator_traits<std::__1::allocator<DeltaPage::DeltaItem>>::pointer> std::__1::__allocate_at_least[abi:ne190101]<std::__1::allocator<DeltaPage::DeltaItem>>(std::__1::allocator<DeltaPage::DeltaItem>&, unsigned long) allocate_at_least.h:41
+    #5 0x000100503228 in std::__1::__split_buffer<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<DeltaPage::DeltaItem>&) __split_buffer:353
+    #6 0x000100502d44 in std::__1::__split_buffer<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<DeltaPage::DeltaItem>&) __split_buffer:349
+    #7 0x000100502a24 in DeltaPage::DeltaItem* std::__1::vector<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>>::__push_back_slow_path<DeltaPage::DeltaItem>(DeltaPage::DeltaItem&&) vector:1498
+    #8 0x0001004e3d54 in std::__1::vector<DeltaPage::DeltaItem, std::__1::allocator<DeltaPage::DeltaItem>>::push_back[abi:ne190101](DeltaPage::DeltaItem&&) vector:1526
+    #9 0x0001004e0408 in DeltaPage::AddIndexNodeUpdate(unsigned char, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:451
+    #10 0x0001004e0074 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:293
+    #11 0x0001004e844c in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:648
+    #12 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #13 0x0001004cb198 in main get_put.cc:103
+    #14 0x000192fec270  (<unknown module>)
+
+Indirect leak of 2232 byte(s) in 31 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x000100522f14 in std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x000100522d6c in std::__1::allocator_traits<std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>>>::allocate[abi:ne190101](std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>>&, unsigned long) allocator_traits.h:280
+    #5 0x0001005228cc in std::__1::unique_ptr<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>, std::__1::__hash_node_destructor<std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>>>> std::__1::__hash_table<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::__unordered_map_hasher<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, PageKey::Hash, std::__1::equal_to<PageKey>, true>, std::__1::__unordered_map_equal<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::equal_to<PageKey>, PageKey::Hash, true>, std::__1::allocator<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>>>::__construct_node_hash<std::__1::piecewise_construct_t const&, std::__1::tuple<PageKey const&>, std::__1::tuple<>>(unsigned long, std::__1::piecewise_construct_t const&, std::__1::tuple<PageKey const&>&&, std::__1::tuple<>&&) __hash_table:1816
+    #6 0x000100521f60 in std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::__unordered_map_hasher<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, PageKey::Hash, std::__1::equal_to<PageKey>, true>, std::__1::__unordered_map_equal<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::equal_to<PageKey>, PageKey::Hash, true>, std::__1::allocator<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>>>::__emplace_unique_key_args<PageKey, std::__1::piecewise_construct_t const&, std::__1::tuple<PageKey const&>, std::__1::tuple<>>(PageKey const&, std::__1::piecewise_construct_t const&, std::__1::tuple<PageKey const&>&&, std::__1::tuple<>&&) __hash_table:1523
+    #7 0x0001004f3c90 in std::__1::unordered_map<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>, PageKey::Hash, std::__1::equal_to<PageKey>, std::__1::allocator<std::__1::pair<PageKey const, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>>>::operator[](PageKey const&) unordered_map:1729
+    #8 0x0001004ef440 in DMMTrie::PutPage(PageKey const&, BasePage*) DMMTrie.cpp:1038
+    #9 0x0001004ec9a8 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1019
+    #10 0x0001004eb8a0 in DMMTrie::Get(unsigned long long, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:807
+    #11 0x0001004cb418 in main get_put.cc:120
+    #12 0x000192fec270  (<unknown module>)
+
+Indirect leak of 2232 byte(s) in 31 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x00010052179c in std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x000100521740 in std::__1::allocator_traits<std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>>::allocate[abi:ne190101](std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>&, unsigned long) allocator_traits.h:280
+    #5 0x0001005216dc in std::__1::__allocation_guard<std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>>::__allocation_guard[abi:ne190101]<std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>>(std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>, unsigned long) allocation_guard.h:56
+    #6 0x00010052141c in std::__1::__allocation_guard<std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>>::__allocation_guard[abi:ne190101]<std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>>(std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>, unsigned long) allocation_guard.h:57
+    #7 0x000100521040 in std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>* std::__1::__list_imp<std::__1::pair<PageKey, BasePage*>, std::__1::allocator<std::__1::pair<PageKey, BasePage*>>>::__create_node[abi:ne190101]<std::__1::pair<PageKey, BasePage*>>(std::__1::__list_node_base<std::__1::pair<PageKey, BasePage*>, void*>*, std::__1::__list_node_base<std::__1::pair<PageKey, BasePage*>, void*>*, std::__1::pair<PageKey, BasePage*>&&) list:553
+    #8 0x0001004f3a18 in std::__1::list<std::__1::pair<PageKey, BasePage*>, std::__1::allocator<std::__1::pair<PageKey, BasePage*>>>::push_front(std::__1::pair<PageKey, BasePage*>&&) list:1244
+    #9 0x0001004ef3e4 in DMMTrie::PutPage(PageKey const&, BasePage*) DMMTrie.cpp:1035
+    #10 0x0001004ec9a8 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1019
+    #11 0x0001004eb8a0 in DMMTrie::Get(unsigned long long, unsigned long long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:807
+    #12 0x0001004cb418 in main get_put.cc:120
+    #13 0x000192fec270  (<unknown module>)
+
+Indirect leak of 1848 byte(s) in 7 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004d20d8 in void std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::construct[abi:ne190101]<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) allocator.h:165
+    #4 0x0001004d1bc0 in void std::__1::allocator_traits<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::construct[abi:ne190101]<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&, 0>(std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) allocator_traits.h:319
+    #5 0x0001004d196c in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>* std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::__emplace_back_slow_path<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1538
+    #6 0x0001004ca5d0 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::emplace_back<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1558
+    #7 0x0001004ca1ac in taskGenerator(int, int, int, Task&, Task&) get_put.cc:55
+    #8 0x0001004cac1c in main get_put.cc:70
+    #9 0x000192fec270  (<unknown module>)
+
+Indirect leak of 1848 byte(s) in 7 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004d20d8 in void std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::construct[abi:ne190101]<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) allocator.h:165
+    #4 0x0001004d1bc0 in void std::__1::allocator_traits<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::construct[abi:ne190101]<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&, 0>(std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) allocator_traits.h:319
+    #5 0x0001004d196c in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>* std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::__emplace_back_slow_path<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1538
+    #6 0x0001004ca5d0 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::emplace_back<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1558
+    #7 0x0001004ca14c in taskGenerator(int, int, int, Task&, Task&) get_put.cc:52
+    #8 0x0001004cac1c in main get_put.cc:70
+    #9 0x000192fec270  (<unknown module>)
+
+Indirect leak of 1536 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x0001004d3864 in std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x0001004d36f4 in std::__1::__allocation_result<std::__1::allocator_traits<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::pointer> std::__1::__allocate_at_least[abi:ne190101]<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>(std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&, unsigned long) allocate_at_least.h:41
+    #5 0x0001004d3494 in std::__1::__split_buffer<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&) __split_buffer:353
+    #6 0x0001004d26d0 in std::__1::__split_buffer<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&) __split_buffer:349
+    #7 0x0001004d1948 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>* std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::__emplace_back_slow_path<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1536
+    #8 0x0001004ca5d0 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::emplace_back<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1558
+    #9 0x0001004ca1ac in taskGenerator(int, int, int, Task&, Task&) get_put.cc:55
+    #10 0x0001004cac1c in main get_put.cc:70
+    #11 0x000192fec270  (<unknown module>)
+
+Indirect leak of 1536 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x0001004d3864 in std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x0001004d36f4 in std::__1::__allocation_result<std::__1::allocator_traits<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::pointer> std::__1::__allocate_at_least[abi:ne190101]<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>(std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&, unsigned long) allocate_at_least.h:41
+    #5 0x0001004d3494 in std::__1::__split_buffer<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&) __split_buffer:353
+    #6 0x0001004d26d0 in std::__1::__split_buffer<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&) __split_buffer:349
+    #7 0x0001004d1948 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>* std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::__emplace_back_slow_path<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1536
+    #8 0x0001004ca5d0 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::emplace_back<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1558
+    #9 0x0001004ca14c in taskGenerator(int, int, int, Task&, Task&) get_put.cc:52
+    #10 0x0001004cac1c in main get_put.cc:70
+    #11 0x000192fec270  (<unknown module>)
+
+Indirect leak of 1536 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x0001004d3864 in std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x0001004d36f4 in std::__1::__allocation_result<std::__1::allocator_traits<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::pointer> std::__1::__allocate_at_least[abi:ne190101]<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>(std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&, unsigned long) allocate_at_least.h:41
+    #5 0x0001004d3494 in std::__1::__split_buffer<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&) __split_buffer:353
+    #6 0x0001004d26d0 in std::__1::__split_buffer<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&) __split_buffer:349
+    #7 0x0001004d1948 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>* std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::__emplace_back_slow_path<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1536
+    #8 0x0001004ca5d0 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::emplace_back<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1558
+    #9 0x0001004ca138 in taskGenerator(int, int, int, Task&, Task&) get_put.cc:51
+    #10 0x0001004cac1c in main get_put.cc:70
+    #11 0x000192fec270  (<unknown module>)
+
+Indirect leak of 1536 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x0001004d3864 in std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x0001004d36f4 in std::__1::__allocation_result<std::__1::allocator_traits<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::pointer> std::__1::__allocate_at_least[abi:ne190101]<std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>(std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&, unsigned long) allocate_at_least.h:41
+    #5 0x0001004d3494 in std::__1::__split_buffer<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&) __split_buffer:353
+    #6 0x0001004d26d0 in std::__1::__split_buffer<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>&) __split_buffer:349
+    #7 0x0001004d1948 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>* std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::__emplace_back_slow_path<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1536
+    #8 0x0001004ca5d0 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>& std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>::emplace_back<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) vector:1558
+    #9 0x0001004ca198 in taskGenerator(int, int, int, Task&, Task&) get_put.cc:54
+    #10 0x0001004cac1c in main get_put.cc:70
+    #11 0x000192fec270  (<unknown module>)
+
+Indirect leak of 1368 byte(s) in 19 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001932a3ed0 in void std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_with_size[abi:ne180100]<char*, char*>(char*, char*, unsigned long)+0x60 (libc++.1.dylib:arm64+0x1fed0)
+    #2 0x0001004db0f0 in std::__1::basic_stringstream<char, std::__1::char_traits<char>, std::__1::allocator<char>>::str[abi:ne190101]() const sstream:1217
+    #3 0x0001004da690 in HashFunction(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:51
+    #4 0x0001004e0018 in IndexNode::UpdateNode(unsigned long long, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned char, DeltaPage*) DMMTrie.cpp:291
+    #5 0x0001004e844c in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:648
+    #6 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #7 0x0001004cb198 in main get_put.cc:103
+    #8 0x000192fec270  (<unknown module>)
+
+Indirect leak of 960 byte(s) in 10 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004e78bc in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:628
+    #2 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #3 0x0001004cb198 in main get_put.cc:103
+    #4 0x000192fec270  (<unknown module>)
+
+Indirect leak of 776 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x00010051bc10 in std::__1::allocator<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, void*>*>*>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x00010051b9d8 in std::__1::allocator_traits<std::__1::allocator<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, void*>*>*>>::allocate[abi:ne190101](std::__1::allocator<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, void*>*>*>&, unsigned long) allocator_traits.h:280
+    #5 0x00010051b3d8 in void std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>>>::__do_rehash<true>(unsigned long) __hash_table:1706
+    #6 0x00010051b0b0 in void std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>>>::__rehash<true>(unsigned long) __hash_table:1691
+    #7 0x00010051a138 in std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>>>::__rehash_unique[abi:ne190101](unsigned long) __hash_table:875
+    #8 0x000100519728 in std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>>>>::__emplace_unique_key_args<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>, std::__1::tuple<>>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>&&, std::__1::tuple<>&&) __hash_table:1525
+    #9 0x0001004f2d9c in std::__1::unordered_map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::pair<unsigned long long, unsigned long long>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::pair<unsigned long long, unsigned long long>>>>::operator[](std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) unordered_map:1729
+    #10 0x0001004e8eb4 in DMMTrie::UpdatePageVersion(PageKey, unsigned long long, unsigned long long) DMMTrie.cpp:992
+    #11 0x0001004e8a18 in BasePage::UpdatePage(unsigned long long, std::__1::tuple<unsigned long long, unsigned long long, unsigned long long>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, DeltaPage*, PageKey) DMMTrie.cpp:686
+    #12 0x0001004edd2c in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:902
+    #13 0x0001004cb198 in main get_put.cc:103
+    #14 0x000192fec270  (<unknown module>)
+
+Indirect leak of 776 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x000100517afc in std::__1::allocator<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, void*>*>*>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x0001005178c4 in std::__1::allocator_traits<std::__1::allocator<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, void*>*>*>>::allocate[abi:ne190101](std::__1::allocator<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, void*>*>*>&, unsigned long) allocator_traits.h:280
+    #5 0x00010051725c in void std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>>>::__do_rehash<true>(unsigned long) __hash_table:1706
+    #6 0x000100516f34 in void std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>>>::__rehash<true>(unsigned long) __hash_table:1691
+    #7 0x000100515d60 in std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>>>::__rehash_unique[abi:ne190101](unsigned long) __hash_table:875
+    #8 0x000100515338 in std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::__unordered_map_hasher<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::__unordered_map_equal<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, true>, std::__1::allocator<std::__1::__hash_value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage>>>::__emplace_unique_key_args<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>, std::__1::tuple<>>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::piecewise_construct_t const&, std::__1::tuple<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&>&&, std::__1::tuple<>&&) __hash_table:1525
+    #9 0x0001004f1dd8 in std::__1::unordered_map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, DeltaPage, std::__1::hash<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::equal_to<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, DeltaPage>>>::operator[](std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) unordered_map:1729
+    #10 0x0001004ef8a8 in DMMTrie::GetDeltaPage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) DMMTrie.cpp:969
+    #11 0x000100528a34 in LSVPS::LoadPage(PageKey const&) LSVPS.cpp:202
+    #12 0x0001004ec958 in DMMTrie::GetPage(PageKey const&) DMMTrie.cpp:1011
+    #13 0x0001004edadc in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:893
+    #14 0x0001004cb198 in main get_put.cc:103
+    #15 0x000192fec270  (<unknown module>)
+
+Indirect leak of 376 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x000100524140 in std::__1::allocator<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>*>*>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x000100523f08 in std::__1::allocator_traits<std::__1::allocator<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>*>*>>::allocate[abi:ne190101](std::__1::allocator<std::__1::__hash_node_base<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>*>*>&, unsigned long) allocator_traits.h:280
+    #5 0x000100523908 in void std::__1::__hash_table<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::__unordered_map_hasher<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, PageKey::Hash, std::__1::equal_to<PageKey>, true>, std::__1::__unordered_map_equal<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::equal_to<PageKey>, PageKey::Hash, true>, std::__1::allocator<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>>>::__do_rehash<true>(unsigned long) __hash_table:1706
+    #6 0x0001005235e0 in void std::__1::__hash_table<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::__unordered_map_hasher<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, PageKey::Hash, std::__1::equal_to<PageKey>, true>, std::__1::__unordered_map_equal<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::equal_to<PageKey>, PageKey::Hash, true>, std::__1::allocator<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>>>::__rehash<true>(unsigned long) __hash_table:1691
+    #7 0x000100522b94 in std::__1::__hash_table<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::__unordered_map_hasher<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, PageKey::Hash, std::__1::equal_to<PageKey>, true>, std::__1::__unordered_map_equal<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::equal_to<PageKey>, PageKey::Hash, true>, std::__1::allocator<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>>>::__rehash_unique[abi:ne190101](unsigned long) __hash_table:875
+    #8 0x000100522184 in std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::__unordered_map_hasher<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, PageKey::Hash, std::__1::equal_to<PageKey>, true>, std::__1::__unordered_map_equal<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::equal_to<PageKey>, PageKey::Hash, true>, std::__1::allocator<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>>>::__emplace_unique_key_args<PageKey, std::__1::piecewise_construct_t const&, std::__1::tuple<PageKey const&>, std::__1::tuple<>>(PageKey const&, std::__1::piecewise_construct_t const&, std::__1::tuple<PageKey const&>&&, std::__1::tuple<>&&) __hash_table:1525
+    #9 0x0001004f3c90 in std::__1::unordered_map<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>, PageKey::Hash, std::__1::equal_to<PageKey>, std::__1::allocator<std::__1::pair<PageKey const, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>>>::operator[](PageKey const&) unordered_map:1729
+    #10 0x0001004ef440 in DMMTrie::PutPage(PageKey const&, BasePage*) DMMTrie.cpp:1038
+    #11 0x0001004edba8 in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:898
+    #12 0x0001004cb198 in main get_put.cc:103
+    #13 0x000192fec270  (<unknown module>)
+
+Indirect leak of 256 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x0001004d6100 in std::__1::allocator<int>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x0001004d5f94 in std::__1::__allocation_result<std::__1::allocator_traits<std::__1::allocator<int>>::pointer> std::__1::__allocate_at_least[abi:ne190101]<std::__1::allocator<int>>(std::__1::allocator<int>&, unsigned long) allocate_at_least.h:41
+    #5 0x0001004d5d44 in std::__1::__split_buffer<int, std::__1::allocator<int>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<int>&) __split_buffer:353
+    #6 0x0001004d5548 in std::__1::__split_buffer<int, std::__1::allocator<int>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<int>&) __split_buffer:349
+    #7 0x0001004d46a0 in int* std::__1::vector<int, std::__1::allocator<int>>::__emplace_back_slow_path<int>(int&&) vector:1536
+    #8 0x0001004ca6fc in int& std::__1::vector<int, std::__1::allocator<int>>::emplace_back<int>(int&&) vector:1558
+    #9 0x0001004ca1d4 in taskGenerator(int, int, int, Task&, Task&) get_put.cc:56
+    #10 0x0001004cac1c in main get_put.cc:70
+    #11 0x000192fec270  (<unknown module>)
+
+Indirect leak of 256 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x0001004d6100 in std::__1::allocator<int>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x0001004d5f94 in std::__1::__allocation_result<std::__1::allocator_traits<std::__1::allocator<int>>::pointer> std::__1::__allocate_at_least[abi:ne190101]<std::__1::allocator<int>>(std::__1::allocator<int>&, unsigned long) allocate_at_least.h:41
+    #5 0x0001004d5d44 in std::__1::__split_buffer<int, std::__1::allocator<int>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<int>&) __split_buffer:353
+    #6 0x0001004d5548 in std::__1::__split_buffer<int, std::__1::allocator<int>&>::__split_buffer(unsigned long, unsigned long, std::__1::allocator<int>&) __split_buffer:349
+    #7 0x0001004d46a0 in int* std::__1::vector<int, std::__1::allocator<int>>::__emplace_back_slow_path<int>(int&&) vector:1536
+    #8 0x0001004ca6fc in int& std::__1::vector<int, std::__1::allocator<int>>::emplace_back<int>(int&&) vector:1558
+    #9 0x0001004ca174 in taskGenerator(int, int, int, Task&, Task&) get_put.cc:53
+    #10 0x0001004cac1c in main get_put.cc:70
+    #11 0x000192fec270  (<unknown module>)
+
+Indirect leak of 240 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004cad2c in main get_put.cc:82
+    #2 0x000192fec270  (<unknown module>)
+
+Indirect leak of 88 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004cac80 in main get_put.cc:78
+    #2 0x000192fec270  (<unknown module>)
+
+Indirect leak of 72 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x000100522f14 in std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x000100522d6c in std::__1::allocator_traits<std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>>>::allocate[abi:ne190101](std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>>&, unsigned long) allocator_traits.h:280
+    #5 0x0001005228cc in std::__1::unique_ptr<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>, std::__1::__hash_node_destructor<std::__1::allocator<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>>>> std::__1::__hash_table<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::__unordered_map_hasher<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, PageKey::Hash, std::__1::equal_to<PageKey>, true>, std::__1::__unordered_map_equal<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::equal_to<PageKey>, PageKey::Hash, true>, std::__1::allocator<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>>>::__construct_node_hash<std::__1::piecewise_construct_t const&, std::__1::tuple<PageKey const&>, std::__1::tuple<>>(unsigned long, std::__1::piecewise_construct_t const&, std::__1::tuple<PageKey const&>&&, std::__1::tuple<>&&) __hash_table:1816
+    #6 0x000100521f60 in std::__1::pair<std::__1::__hash_iterator<std::__1::__hash_node<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, void*>*>, bool> std::__1::__hash_table<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::__unordered_map_hasher<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, PageKey::Hash, std::__1::equal_to<PageKey>, true>, std::__1::__unordered_map_equal<PageKey, std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>, std::__1::equal_to<PageKey>, PageKey::Hash, true>, std::__1::allocator<std::__1::__hash_value_type<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>>>::__emplace_unique_key_args<PageKey, std::__1::piecewise_construct_t const&, std::__1::tuple<PageKey const&>, std::__1::tuple<>>(PageKey const&, std::__1::piecewise_construct_t const&, std::__1::tuple<PageKey const&>&&, std::__1::tuple<>&&) __hash_table:1523
+    #7 0x0001004f3c90 in std::__1::unordered_map<PageKey, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>, PageKey::Hash, std::__1::equal_to<PageKey>, std::__1::allocator<std::__1::pair<PageKey const, std::__1::__list_iterator<std::__1::pair<PageKey, BasePage*>, void*>>>>::operator[](PageKey const&) unordered_map:1729
+    #8 0x0001004efddc in DMMTrie::UpdatePageKey(PageKey const&, PageKey const&) DMMTrie.cpp:1053
+    #9 0x0001004edd48 in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:904
+    #10 0x0001004cb198 in main get_put.cc:103
+    #11 0x000192fec270  (<unknown module>)
+
+Indirect leak of 72 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004d3968 in void* std::__1::__libcpp_operator_new[abi:ne190101]<unsigned long>(unsigned long) new:265
+    #2 0x0001004d38f0 in std::__1::__libcpp_allocate[abi:ne190101](unsigned long, unsigned long) new:289
+    #3 0x00010052179c in std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>::allocate[abi:ne190101](unsigned long) allocator.h:118
+    #4 0x000100521740 in std::__1::allocator_traits<std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>>::allocate[abi:ne190101](std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>&, unsigned long) allocator_traits.h:280
+    #5 0x0001005216dc in std::__1::__allocation_guard<std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>>::__allocation_guard[abi:ne190101]<std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>>(std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>, unsigned long) allocation_guard.h:56
+    #6 0x00010052141c in std::__1::__allocation_guard<std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>>::__allocation_guard[abi:ne190101]<std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>>(std::__1::allocator<std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>>, unsigned long) allocation_guard.h:57
+    #7 0x000100521040 in std::__1::__list_node<std::__1::pair<PageKey, BasePage*>, void*>* std::__1::__list_imp<std::__1::pair<PageKey, BasePage*>, std::__1::allocator<std::__1::pair<PageKey, BasePage*>>>::__create_node[abi:ne190101]<std::__1::pair<PageKey, BasePage*>>(std::__1::__list_node_base<std::__1::pair<PageKey, BasePage*>, void*>*, std::__1::__list_node_base<std::__1::pair<PageKey, BasePage*>, void*>*, std::__1::pair<PageKey, BasePage*>&&) list:553
+    #8 0x0001004f3a18 in std::__1::list<std::__1::pair<PageKey, BasePage*>, std::__1::allocator<std::__1::pair<PageKey, BasePage*>>>::push_front(std::__1::pair<PageKey, BasePage*>&&) list:1244
+    #9 0x0001004efd7c in DMMTrie::UpdatePageKey(PageKey const&, PageKey const&) DMMTrie.cpp:1052
+    #10 0x0001004edd48 in DMMTrie::Commit(unsigned long long) DMMTrie.cpp:904
+    #11 0x0001004cb198 in main get_put.cc:103
+    #12 0x000192fec270  (<unknown module>)
+
+Indirect leak of 48 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x0001004caccc in main get_put.cc:81
+    #2 0x000192fec270  (<unknown module>)
+
+Indirect leak of 36 byte(s) in 1 object(s) allocated from:
+    #0 0x000101068de4 in malloc+0x70 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x54de4)
+    #1 0x000193193a8c in _malloc_type_malloc_outlined+0x60 (libsystem_malloc.dylib:arm64+0x1ca8c)
+    #2 0x000193212904 in __Balloc_D2A+0x108 (libsystem_c.dylib:arm64+0x10904)
+    #3 0x000193212728 in __d2b_D2A+0x34 (libsystem_c.dylib:arm64+0x10728)
+    #4 0x0001932119b0 in __dtoa+0xd4 (libsystem_c.dylib:arm64+0xf9b0)
+    #5 0x000193205440 in __vfprintf+0xacc (libsystem_c.dylib:arm64+0x3440)
+    #6 0x000193230458 in _vsnprintf+0xdc (libsystem_c.dylib:arm64+0x2e458)
+    #7 0x00019320ee6c in snprintf_l+0x1c (libsystem_c.dylib:arm64+0xce6c)
+    #8 0x0001932c2d84 in std::__1::ostreambuf_iterator<char, std::__1::char_traits<char>> std::__1::num_put<char, std::__1::ostreambuf_iterator<char, std::__1::char_traits<char>>>::__do_put_floating_point[abi:ne180100]<double>(std::__1::ostreambuf_iterator<char, std::__1::char_traits<char>>, std::__1::ios_base&, char, double, char const*) const+0x8c (libc++.1.dylib:arm64+0x3ed84)
+    #9 0x0001932ae708 in std::__1::basic_ostream<char, std::__1::char_traits<char>>::operator<<(double)+0x158 (libc++.1.dylib:arm64+0x2a708)
+    #10 0x0001004cb604 in main get_put.cc:132
+    #11 0x000192fec270  (<unknown module>)
+
+Indirect leak of 32 byte(s) in 1 object(s) allocated from:
+    #0 0x000101077ee4 in _Znwm+0x6c (libclang_rt.asan_osx_dynamic.dylib:arm64+0x63ee4)
+    #1 0x000193296e80 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::__init_copy_ctor_external(char const*, unsigned long)+0x58 (libc++.1.dylib:arm64+0x12e80)
+    #2 0x00019329cfc4 in std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>::basic_string(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)+0x3c (libc++.1.dylib:arm64+0x18fc4)
+    #3 0x0001004ceab8 in VDLS::VDLS(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) VDLS.hpp:18
+    #4 0x0001004cbc78 in VDLS::VDLS(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) VDLS.hpp:18
+    #5 0x0001004cad00 in main get_put.cc:81
+    #6 0x000192fec270  (<unknown module>)
+
+Indirect leak of 32 byte(s) in 1 object(s) allocated from:
+    #0 0x000101068de4 in malloc+0x70 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x54de4)
+    #1 0x000193193a8c in _malloc_type_malloc_outlined+0x60 (libsystem_malloc.dylib:arm64+0x1ca8c)
+    #2 0x000193212904 in __Balloc_D2A+0x108 (libsystem_c.dylib:arm64+0x10904)
+    #3 0x000193212a1c in __rv_alloc_D2A+0x48 (libsystem_c.dylib:arm64+0x10a1c)
+    #4 0x000193211bd8 in __dtoa+0x2fc (libsystem_c.dylib:arm64+0xfbd8)
+    #5 0x000193205440 in __vfprintf+0xacc (libsystem_c.dylib:arm64+0x3440)
+    #6 0x000193230458 in _vsnprintf+0xdc (libsystem_c.dylib:arm64+0x2e458)
+    #7 0x00019320ee6c in snprintf_l+0x1c (libsystem_c.dylib:arm64+0xce6c)
+    #8 0x0001932c2d84 in std::__1::ostreambuf_iterator<char, std::__1::char_traits<char>> std::__1::num_put<char, std::__1::ostreambuf_iterator<char, std::__1::char_traits<char>>>::__do_put_floating_point[abi:ne180100]<double>(std::__1::ostreambuf_iterator<char, std::__1::char_traits<char>>, std::__1::ios_base&, char, double, char const*) const+0x8c (libc++.1.dylib:arm64+0x3ed84)
+    #9 0x0001932ae708 in std::__1::basic_ostream<char, std::__1::char_traits<char>>::operator<<(double)+0x158 (libc++.1.dylib:arm64+0x2a708)
+    #10 0x0001004cb604 in main get_put.cc:132
+    #11 0x000192fec270  (<unknown module>)
+
+Indirect leak of 32 byte(s) in 1 object(s) allocated from:
+    #0 0x0001010690bc in calloc+0x78 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x550bc)
+    #1 0x000193193b04 in _malloc_type_calloc_outlined+0x64 (libsystem_malloc.dylib:arm64+0x1cb04)
+    #2 0x000192f9eb70 in _fetchInitializingClassList(bool)+0xb0 (libobjc.A.dylib:arm64+0xab70)
+    #3 0x000192f9e9b8 in _setThisThreadIsInitializingClass(objc_class*)+0x1c (libobjc.A.dylib:arm64+0xa9b8)
+    #4 0x000192f9e7d4 in initializeNonMetaClass+0x234 (libobjc.A.dylib:arm64+0xa7d4)
+    #5 0x000192f9e638 in initializeNonMetaClass+0x98 (libobjc.A.dylib:arm64+0xa638)
+    #6 0x000192f9e638 in initializeNonMetaClass+0x98 (libobjc.A.dylib:arm64+0xa638)
+    #7 0x000192f9e638 in initializeNonMetaClass+0x98 (libobjc.A.dylib:arm64+0xa638)
+    #8 0x000192fbca38 in initializeAndMaybeRelock(objc_class*, objc_object*, locker_mixin<lockdebug::lock_mixin<objc_lock_base_t>>&, bool)+0xa0 (libobjc.A.dylib:arm64+0x28a38)
+    #9 0x000192f9df94 in lookUpImpOrForward+0x12c (libobjc.A.dylib:arm64+0x9f94)
+    #10 0x000192f9db80 in _objc_msgSend_uncached+0x40 (libobjc.A.dylib:arm64+0x9b80)
+    #11 0x00019306fd54 in _xpc_collect_images+0xc0 (libxpc.dylib:arm64+0x2d54)
+    #12 0x00019306f1b0 in _libxpc_initializer+0x424 (libxpc.dylib:arm64+0x21b0)
+    #13 0x0001a0e2e634 in libSystem_initializer+0xfc (libSystem.B.dylib:arm64+0x1634)
+    #14 0x000193003d50  (<unknown module>)
+    #15 0x0001930424cc  (<unknown module>)
+    #16 0x000193035c34  (<unknown module>)
+    #17 0x000192fe82d8  (<unknown module>)
+    #18 0x000193034bc8  (<unknown module>)
+    #19 0x000193041fe0  (<unknown module>)
+    #20 0x000193003bb0  (<unknown module>)
+    #21 0x00019300ebe4  (<unknown module>)
+    #22 0x0001930238b4  (<unknown module>)
+    #23 0x000192fed8c4  (<unknown module>)
+    #24 0x000192fecbbc  (<unknown module>)
+    #25 0x000192fec058  (<unknown module>)
+
+Indirect leak of 16 byte(s) in 1 object(s) allocated from:
+    #0 0x0001010690bc in calloc+0x78 (libclang_rt.asan_osx_dynamic.dylib:arm64+0x550bc)
+    #1 0x000193193b04 in _malloc_type_calloc_outlined+0x64 (libsystem_malloc.dylib:arm64+0x1cb04)
+    #2 0x000192f9eb3c in _fetchInitializingClassList(bool)+0x7c (libobjc.A.dylib:arm64+0xab3c)
+    #3 0x000192f9e9b8 in _setThisThreadIsInitializingClass(objc_class*)+0x1c (libobjc.A.dylib:arm64+0xa9b8)
+    #4 0x000192f9e7d4 in initializeNonMetaClass+0x234 (libobjc.A.dylib:arm64+0xa7d4)
+    #5 0x000192f9e638 in initializeNonMetaClass+0x98 (libobjc.A.dylib:arm64+0xa638)
+    #6 0x000192f9e638 in initializeNonMetaClass+0x98 (libobjc.A.dylib:arm64+0xa638)
+    #7 0x000192f9e638 in initializeNonMetaClass+0x98 (libobjc.A.dylib:arm64+0xa638)
+    #8 0x000192fbca38 in initializeAndMaybeRelock(objc_class*, objc_object*, locker_mixin<lockdebug::lock_mixin<objc_lock_base_t>>&, bool)+0xa0 (libobjc.A.dylib:arm64+0x28a38)
+    #9 0x000192f9df94 in lookUpImpOrForward+0x12c (libobjc.A.dylib:arm64+0x9f94)
+    #10 0x000192f9db80 in _objc_msgSend_uncached+0x40 (libobjc.A.dylib:arm64+0x9b80)
+    #11 0x00019306fd54 in _xpc_collect_images+0xc0 (libxpc.dylib:arm64+0x2d54)
+    #12 0x00019306f1b0 in _libxpc_initializer+0x424 (libxpc.dylib:arm64+0x21b0)
+    #13 0x0001a0e2e634 in libSystem_initializer+0xfc (libSystem.B.dylib:arm64+0x1634)
+    #14 0x000193003d50  (<unknown module>)
+    #15 0x0001930424cc  (<unknown module>)
+    #16 0x000193035c34  (<unknown module>)
+    #17 0x000192fe82d8  (<unknown module>)
+    #18 0x000193034bc8  (<unknown module>)
+    #19 0x000193041fe0  (<unknown module>)
+    #20 0x000193003bb0  (<unknown module>)
+    #21 0x00019300ebe4  (<unknown module>)
+    #22 0x0001930238b4  (<unknown module>)
+    #23 0x000192fed8c4  (<unknown module>)
+    #24 0x000192fecbbc  (<unknown module>)
+    #25 0x000192fec058  (<unknown module>)
+
+SUMMARY: AddressSanitizer: 5339820 byte(s) leaked in 1895 allocation(s).

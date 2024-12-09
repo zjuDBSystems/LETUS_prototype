@@ -63,7 +63,7 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
 }
 
 int main(int argc, char** argv) {
-  int batch_size = 5000;  //
+  int batch_size = 60;  //
   int n_test = 1;
   int key_len = 5;    // 32
   int value_len = 5;  // 256, 512, 1024, 2048
@@ -130,7 +130,9 @@ int main(int argc, char** argv) {
 
   // init database
   LSVPS* page_store = new LSVPS();
-  VDLS* value_store = new VDLS();
+  std::string data_path;
+  data_path = "/Users/ldz/Code/miniLETUS/data/";  // your own path
+  VDLS* value_store = new VDLS(data_path);
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);
 
@@ -144,6 +146,9 @@ int main(int argc, char** argv) {
     auto versions = put_tasks[j].versions;
     auto start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
+      if (i == 709) {
+        cout << "!!" << endl;
+      }
       string key = keys[i];
       string value = values[i];
       uint64_t version = versions[i];
@@ -151,6 +156,7 @@ int main(int argc, char** argv) {
                 << std::endl;
       trie->Put(0, version, key, value);
     }
+    trie->Commit(j + 1);
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
     double put_latency = double(duration.count()) *
@@ -161,11 +167,15 @@ int main(int argc, char** argv) {
     values = get_tasks[j].values;
     start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
+      if (i == 1) {
+        cout << "!" << endl;
+      }
       std::string key = keys[i];
       uint64_t version = versions[i];
       std::cout << i << " GET:" << key << ", v" << version << std::endl;
       trie->Get(0, version, key);
     }
+    trie->Commit(j + 1);
     end = chrono::system_clock::now();
     duration = chrono::duration_cast<chrono::microseconds>(end - start);
     double get_latency = double(duration.count()) *

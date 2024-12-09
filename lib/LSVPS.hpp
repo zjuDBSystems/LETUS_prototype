@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+
 #include "DMMTrie.hpp"
 #include "utils.hpp"
 
@@ -16,16 +17,17 @@ struct IndexBlock {
     uint64_t location;
   };
 
-  static constexpr size_t MAPPINGS_PER_BLOCK = (OS_PAGE_SIZE - sizeof(size_t)) / sizeof(Mapping);
+  static constexpr size_t MAPPINGS_PER_BLOCK =
+      (OS_PAGE_SIZE - sizeof(size_t)) / sizeof(Mapping);
 
   IndexBlock();
   bool AddMapping(const PageKey &pagekey, uint64_t location);
   bool IsFull() const;
   const std::vector<Mapping> &GetMappings() const;
-  void SerializeTo(std::ofstream &out) const;
-  void Deserialize(std::ifstream &in);
+  bool SerializeTo(std::ofstream &out) const;
+  bool Deserialize(std::ifstream &in);
 
-private:
+ private:
   std::vector<Mapping> mappings_;
 };
 
@@ -38,47 +40,50 @@ struct IndexFile {
 
 // 查找块结构体
 struct LookupBlock {
+  static const size_t BLOCK_SIZE = 4096;  // 4KB
+  
   std::vector<std::pair<PageKey, size_t>> entries;
-  void SerializeTo(std::ostream &out) const;
-  void Deserialize(std::istream &in);
+  bool SerializeTo(std::ostream &out) const;
+  bool Deserialize(std::istream &in);
 };
 
 // LSVPS类定义
 class LSVPS : public LSVPSInterface {
-public:
+ public:
   LSVPS();
   Page *PageQuery(uint64_t version) override;
-  Page *LoadPage(const PageKey& pagekey) override;
-  void StorePage(Page* page) override;
+  Page *LoadPage(const PageKey &pagekey) override;
+  void StorePage(Page *page) override;
   void AddIndexFile(const IndexFile &index_file);
   int GetNumOfIndexFile();
   void RegisterTrie(DMMTrie *DMM_trie);
 
-private:
+ private:
   // 块缓存类（占位）
   class blockCache {};
 
   // 内存索引表类声明
   class MemIndexTable {
-  public:
+   public:
     explicit MemIndexTable(LSVPS &parent);
-    const std::vector<Page*> &GetBuffer() const;
-    void Store(Page* page);
+    const std::vector<Page *> &GetBuffer() const;
+    void Store(Page *page);
     bool IsFull() const;
     void Flush();
 
-  private:
+   private:
     void writeToStorage(const std::vector<IndexBlock> &index_blocks,
-                       const LookupBlock &lookup_blocks, 
-                       const std::filesystem::path &filepath);
-    std::vector<Page*> buffer_;
-    const size_t max_size_ = 20000;
+                        const LookupBlock &lookup_blocks,
+                        const std::filesystem::path &filepath);
+    std::vector<Page *> buffer_;
+    const size_t max_size_ = 2000;//gurantee that max_size >= one version pages
     LSVPS &parent_LSVPS_;
   };
 
-  Page* pageLookup(const PageKey &pagekey);
-  Page* readPageFromIndexFile(const IndexFile& file, const PageKey& pagekey);
-  void applyDelta(BasePage *basepage, const DeltaPage *deltapage, PageKey pagekey);
+  Page *pageLookup(const PageKey &pagekey, bool isPrecise);
+  Page *readPageFromIndexFile(std::vector<IndexFile>::const_iterator file_it, const PageKey &pagekey, bool isPrecise);
+  void applyDelta(BasePage *basepage, const DeltaPage *deltapage,
+                  PageKey pagekey);
 
   blockCache cache_;
   MemIndexTable table_;
