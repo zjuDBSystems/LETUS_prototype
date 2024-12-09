@@ -1,2 +1,1 @@
-Error: BasePage not found for PageKey: PageKey(pid=02, version=426, type=0)
-libc++abi: terminating due to uncaught exception of type std::runtime_error: BasePage not found for the given PageKey
+libc++abi: terminating due to uncaught exception of type std::runtime_error: Invalid file offset in lookup block

@@ -190,23 +190,28 @@ LSVPS::LSVPS() : cache_(), table_(*this) {}
 Page *LSVPS::PageQuery(uint64_t version) {
   return nullptr;  // unimplemented
 }
-
+/*新增逻辑：先判断该版本与latestbasepageversion的关系保证这个在unprecise的查找中一定可以找到大于他的page，
+如果该版本大于latestbasepage，basepage可以直接取latestbasepage否则就进行pagelookup
+可以保证找到pagekey大于他的（起码有latestbasepage）*/
 Page *LSVPS::LoadPage(const PageKey &pagekey) {
   std::stack<const DeltaPage *> delta_pages;
   BasePage *basepage;
+  PageKey current_pagekey;  
   auto delta_pagekey = pagekey;
   delta_pagekey.type = true;//set to delta
-  DeltaPage *delta_page = dynamic_cast<DeltaPage *>(pageLookup(delta_pagekey, false));
   const DeltaPage *active_deltapage = trie_->GetDeltaPage(pagekey.pid);
+  /*pid足够了 因为一个LSVPS绑定一个trie也就绑定一个tid*/
   delta_pages.push(active_deltapage);
-  PageKey current_pagekey;
-  if(delta_page != nullptr){
-    current_pagekey = delta_page->GetPageKey();
-  } else {
-    current_pagekey.version = 0;
-    current_pagekey.type = false;  // base page
+  if( pagekey.version > trie_->GetLatestBasePageKey(pagekey).version ){
+    current_pagekey = active_deltapage->GetPageKey();
   }
-  
+  else{
+    Page* replay_sentinal = pageLookup(delta_pagekey, false);
+    if(replay_sentinal != nullptr) current_pagekey = replay_sentinal->GetPageKey();
+    else{
+      current_pagekey = active_deltapage->GetPageKey();
+    }
+  } 
   while (current_pagekey.type) {
     DeltaPage *delta_page =
         dynamic_cast<DeltaPage *>(pageLookup(current_pagekey, true));//precisely search
@@ -216,7 +221,7 @@ Page *LSVPS::LoadPage(const PageKey &pagekey) {
     } else {
       break;
     }
-  }
+  } 
   if (current_pagekey.version == 0)
     basepage = new BasePage(trie_, nullptr, pagekey.pid);
   else{
@@ -226,12 +231,17 @@ Page *LSVPS::LoadPage(const PageKey &pagekey) {
       throw std::runtime_error("BasePage not found for the given PageKey");
     }
   }
-      
-  
+
   while(!delta_pages.empty()){
     applyDelta(basepage, delta_pages.top(), pagekey);
     delta_pages.pop();
   }
+  if(basepage->GetPageKey().version < pagekey.version) {
+    std::cerr << "Error: Requested version " << pagekey.version 
+              << " not found. Latest available version is " 
+              << basepage->GetPageKey().version << std::endl;
+    return nullptr; //the version is not found
+  } 
   cout << basepage->GetPageKey().pid << endl;
   return basepage;
 }
@@ -253,8 +263,7 @@ void LSVPS::RegisterTrie(DMMTrie *DMM_trie) { trie_ = DMM_trie; }
 
 Page *LSVPS::pageLookup(const PageKey &pagekey, bool isPrecise) {
   auto &buffer = table_.GetBuffer();
-  // auto delta_pagekey = pagekey;
-  // delta_pagekey.type = true;
+  Page* smallest_page;
   //first step: search in the buffer
   if(isPrecise){
     for(const auto &page : buffer){
@@ -263,31 +272,72 @@ Page *LSVPS::pageLookup(const PageKey &pagekey, bool isPrecise) {
   }else{
     for(const auto &page : buffer){
       auto temp_pagekey = page->GetPageKey();
-      if( temp_pagekey.type && temp_pagekey.pid == pagekey.pid && temp_pagekey > pagekey) return page;//unprecise search only happen in deltapages
+      if( temp_pagekey.tid == pagekey.tid && temp_pagekey.pid == pagekey.pid ) {
+        smallest_page = page;
+        break;
+      }
+    }
+    // if(smallest_page == nullptr) return  => in file
+    if(smallest_page != nullptr && smallest_page->GetPageKey() <= pagekey) {
+      Page* identity_basepage = nullptr;
+      PageKey latest_basepage_pagekey;
+      for(const auto &page : buffer){
+        auto temp_pagekey = page->GetPageKey();
+        if( temp_pagekey.tid == pagekey.tid && temp_pagekey.pid == pagekey.pid && temp_pagekey.type ){
+          if( temp_pagekey.version > pagekey.version ) return page;
+          else if( temp_pagekey.version == pagekey.version && temp_pagekey.type == false ) {
+            identity_basepage = page;
+            // latest_basepage_pagekey = temp_pagekey;
+          } 
+          else continue;
+        } 
+      }
+      if(identity_basepage) return identity_basepage;  
+      else{
+        //lookup for the latest basepage
+        PageKey latest_basepage_pagekey = pagekey;
+        latest_basepage_pagekey.type = false;
+        auto file_iterator = std::find_if(index_files_.begin(), index_files_.end(),
+                                  [&latest_basepage_pagekey](const IndexFile &file) {
+                                    return file.min_pagekey <= latest_basepage_pagekey &&
+                                            latest_basepage_pagekey <= file.max_pagekey;
+                                  });
+        if (file_iterator == index_files_.end()) {
+          std::cerr << "Error: Page not found in index file for PageKey: " << pagekey 
+                        << std::endl;
+          return nullptr;
+          //there is no indexfile of the demanding version 
+        }
+        //second step:search in the disk
+        return readPageFromIndexFile(file_iterator, latest_basepage_pagekey, true);
+      } 
+      // throw logic_error("Unreachable code: Previous conditions guarantee earlier return"); // impossible 
     }
   }
+  //assumption: one block size <= cfr deltapage size
 
   auto file_iterator = std::find_if(index_files_.begin(), index_files_.end(),
                                     [&pagekey](const IndexFile &file) {
                                       return file.min_pagekey <= pagekey &&
                                              pagekey <= file.max_pagekey;
                                     });
-  //边界
-  // if()
   if (file_iterator == index_files_.end()) {
+    std::cerr << "Error: Page not found in index file for PageKey: " << pagekey 
+                  << std::endl;
     return nullptr;
+    //there is no indexfile of the demanding version 
   }
   //second step:search in the disk
-  return readPageFromIndexFile(*file_iterator, pagekey, isPrecise);
+  return readPageFromIndexFile(file_iterator, pagekey, isPrecise);
 }
 
-Page *LSVPS::readPageFromIndexFile(const IndexFile &file,
+Page *LSVPS::readPageFromIndexFile(std::vector<IndexFile>::const_iterator file_it,
                                    const PageKey &pagekey,
                                    bool isPrecise) {
     PageKey true_pagekey;                                
-    std::ifstream in_file(file.filepath, std::ios::binary);
+    std::ifstream in_file(file_it->filepath, std::ios::binary);
     if (!in_file) {
-        throw std::runtime_error("Failed to open index file: " + file.filepath);
+        throw std::runtime_error("Failed to open index file: " + file_it->filepath);
     }
 
     // Read LookupBlock from the end of file
@@ -355,18 +405,21 @@ Page *LSVPS::readPageFromIndexFile(const IndexFile &file,
                 if (m.pagekey.pid.size() > 256) {
                     throw std::runtime_error("Invalid PID size in mapping");
                 }
-                return m.pagekey.pid == pagekey.pid && m.pagekey > pagekey; 
+                return m.pagekey.tid == pagekey.tid && m.pagekey.pid == pagekey.pid && m.pagekey.type && m.pagekey > pagekey; 
             });
 
         if (mapping == mappings.end()) {  //边界
-          auto rev_mapping = mappings.rbegin();
-          for( rev_mapping = mappings.rbegin(); rev_mapping != mappings.rend(); ++rev_mapping){
-            if(rev_mapping->pagekey.pid != pagekey.pid) continue;
-            if(!rev_mapping->pagekey.type) return nullptr;//basepage exit
-            if( rev_mapping->pagekey <= pagekey) break;
+          for(; file_it ！= this->index_files_.end(); ++file_it) {
+            Page* page = readPageFromIndexFile(file_it, pagekey, isPrecise);
+            if(page != nullptr) return page;
           }
-          if( rev_mapping == mappings.rend() ) return nullptr;
-          else mapping = (++rev_mapping).base();
+          for(const auto &page : this->table_.GetBuffer()){
+            auto temp_pagekey = page->GetPageKey();
+            if( temp_pagekey.tid == pagekey.tid && temp_pagekey.pid == pagekey.pid && temp_pagekey.type && temp_pagekey.version > pagekey.version ) return page;
+          }
+          return nullptr;
+          // throw logic_error("Unreachable code: Previous conditions guarantee earlier return"); //
+         
         }
         
     }
@@ -444,7 +497,7 @@ void LSVPS::MemIndexTable::Flush() {
   IndexBlock current_block;
   uint64_t current_location = 0;
 
-  for (size_t i = 0; i < buffer_.size(); i++) {
+  for (size_t i = 0; i < sen; i++) {
     if (current_block.IsFull()) {
       index_blocks.push_back(current_block);
       current_block = IndexBlock();
@@ -483,6 +536,7 @@ void LSVPS::MemIndexTable::Flush() {
       {buffer_.front()->GetPageKey(), buffer_.back()->GetPageKey(), filepath});
 
   buffer_.clear();
+  buffer_ = std::move(remaining_pages);
 }
 
 void LSVPS::MemIndexTable::writeToStorage(

@@ -33,6 +33,7 @@ class Node {
   virtual ~Node() noexcept = default;
   // string hash_;  // merkle hash of the node
   // uint64_t version_;
+  //delete SetChild GetChild
 
   virtual void CalculateHash();
   virtual void SerializeTo(char *buffer, size_t &current_size,

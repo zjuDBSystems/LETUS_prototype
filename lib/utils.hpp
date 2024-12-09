@@ -133,7 +133,7 @@ class Page {  //设置成抽象类 序列化 反序列化 getPageKey setPageKey 
 
   char* GetData() { return data_; }
 };
-class LSVPSInterface {
+class LSVPSInterface {//no need now
  public:
   virtual Page* LoadPage(const PageKey& pagekey) = 0;
   virtual void StorePage(Page* page) = 0;
