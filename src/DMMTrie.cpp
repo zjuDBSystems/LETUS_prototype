@@ -78,8 +78,7 @@ void LeafNode::CalculateHash(const string &value) {
 */
 void LeafNode::SerializeTo(char *buffer, size_t &current_size,
                            bool is_root) const {
-  bool is_leaf_node = true;
-  memcpy(buffer + current_size, &is_leaf_node,
+  memcpy(buffer + current_size, &is_leaf_,
          sizeof(bool));  // true means that the node is leafnode
   current_size += sizeof(bool);
 
@@ -141,7 +140,6 @@ void LeafNode::UpdateNode(uint64_t version,
   location_ = location;
   hash_ = HashFunction(key_ + value);
 
-  // uint8_t location_in_page = is_root ? 0 : index + 1;
   deltapage->AddLeafNodeUpdate(location_in_page, version, hash_,
                                get<0>(location), get<1>(location),
                                get<2>(location));
@@ -195,8 +193,7 @@ void IndexNode::CalculateHash() {
 */
 void IndexNode::SerializeTo(char *buffer, size_t &current_size,
                             bool is_root) const {
-  bool is_leaf_node = false;
-  memcpy(buffer + current_size, &is_leaf_node,
+  memcpy(buffer + current_size, &is_leaf_,
          sizeof(bool));  // false means that the node is indexnode
   current_size += sizeof(bool);
 
@@ -204,7 +201,7 @@ void IndexNode::SerializeTo(char *buffer, size_t &current_size,
   current_size += sizeof(uint64_t);
 
   memcpy(buffer + current_size, hash_.c_str(), hash_.size());
-  current_size += hash_.size();
+  current_size += HASH_SIZE;
 
   memcpy(buffer + current_size, &bitmap_, sizeof(uint16_t));
   current_size += sizeof(uint16_t);
@@ -293,7 +290,6 @@ void IndexNode::UpdateNode(uint64_t version, int index,
   }
   hash_ = HashFunction(concatenated_hash);
 
-  // uint8_t location_in_page = is_root ? 0 : index + 1;
   deltapage->AddIndexNodeUpdate(location_in_page, version, hash_, index,
                                 child_hash);
 }
@@ -391,13 +387,10 @@ void DeltaPage::DeltaItem::SerializeTo(char *buffer,
                                        size_t &current_size) const {
   memcpy(buffer + current_size, &location_in_page, sizeof(location_in_page));
   current_size += sizeof(location_in_page);
-
   memcpy(buffer + current_size, &is_leaf_node, sizeof(is_leaf_node));
   current_size += sizeof(is_leaf_node);
-
   memcpy(buffer + current_size, &version, sizeof(version));
   current_size += sizeof(version);
-
   memcpy(buffer + current_size, hash.c_str(), HASH_SIZE);
   current_size += HASH_SIZE;
 
@@ -671,9 +664,6 @@ void BasePage::UpdatePage(uint64_t version,
     basepage_copy->SerializeTo();
     trie_->WritePageCache(pagekey, basepage_copy);  // store basepage in cache
 
-    // trie_->GetPageStore()->StorePage(basepage_copy);  // send basepage to
-    // LSVPS
-
     trie_->UpdatePageVersion(pagekey, version, version);
     deltapage->ClearBasePageUpdateCount();
     deltapage->SetLastPageKey(pagekey);
@@ -816,14 +806,14 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
     } else {  // first level is leafnode
       leafnode = static_cast<LeafNode *>(page->GetRoot());
     }
-
-    string value = value_store_->ReadValue(leafnode->GetLocation());
-    tuple<uint64_t, uint64_t, uint64_t> l = leafnode->GetLocation();
-    cout << get<0>(l) << " " << get<1>(l) << " " << get<2>(l) << endl;
-    cout << "Key " << key << " has value " << value << " at version " << version
-         << endl;
-    return value;
   }
+
+  string value = value_store_->ReadValue(leafnode->GetLocation());
+  tuple<uint64_t, uint64_t, uint64_t> l = leafnode->GetLocation();
+  cout << get<0>(l) << " " << get<1>(l) << " " << get<2>(l) << endl;
+  cout << "Key " << key << " has value " << value << " at version " << version
+       << endl;
+  return value;
 
   // string pid = key.substr(
   //     0,
@@ -906,10 +896,9 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
     } else {  // first level is leafnode
       leafnode = static_cast<LeafNode *>(page->GetRoot());
     }
-
-    merkle_proof.value = value_store_->ReadValue(leafnode->GetLocation());
-    return merkle_proof;
   }
+  merkle_proof.value = value_store_->ReadValue(leafnode->GetLocation());
+  return merkle_proof;
 }
 
 DeltaPage *DMMTrie::GetDeltaPage(const string &pid) {
