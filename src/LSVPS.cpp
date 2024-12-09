@@ -92,7 +92,9 @@ Page *LSVPS::PageQuery(uint64_t version) {
 Page *LSVPS::LoadPage(const PageKey &pagekey) {
   std::vector<const DeltaPage *> delta_pages;
   BasePage *basepage;
-  DeltaPage *delta_page = dynamic_cast<DeltaPage *>(pageLookup(pagekey));
+  auto delta_pagekey = pagekey;
+  delta_pagekey.type = true;
+  DeltaPage *delta_page = dynamic_cast<DeltaPage *>(pageLookup(delta_pagekey));
   if (delta_page == nullptr) {
     const DeltaPage *active_deltapage = trie_->GetDeltaPage(pagekey.pid);
     if (!active_deltapage) return nullptr;

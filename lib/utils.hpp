@@ -9,7 +9,7 @@ static constexpr int PAGE_SIZE = 12288;  // 每个页面的大小为12KB
 // PageKey结构体
 struct PageKey {
   uint64_t version;
-  int tid;
+  uint64_t tid;
   bool type;        // basepage(false)或deltapage(true)
   std::string pid;  // nibble，例如"Alice"中的"Al"
 
