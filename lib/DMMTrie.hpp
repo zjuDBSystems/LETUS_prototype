@@ -209,7 +209,7 @@ class BasePage : public Page {
 
 class DMMTrie {
  public:
-  DMMTrie(uint64_t tid, LSVPSInterface *page_store, VDLS *value_store,
+  DMMTrie(uint64_t tid, LSVPS *page_store, VDLS *value_store,
           uint64_t current_version = 0);
   void Put(uint64_t tid, uint64_t version, const string &key,
            const string &value);
@@ -223,11 +223,11 @@ class DMMTrie {
   PageKey GetLatestBasePageKey(PageKey pagekey) const;
   void UpdatePageVersion(PageKey pagekey, uint64_t current_version,
                          uint64_t latest_basepage_version);
-  LSVPSInterface *GetPageStore();
+  LSVPS *GetPageStore();
   void WritePageCache(PageKey pagekey, Page *page);
 
  private:
-  LSVPSInterface *page_store_;
+  LSVPS *page_store_;
   VDLS *value_store_;
   uint64_t tid;
   BasePage *root_page_;

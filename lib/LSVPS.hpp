@@ -48,12 +48,12 @@ struct LookupBlock {
 };
 
 // LSVPS类定义
-class LSVPS : public LSVPSInterface {
+class LSVPS {
  public:
   LSVPS();
-  Page *PageQuery(uint64_t version) override;
-  Page *LoadPage(const PageKey &pagekey) override;
-  void StorePage(Page *page) override;
+  Page *PageQuery(uint64_t version);
+  Page *LoadPage(const PageKey &pagekey);
+  void StorePage(Page *page);
   void AddIndexFile(const IndexFile &index_file);
   int GetNumOfIndexFile();
   void RegisterTrie(DMMTrie *DMM_trie);
