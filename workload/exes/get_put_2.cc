@@ -153,37 +153,41 @@ int main(int argc, char** argv) {
                 << std::endl;
       trie->Put(0, version, key, value);
     }
+    std::cout << "COMMIT:"
+              << "v" << j + 1 << std::endl;
     trie->Commit(j + 1);
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
     double put_latency = double(duration.count()) *
                          chrono::microseconds::period::num /
                          chrono::microseconds::period::den;
+    put_latency_sum += put_latency;
+    std::cout << "test " << j << ": ";
+    std::cout << "put latency=" << put_latency << " s, ";
+    std::cout << std::endl;
+  }
+  for (int j = 0; j < n_test; j++) {
     // get
-    keys = get_tasks[j].keys;
-    values = get_tasks[j].values;
-    start = chrono::system_clock::now();
+    auto keys = get_tasks[j].keys;
+    auto values = get_tasks[j].values;
+    auto versions = get_tasks[j].versions;
+    auto start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
-      if (i == 1) {
-        cout << "!" << endl;
-      }
       std::string key = keys[i];
       uint64_t version = versions[i];
       std::cout << i << " GET:" << key << ", v" << version << std::endl;
       std::string value_2 = trie->Get(0, version, key);
       std::cout << "value = " << value_2 << std::endl;
     }
-    trie->Commit(j + 1);
-    end = chrono::system_clock::now();
-    duration = chrono::duration_cast<chrono::microseconds>(end - start);
+    auto end = chrono::system_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
     double get_latency = double(duration.count()) *
                          chrono::microseconds::period::num /
                          chrono::microseconds::period::den;
 
-    put_latency_sum += put_latency;
     get_latency_sum += get_latency;
     std::cout << "test " << j << ": ";
-    std::cout << "put latency=" << put_latency << " s, ";
+
     std::cout << "get latency=" << get_latency << " s, ";
     std::cout << std::endl;
   }
