@@ -376,7 +376,7 @@ Page *LSVPS::readPageFromIndexFile(std::vector<IndexFile>::const_iterator file_i
         return nullptr;
     }
 
-    if (it->second >= std::filesystem::file_size(file.filepath)) {
+    if (it->second >= std::filesystem::file_size(file_it->filepath)) {
         throw std::runtime_error("Invalid file offset in lookup block");
     }
 
@@ -409,7 +409,7 @@ Page *LSVPS::readPageFromIndexFile(std::vector<IndexFile>::const_iterator file_i
             });
 
         if (mapping == mappings.end()) {  //边界
-          for(; file_it ！= this->index_files_.end(); ++file_it) {
+          for(; file_it != this->index_files_.end(); ++file_it) {
             Page* page = readPageFromIndexFile(file_it, pagekey, isPrecise);
             if(page != nullptr) return page;
           }
@@ -497,13 +497,13 @@ void LSVPS::MemIndexTable::Flush() {
   IndexBlock current_block;
   uint64_t current_location = 0;
 
-  for (size_t i = 0; i < sen; i++) {
+  for (auto& page : buffer_) {
     if (current_block.IsFull()) {
       index_blocks.push_back(current_block);
       current_block = IndexBlock();
     }
 
-    current_block.AddMapping(buffer_[i]->GetPageKey(), current_location);
+    current_block.AddMapping(page->GetPageKey(), current_location);
     current_location += PAGE_SIZE;
   }
 
@@ -536,7 +536,6 @@ void LSVPS::MemIndexTable::Flush() {
       {buffer_.front()->GetPageKey(), buffer_.back()->GetPageKey(), filepath});
 
   buffer_.clear();
-  buffer_ = std::move(remaining_pages);
 }
 
 void LSVPS::MemIndexTable::writeToStorage(

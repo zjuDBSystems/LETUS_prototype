@@ -81,7 +81,7 @@ class LSVPS : public LSVPSInterface {
   };
 
   Page *pageLookup(const PageKey &pagekey, bool isPrecise);
-  Page *readPageFromIndexFile(const IndexFile &file, const PageKey &pagekey, bool isPrecise);
+  Page *readPageFromIndexFile(std::vector<IndexFile>::const_iterator file_it, const PageKey &pagekey, bool isPrecise);
   void applyDelta(BasePage *basepage, const DeltaPage *deltapage,
                   PageKey pagekey);
 
