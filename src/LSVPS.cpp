@@ -194,7 +194,7 @@ Page *LSVPS::PageQuery(uint64_t version) {
 /*新增逻辑：先判断该版本与latestbasepageversion的关系保证这个在unprecise的查找中一定可以找到大于他的page，
 如果该版本大于latestbasepage，basepage可以直接取latestbasepage否则就进行pagelookup
 可以保证找到pagekey大于他的（起码有latestbasepage）*/
-Page *LSVPS::LoadPage(const PageKey &pagekey) {
+BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
   std::stack<const DeltaPage *> delta_pages;
   BasePage *basepage;
   PageKey current_pagekey;

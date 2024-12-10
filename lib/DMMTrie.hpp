@@ -16,7 +16,7 @@
 #include "VDLS.hpp"
 #include "utils.hpp"
 
-static constexpr size_t HASH_SIZE = 64;
+static constexpr size_t HASH_SIZE = 32;
 static constexpr size_t DMM_NODE_FANOUT = 10;
 
 using namespace std;

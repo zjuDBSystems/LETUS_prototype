@@ -52,7 +52,7 @@ class LSVPS {
  public:
   LSVPS();
   Page *PageQuery(uint64_t version);
-  Page *LoadPage(const PageKey &pagekey);
+  BasePage *LoadPage(const PageKey &pagekey);
   void StorePage(Page *page);
   void AddIndexFile(const IndexFile &index_file);
   int GetNumOfIndexFile();
