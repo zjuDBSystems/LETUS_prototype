@@ -1,15 +1,12 @@
 #include "LSVPS.hpp"
+#include "commen.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <stack>
 
-std::ostream &operator<<(std::ostream &os, const PageKey &key) {
-  os << "PageKey(pid=" << key.pid << ", version=" << key.version
-     << ", type=" << key.type << ")";
-  return os;
-}
+
 
 namespace fs = std::filesystem;
 
@@ -226,7 +223,7 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
   if (current_pagekey.version == 0)
     basepage = new BasePage(trie_, nullptr, pagekey.pid);
   else {
-    basepage = dynamic_cast<BasePage *>(pageLookup(current_pagekey, true));
+    basepage = new BasePage(*dynamic_cast<BasePage *>(pageLookup(current_pagekey, true)));//deep copy
     if (basepage == nullptr) {
       std::cerr << "Error: BasePage not found for PageKey: " << current_pagekey
                 << std::endl;
@@ -249,7 +246,15 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
 }
 
 void LSVPS::StorePage(Page *page) {
-  table_.Store(page);
+  // Create a deep copy of the page
+  Page *page_copy;
+  if (page->GetPageKey().type) {
+    page_copy = new DeltaPage(*dynamic_cast<DeltaPage*>(page));
+  } else {
+    page_copy = new BasePage(*dynamic_cast<BasePage*>(page));
+  }
+  
+  table_.Store(page_copy);
   if (table_.IsFull()) {
     table_.Flush();
   }
@@ -259,6 +264,9 @@ void LSVPS::AddIndexFile(const IndexFile &index_file) {
   index_files_.push_back(index_file);
 }
 
+const std::vector<Page *> &LSVPS::GetTable() const {
+  return table_.GetBuffer();
+}
 int LSVPS::GetNumOfIndexFile() { return index_files_.size(); }
 
 void LSVPS::RegisterTrie(DMMTrie *DMM_trie) { trie_ = DMM_trie; }
@@ -493,9 +501,9 @@ const std::vector<Page *> &LSVPS::MemIndexTable::GetBuffer() const {
 }
 
 void LSVPS::MemIndexTable::Store(Page *page) {
-  if (page->GetPageKey() == PageKey{426, 0, false, "02"}) {
-    std::cout << "Hele" << std::endl;
-  }
+  // if (page->GetPageKey() == PageKey{426, 0, false, "02"}) {
+  //   std::cout << "Hele" << std::endl;
+  // }
   buffer_.push_back(page);
 }
 

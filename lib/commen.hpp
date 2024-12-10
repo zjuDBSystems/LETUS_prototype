@@ -1,5 +1,5 @@
-#ifndef _UTILS_H_
-#define _UTILS_H_
+#ifndef _COMMEN_H_
+#define _COMMEN_H_
 #include <cstdint>
 #include <filesystem>
 #include <string>
@@ -108,6 +108,10 @@ class Page {  //设置成抽象类 序列化 反序列化 getPageKey setPageKey 
   // }
 
   Page(PageKey pagekey) : pagekey_(pagekey) {}
+  Page(const Page& other){
+    memcpy(data_, other.data_, PAGE_SIZE);
+    pagekey_ = other.pagekey_;
+  }
 
   const PageKey& GetPageKey() const {
     // std::cout << "[GetPageKey]" << pagekey_.pid << std::endl;
@@ -133,4 +137,9 @@ class Page {  //设置成抽象类 序列化 反序列化 getPageKey setPageKey 
 
   char* GetData() { return data_; }
 };
+inline std::ostream &operator<<(std::ostream &os, const PageKey &key) {
+  os << "PageKey(version=" << key.version << ", tid=" << key.tid << ", type=" << key.type
+    << ", pid=" << key.pid << ")";
+  return os;
+}
 #endif
