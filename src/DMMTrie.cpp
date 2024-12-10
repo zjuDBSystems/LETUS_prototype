@@ -1,5 +1,5 @@
 #include "DMMTrie.hpp"
-
+#include "LSVPS.hpp"
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 
@@ -738,7 +738,7 @@ void BasePage::UpdateDeltaItem(
 
 Node *BasePage::GetRoot() const { return root_; }
 
-DMMTrie::DMMTrie(uint64_t tid, LSVPSInterface *page_store, VDLS *value_store,
+DMMTrie::DMMTrie(uint64_t tid, LSVPS *page_store, VDLS *value_store,
                  uint64_t current_version)
     : tid(tid),
       page_store_(page_store),
@@ -992,7 +992,7 @@ void DMMTrie::UpdatePageVersion(PageKey pagekey, uint64_t current_version,
   page_versions_[pagekey.pid] = {current_version, latest_basepage_version};
 }
 
-LSVPSInterface *DMMTrie::GetPageStore() { return page_store_; }
+LSVPS *DMMTrie::GetPageStore() { return page_store_; }
 
 void DMMTrie::WritePageCache(PageKey pagekey, Page *page) {
   page_cache_[pagekey] = page;
