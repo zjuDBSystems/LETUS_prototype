@@ -4,7 +4,7 @@ PROJECT(letus_prototype)
 find_package(OpenSSL 1.1 REQUIRED)
 
 # 查找glibc
-find_package(PkgConfig REQUIRED)
+# find_package(PkgConfig REQUIRED)
 pkg_check_modules(GNUC standard glibc >= 2.34)
 
 include_directories(${OPENSSL_INCLUDE_DIR})
