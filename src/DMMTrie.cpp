@@ -193,19 +193,28 @@ IndexNode::IndexNode(const IndexNode& other)
     for (size_t i = 0; i < DMM_NODE_FANOUT; i++) {
       if (other.HasChild(i)) {
         Node* child = other.GetChild(i);
-        if (child->IsLeaf()) {
-          children_[i] = make_tuple(
-            get<0>(other.children_[i]),
-            get<1>(other.children_[i]),
-            new LeafNode(*dynamic_cast<LeafNode*>(child))
-          );
+        if(child != nullptr){
+          if (child->IsLeaf()) {
+            children_[i] = make_tuple(
+              get<0>(other.children_[i]),
+              get<1>(other.children_[i]),
+              new LeafNode(*dynamic_cast<LeafNode*>(child))
+            );
+          } else {
+            children_[i] = make_tuple(
+              get<0>(other.children_[i]),
+              get<1>(other.children_[i]),
+              new IndexNode(*dynamic_cast<IndexNode*>(child))
+            );
+          }
         } else {
           children_[i] = make_tuple(
             get<0>(other.children_[i]),
             get<1>(other.children_[i]),
-            new IndexNode(*dynamic_cast<IndexNode*>(child))
+            nullptr
           );
         }
+        
       } else {
         children_[i] = make_tuple(0, "", nullptr);
       }
@@ -451,10 +460,7 @@ DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count,
       update_count_(update_count),
       b_update_count_(b_update_count){};
 
-DeltaPage::DeltaPage(const DeltaPage& other) : Page(other.GetPageKey()) {
-    // Copy Page's data array
-    memcpy(this->GetData(), other.GetData(), PAGE_SIZE);
-    
+DeltaPage::DeltaPage(const DeltaPage& other) : Page(other) {
     // Copy DeltaPage specific members
     last_pagekey_ = other.last_pagekey_;
     update_count_ = other.update_count_;
@@ -561,9 +567,7 @@ BasePage::BasePage(DMMTrie *trie, Node *root, const string &pid)
     : trie_(trie), root_(root), pid_(pid), Page({0, 0, false, pid}) {}
 
 BasePage::BasePage(const BasePage& other)
-: trie_(other.trie_), pid_(other.pid_), Page(other.GetPageKey()){
-  // Copy Page's data array
-  memcpy(this->GetData(), other.GetData(), PAGE_SIZE);
+: trie_(other.trie_), pid_(other.pid_), Page(other){
   // Deep copy the root node
   if (other.root_) {
     if (other.root_->IsLeaf()) {

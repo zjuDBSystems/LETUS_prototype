@@ -223,7 +223,7 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
   if (current_pagekey.version == 0)
     basepage = new BasePage(trie_, nullptr, pagekey.pid);
   else {
-    basepage = dynamic_cast<BasePage *>(pageLookup(current_pagekey, true));
+    basepage = new BasePage(*dynamic_cast<BasePage *>(pageLookup(current_pagekey, true)));//deep copy
     if (basepage == nullptr) {
       std::cerr << "Error: BasePage not found for PageKey: " << current_pagekey
                 << std::endl;
