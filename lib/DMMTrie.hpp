@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <vector>
 #include "VDLS.hpp"
-#include "utils.hpp"
+#include "commen.hpp"
 
 static constexpr size_t HASH_SIZE = 32;
 static constexpr size_t DMM_NODE_FANOUT = 10;

@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "DMMTrie.hpp"
-#include "utils.hpp"
+#include "commen.hpp"
 
 // 索引块结构体
 struct IndexBlock {
