@@ -1,0 +1,113 @@
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0000)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=00)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0001)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0002)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0003)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0004)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0006)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0008)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0011)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0015)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0016)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0019)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0023)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0024)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0026)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0029)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0032)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0035)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0036)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0060)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0122)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=01)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0164)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0222)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=02)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0245)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0250)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0291)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0390)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=03)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0513)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=05)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0545)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0565)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0606)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=06)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=0667)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=1558)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=15)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=1567)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=1642)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=16)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=2594)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=25)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=2715)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=27)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=2785)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=3022)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=30)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=3654)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=36)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=4440)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=44)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=4667)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=46)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=8162)
+Error: LatestBasePage not found in index file for PageKey: PageKey(version=0, tid=0, type=1, pid=81)
+=================================================================
+==324146==ERROR: AddressSanitizer: stack-use-after-return on address 0x7f34d59a2e80 at pc 0x000000547af8 bp 0x7ffef43afcb0 sp 0x7ffef43afca8
+READ of size 8 at 0x7f34d59a2e80 thread T0
+    #0 0x547af7 in PageKey::operator<(PageKey const&) const /home/xinyu.chen/LETUS_prototype/lib/commen.hpp:18:9
+    #1 0x56326e in PageKey::operator<=(PageKey const&) const /home/xinyu.chen/LETUS_prototype/lib/commen.hpp:34:18
+    #2 0x55420c in LSVPS::pageLookup(PageKey const&, bool) /home/xinyu.chen/LETUS_prototype/src/LSVPS.cpp:291:65
+    #3 0x552c55 in LSVPS::LoadPage(PageKey const&) /home/xinyu.chen/LETUS_prototype/src/LSVPS.cpp:206:29
+    #4 0x5231e9 in DMMTrie::GetPage(PageKey const&) /home/xinyu.chen/LETUS_prototype/src/DMMTrie.cpp:1081:33
+    #5 0x523ee5 in DMMTrie::Commit(unsigned long) /home/xinyu.chen/LETUS_prototype/src/DMMTrie.cpp:962:14
+    #6 0x4ff1ff in main /home/xinyu.chen/LETUS_prototype/workload/exes/get_put_2.cc:158:11
+    #7 0x7f34d8efdc86 in __libc_start_main /build/glibc-CVJwZb/glibc-2.27/csu/../csu/libc-start.c:310
+    #8 0x41f039 in _start (/home/xinyu.chen/LETUS_prototype/build/bin/get_put_2+0x41f039)
+
+Address 0x7f34d59a2e80 is located in stack of thread T0 at offset 0 in frame
+    #0 0x507c8f in __gnu_cxx::__normal_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >::operator-(long) const /usr/bin/../lib/gcc/x86_64-linux-gnu/9/../../../../include/c++/9/bits/stl_iterator.h:865
+
+  This frame has 2 object(s):
+    [32, 40) 'retval'
+    [64, 72) 'ref.tmp' (line 865)
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+      (longjmp and C++ exceptions *are* supported)
+SUMMARY: AddressSanitizer: stack-use-after-return /home/xinyu.chen/LETUS_prototype/lib/commen.hpp:18:9 in PageKey::operator<(PageKey const&) const
+Shadow bytes around the buggy address:
+  0x0fe71ab2c580: f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5
+  0x0fe71ab2c590: f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5
+  0x0fe71ab2c5a0: f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5
+  0x0fe71ab2c5b0: f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5
+  0x0fe71ab2c5c0: f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5
+=>0x0fe71ab2c5d0:[f5]f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5
+  0x0fe71ab2c5e0: f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5
+  0x0fe71ab2c5f0: f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5
+  0x0fe71ab2c600: f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5
+  0x0fe71ab2c610: f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5
+  0x0fe71ab2c620: f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5 f5
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==324146==ABORTING
