@@ -48,10 +48,12 @@ func (b *LetusBatch) Write(db interface{}) error {
 	db_ := db.(*LetusKVStroage)
 	for i := 0; i < len(b.kv); i++ {
 		ok := db_.Put(b.kv[i].key, b.kv[i].value)
-		if ok != nil {
-			return ok
-		}
+		if ok != nil { return ok }
 	}
+	seq, ok := db_.GetCurrentSeqNo()
+	if ok != nil { return ok }
+	ok = db_.Commit(seq)
+	if ok != nil { return ok }
 	return nil 
 }
 
