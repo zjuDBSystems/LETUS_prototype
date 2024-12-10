@@ -59,7 +59,7 @@ int taskGenerator(int tlen, int key_len, int value_len, Task& put_task,
 }
 
 int main(int argc, char** argv) {
-  int batch_size = 5000;  //
+  int batch_size = 60;  //
   int n_test = 1;
   int key_len = 5;      // 32
   int value_len = 256;  // 256, 512, 1024, 2048
@@ -76,7 +76,9 @@ int main(int argc, char** argv) {
 
   // init database
   LSVPS* page_store = new LSVPS();
-  VDLS* value_store = new VDLS();
+  std::string data_path;
+  data_path = "/Users/ldz/Code/miniLETUS/data/";//your own path
+  VDLS* value_store = new VDLS(data_path);
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);
 
@@ -109,7 +111,7 @@ int main(int argc, char** argv) {
     values = get_tasks[j].values;
     start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
-      if (i == 4986) {
+      if (i == 1) {
         cout << "!" << endl;
       }
       std::string key = keys[i];

@@ -11,7 +11,9 @@ using namespace std;
 
 int main(int argc, char** argv) {
   LSVPS* page_store = new LSVPS();
-  VDLS* value_store = new VDLS();
+  std::string data_path;
+  data_path = "/Users/ldz/Code/miniLETUS/data/";//your own path
+  VDLS* value_store = new VDLS(data_path);
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);
 
