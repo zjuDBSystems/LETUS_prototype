@@ -481,12 +481,14 @@ void DeltaPage::SerializeTo() {
 
   memcpy(buffer + current_size, &update_count_, sizeof(uint16_t));
   current_size += sizeof(uint16_t);
-
+  int i = 0;
+  std::cout << "Current_size is " << current_size << std::endl;
   for (const auto &item : deltaitems_) {
     if (current_size + sizeof(DeltaItem) > PAGE_SIZE) {  // exceeds page size
-      throw overflow_error("DeltaPage exceeds PAGE_SIZE during serialization.");
+      throw overflow_error("DeltaPage exceeds PAGE_SIZE during serialization._" + i);
     }
     item.SerializeTo(buffer, current_size);
+    i++;
   }
 }
 
@@ -1009,8 +1011,8 @@ BasePage *DMMTrie::GetPage(
     return it->second->second;
   }
 
-  BasePage *page = static_cast<BasePage *>(page_store_->LoadPage(
-      pagekey));  // page is not in cache, fetch it from LSVPS
+  BasePage *page = page_store_->LoadPage(
+      pagekey);  // page is not in cache, fetch it from LSVPS
   if (!page) {    // page is not found in disk
     return nullptr;
   }

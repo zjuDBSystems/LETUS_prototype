@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "DMMTrie.hpp"
-#include "utils.hpp"
+#include "commen.hpp"
 
 // 索引块结构体
 struct IndexBlock {
@@ -52,7 +52,7 @@ class LSVPS {
  public:
   LSVPS();
   Page *PageQuery(uint64_t version);
-  Page *LoadPage(const PageKey &pagekey);
+  BasePage *LoadPage(const PageKey &pagekey);
   void StorePage(Page *page);
   void AddIndexFile(const IndexFile &index_file);
   int GetNumOfIndexFile();

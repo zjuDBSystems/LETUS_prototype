@@ -13,8 +13,7 @@ using namespace std;
 // log stream format: fileID,offset,size\n
 class VDLS {
  public:
-  VDLS(string file_path =
-           "/mnt/c/Users/qyf/Desktop/LETUS_prototype/data/")
+  VDLS(string file_path = "/mnt/c/Users/qyf/Desktop/LETUS_prototype/data/")
       : current_fileID_(0), current_offset_(0), file_path_(file_path) {}
 
   tuple<uint64_t, uint64_t, uint64_t> WriteValue(
@@ -27,8 +26,9 @@ class VDLS {
       current_offset_ = 0;
     }
 
-    ofstream file(file_path_ + "data_file_" + to_string(current_fileID_) + ".dat",
-                  ios::app);  // create or open the file for appending
+    ofstream file(
+        file_path_ + "data_file_" + to_string(current_fileID_) + ".dat",
+        ios::app);  // create or open the file for appending
     if (!file) {
       throw std::runtime_error("Cannot open file ");
     }

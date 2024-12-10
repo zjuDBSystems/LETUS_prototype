@@ -133,5 +133,4 @@ class Page {  //设置成抽象类 序列化 反序列化 getPageKey setPageKey 
 
   char* GetData() { return data_; }
 };
-
 #endif
