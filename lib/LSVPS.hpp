@@ -57,7 +57,7 @@ class LSVPS {
   void AddIndexFile(const IndexFile &index_file);
   int GetNumOfIndexFile();
   void RegisterTrie(DMMTrie *DMM_trie);
-
+  const std::vector<Page *> &GetTable() const;
  private:
   // 块缓存类（占位）
   class blockCache {};

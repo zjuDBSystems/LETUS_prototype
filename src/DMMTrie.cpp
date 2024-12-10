@@ -54,8 +54,8 @@ string HashFunction(const string &input) {  // hash function SHA-256
 void Node::CalculateHash() {}
 void Node::AddChild(int index, Node *child, uint64_t version,
                     const string &hash) {}
-Node *Node::GetChild(int index) { return nullptr; }
-bool Node::HasChild(int index) { return false; }
+Node *Node::GetChild(int index) const { return nullptr; }
+bool Node::HasChild(int index) const { return false; }
 void Node::SetChild(int index, uint64_t version, string hash) {}
 string Node::GetChildHash(int index) {}
 uint64_t Node::GetChildVersion(int index) {}
@@ -67,6 +67,13 @@ LeafNode::LeafNode(uint64_t V, const string &k,
                    const tuple<uint64_t, uint64_t, uint64_t> &l,
                    const string &h)
     : version_(V), key_(k), location_(l), hash_(h), is_leaf_(true) {}
+
+// LeafNode::LeafNode(LeafNode& other) 
+//     : version_(other.version_),
+//       key_(other.key_),
+//       location_(other.location_),
+//       hash_(other.hash_),
+//       is_leaf_(other.is_leaf_) {}
 
 void LeafNode::CalculateHash(const string &value) {
   hash_ = HashFunction(key_ + value);
@@ -176,6 +183,35 @@ IndexNode::IndexNode(
       bitmap_(bitmap),
       children_(children),
       is_leaf_(false) {}
+
+IndexNode::IndexNode(const IndexNode& other)
+    : version_(other.version_),
+      hash_(other.hash_),
+      bitmap_(other.bitmap_),
+      is_leaf_(other.is_leaf_) {
+    // Deep copy children array
+    for (size_t i = 0; i < DMM_NODE_FANOUT; i++) {
+      if (other.HasChild(i)) {
+        Node* child = other.GetChild(i);
+        if (child->IsLeaf()) {
+          children_[i] = make_tuple(
+            get<0>(other.children_[i]),
+            get<1>(other.children_[i]),
+            new LeafNode(*dynamic_cast<LeafNode*>(child))
+          );
+        } else {
+          children_[i] = make_tuple(
+            get<0>(other.children_[i]),
+            get<1>(other.children_[i]),
+            new IndexNode(*dynamic_cast<IndexNode*>(child))
+          );
+        }
+      } else {
+        children_[i] = make_tuple(0, "", nullptr);
+      }
+    }
+}
+
 
 void IndexNode::CalculateHash() {
   string concatenated_hash;
@@ -303,7 +339,7 @@ void IndexNode::AddChild(int index, Node *child, uint64_t version,
     throw runtime_error("AddChild out of range.");
 }
 
-Node *IndexNode::GetChild(int index) {
+Node *IndexNode::GetChild(int index) const {
   if (index >= 0 && index < DMM_NODE_FANOUT) {
     if (bitmap_ & (1 << index)) {
       return get<2>(children_[index]);
@@ -313,7 +349,7 @@ Node *IndexNode::GetChild(int index) {
     throw runtime_error("GetChild out of range.");
 }
 
-bool IndexNode::HasChild(int index) {
+bool IndexNode::HasChild(int index) const {
   return bitmap_ & (1 << index) ? true : false;
 }
 
@@ -415,6 +451,17 @@ DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count,
       update_count_(update_count),
       b_update_count_(b_update_count){};
 
+DeltaPage::DeltaPage(const DeltaPage& other) : Page(other.GetPageKey()) {
+    // Copy Page's data array
+    memcpy(this->GetData(), other.GetData(), PAGE_SIZE);
+    
+    // Copy DeltaPage specific members
+    last_pagekey_ = other.last_pagekey_;
+    update_count_ = other.update_count_;
+    b_update_count_ = other.b_update_count_;
+    deltaitems_ = other.deltaitems_;
+}
+
 DeltaPage::DeltaPage(char *buffer) : b_update_count_(0) {
   Page({0, 0, true, ""});  // 临时初始化，后面会更新
 
@@ -512,6 +559,22 @@ void DeltaPage::ClearBasePageUpdateCount() { b_update_count_ = 0; }
 
 BasePage::BasePage(DMMTrie *trie, Node *root, const string &pid)
     : trie_(trie), root_(root), pid_(pid), Page({0, 0, false, pid}) {}
+
+BasePage::BasePage(const BasePage& other)
+: trie_(other.trie_), pid_(other.pid_), Page(other.GetPageKey()){
+  // Copy Page's data array
+  memcpy(this->GetData(), other.GetData(), PAGE_SIZE);
+  // Deep copy the root node
+  if (other.root_) {
+    if (other.root_->IsLeaf()) {
+      root_ = new LeafNode(*dynamic_cast<LeafNode*>(other.root_));
+    } else {
+      root_ = new IndexNode(*dynamic_cast<IndexNode*>(other.root_));
+    }
+  } else {
+    root_ = nullptr;
+  }
+}
 
 BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
   Page({0, 0, false, ""});  // 临时初始化，后面会更新
@@ -674,7 +737,7 @@ void BasePage::UpdatePage(uint64_t version,
   if (deltapage->GetBasePageUpdateCount() >=
       Tb_) {  // Each page generates a checkpoint as
               // BasePage after every 𝑇𝑏 updates
-    BasePage *basepage_copy = new BasePage(*this);
+    BasePage *basepage_copy = new BasePage(*this);//not deep copy!!!!!!!!!!!!!!!!!!!!!!!!!
     basepage_copy->SerializeTo();
     trie_->WritePageCache(pagekey, basepage_copy);  // store basepage in cache
 
@@ -910,6 +973,7 @@ void DMMTrie::Commit(uint64_t version) {
 
   for (auto &it : page_cache_) {
     page_store_->StorePage(it.second);
+    std:: cout <<"Commit"<<version<< " Store Page: " << it.second->GetPageKey() << std::endl;
   }
   page_cache_.clear();
   put_cache_.clear();
