@@ -1,0 +1,17 @@
+batch_size,value_size,put_latency,get_latency,put_throughput,get_throughput
+500,256,latency=11.9726,latency=11.2614,put=334.096,get=355.195
+500,512,latency=14.7786,latency=13.0697,put=270.661,get=306.051
+500,1024,latency=12.5475,latency=10.0672,put=318.788,get=397.33
+500,2048,latency=12.9515,latency=11.5889,put=308.844,get=345.157
+1000,256,latency=13.267,latency=8.46806,put=301.499,get=472.363
+1000,512,latency=14.6496,latency=10.5814,put=273.045,get=378.023
+1000,1024,latency=15.3456,latency=14.0118,put=260.662,get=285.473
+1000,2048,latency=15.125,latency=11.607,put=264.463,get=344.62
+2000,256,latency=15.7977,latency=10.4574,put=253.201,get=382.505
+2000,512,latency=15.5264,latency=13.3724,put=257.626,get=299.124
+2000,1024,latency=13.2655,latency=13.4507,put=301.535,get=297.382
+2000,2048,latency=16.2214,latency=10.5656,put=246.588,get=378.589
+4000,256,latency=14.3994,latency=13.035,put=277.79,get=306.867
+4000,512,latency=14.4609,latency=9.22545,put=276.609,get=433.583
+4000,1024,latency=14.7046,latency=12.0622,put=272.024,get=331.616
+4000,2048,latency=14.5624,latency=15.9598,put=274.68,get=250.629

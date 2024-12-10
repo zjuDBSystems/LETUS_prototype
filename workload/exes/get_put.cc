@@ -59,10 +59,10 @@ int taskGenerator(int tlen, int key_len, int value_len, Task& put_task,
 }
 
 int main(int argc, char** argv) {
-  int batch_size = 5000;  //
-  int n_test = 1;
+  int batch_size = 4000;  //
+  int n_test = 5;
   int key_len = 5;    // 32
-  int value_len = 256;  // 256, 512, 1024, 2048
+  int value_len = 2048;  // 256, 512, 1024, 2048
   // init tasks
   Task* put_tasks = new Task[n_test];
   Task* get_tasks = new Task[n_test];
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
     for (int i = 0; i < keys.size(); i++) {
       string key = keys[i];
       string value = values[i];
-      std::cout << i << " PUT:" << key << "," << value << std::endl;
+      //std::cout << i << " PUT:" << key << "," << value << std::endl;
       trie->Put(0, 1, key, value);
       // std::cout << i << "PUT:" << key << "," << value << std::endl;
     }
@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
       // std::cout<<"trie->Get(0,1,\""<<key<<"\");"<<std::endl;
-      std::cout << i << " GET:" << key << std::endl;
+      //std::cout << i << " GET:" << key << std::endl;
       trie->Get(0, 1, key);
     }
     end = chrono::system_clock::now();
@@ -127,6 +127,14 @@ int main(int argc, char** argv) {
   std::cout << "put latency=" << put_latency_sum / n_test << " s, ";
   std::cout << "get latency=" << get_latency_sum / n_test << " s, ";
   std::cout << std::endl;
+  double total_operations = batch_size * n_test;
+    double put_throughput = total_operations / put_latency_sum;  // ops/s
+    double get_throughput = total_operations / get_latency_sum;  // ops/s
+    
+    std::cout << "throughput: ";
+    std::cout << "put=" << put_throughput << " ops/s, ";
+    std::cout << "get=" << get_throughput << " ops/s";
+    std::cout << std::endl;
 
   return 0;
 }

@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 
 PROJECT(letus_prototype)
 
-find_library(jsoncpp REQUIRED)
+#find_library(jsoncpp REQUIRED)
 find_package(OpenSSL 1.1 REQUIRED)
 
 include_directories(${OPENSSL_INCLUDE_DIR})

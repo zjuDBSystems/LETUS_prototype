@@ -639,8 +639,8 @@ void BasePage::UpdatePage(uint64_t version,
     deltapage->SetLastPageKey(deltapage_pagekey);
     return;
   }
-  cout << pagekey.pid << ":" << d_update_count_ << " " << b_update_count_
-       << endl;
+  //cout << pagekey.pid << ":" << d_update_count_ << " " << b_update_count_
+   //    << endl;
 
   pair<uint64_t, uint64_t> page_version = trie_->GetPageVersion(pagekey);
   trie_->UpdatePageVersion(pagekey, version, page_version.second);
@@ -771,9 +771,9 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
   }
 
   string value = value_store_->ReadValue(leafnode->GetLocation());
-  cout << "Key " << key << " has value " << value << " at version " <<
-  version
-       << endl;
+  //cout << "Key " << key << " has value " << value << " at version " <<
+  //version
+    ///   << endl;
   return value;
 }
 
