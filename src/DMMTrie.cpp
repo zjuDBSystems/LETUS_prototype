@@ -567,7 +567,7 @@ BasePage::BasePage(DMMTrie *trie, Node *root, const string &pid)
     : trie_(trie), root_(root), pid_(pid), Page({0, 0, false, pid}) {}
 
 BasePage::BasePage(const BasePage& other)
-: trie_(other.trie_), pid_(other.pid_), Page(other){
+: Page(other), trie_(other.trie_), pid_(other.pid_) {
   // Deep copy the root node
   if (other.root_) {
     if (other.root_->IsLeaf()) {

@@ -155,6 +155,9 @@ int main(int argc, char** argv) {
     }
     std::cout << "COMMIT:"
               << "v" << j + 1 << std::endl;
+    if(j == 727){
+      std::cout<<"Ouch!"<<std::endl;
+    }
     trie->Commit(j + 1);
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);

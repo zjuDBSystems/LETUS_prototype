@@ -273,12 +273,13 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
   if (current_pagekey.version == 0)
     basepage = new BasePage(trie_, nullptr, pagekey.pid);
   else {
-    basepage = new BasePage(*dynamic_cast<BasePage *>(pageLookup(current_pagekey, true)));//deep copy
+    basepage = dynamic_cast<BasePage *>(pageLookup(current_pagekey, true));
     if (basepage == nullptr) {
       std::cerr << "Error: BasePage not found for PageKey: " << current_pagekey
                 << std::endl;
       throw std::runtime_error("BasePage not found for the given PageKey");
     }
+    basepage = new BasePage(*basepage);//deep copy
   }
 
   while (!delta_pages.empty()) {
@@ -430,23 +431,23 @@ Page *LSVPS::readPageFromIndexFile(
   std::cout << "Last entry in lookup_block: "
             << lookup_block.entries.back().first << std::endl;
 
-  // 使用 upper_bound 找到第一个大于 pagekey 的元素
-  auto it =
-      std::upper_bound(lookup_block.entries.begin(), lookup_block.entries.end(),
-                       std::make_pair(pagekey, size_t(0)));
+  // 使用自定义比较来找到第一个大于 pagekey 的元素
+  auto it = std::upper_bound(
+      lookup_block.entries.begin(), 
+      lookup_block.entries.end(),
+      std::make_pair(pagekey, 0), // 使用0作为location占位符
+      [](const auto& a, const auto& b) {
+          return a.first < b.first;
+      }
+  );
 
   // 如果找到了大于的元素，且不是第一个元素，就取前一个
   if (it != lookup_block.entries.begin()) {
     --it;  // 回退到前一个元素
-           // 使用 it 指向的元素
   } else {
     // 没有找到合适的元素
     return nullptr;
   }
-
-  // if (it->second >= std::filesystem::file_size(file_it->filepath)) {
-  //   throw std::runtime_error("Invalid file offset in lookup block");
-  // }
 
   in_file.seekg(it->second);
   if (!in_file.good()) {
@@ -474,6 +475,7 @@ Page *LSVPS::readPageFromIndexFile(
           }
           return m.pagekey.tid == pagekey.tid && m.pagekey.pid == pagekey.pid &&
                  m.pagekey.type && m.pagekey > pagekey;
+                 //可能这里tid不需要 因为后面一个trie会绑定一个LSVPS
         });
 
     if (mapping == mappings.end()) {  //边界

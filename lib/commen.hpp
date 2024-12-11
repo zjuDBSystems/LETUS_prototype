@@ -101,13 +101,9 @@ class Page {  //设置成抽象类 序列化 反序列化 getPageKey setPageKey 
 
  public:
   Page() {}
-  // Page(PageKey pageKey, char* data) : pagekey_(pageKey){
-  //     for( int i = 0; i <= PAGE_SIZE; i++) {
-  //         data_[i] = data[i];
-  //     }
-  // }
 
   Page(PageKey pagekey) : pagekey_(pagekey) {}
+  
   Page(const Page& other){
     memcpy(data_, other.data_, PAGE_SIZE);
     pagekey_ = other.pagekey_;
