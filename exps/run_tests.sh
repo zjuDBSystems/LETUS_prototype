@@ -18,9 +18,6 @@ echo "batch_size,value_size,put_latency,get_latency,put_throughput,get_throughpu
 # 运行测试
 for batch_size in "${batch_sizes[@]}"; do
     for value_size in "${value_sizes[@]}"; do
-        rm -rf ../data/
-        mkdir -p ../data/
-
         echo "Running test with batch_size=$batch_size, value_size=$value_size"
         # 运行测试并提取结果
         output=$(../build/bin/get_put -b $batch_size -v $value_size)
