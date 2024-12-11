@@ -13,8 +13,10 @@
 #include <tuple>
 #include <unordered_map>
 #include <vector>
+
 #include "VDLS.hpp"
 #include "commen.hpp"
+
 
 static constexpr size_t HASH_SIZE = 32;
 static constexpr size_t DMM_NODE_FANOUT = 10;
@@ -50,8 +52,8 @@ class Node {
                                bool is_root) = 0;
   virtual void AddChild(int index, Node *child, uint64_t version,
                         const string &hash);
-  virtual Node *GetChild(int index);
-  virtual bool HasChild(int index);
+  virtual Node *GetChild(int index) const;
+  virtual bool HasChild(int index) const;
   virtual void SetChild(int index, uint64_t version, string hash);
   virtual string GetChildHash(int index);
   virtual uint64_t GetChildVersion(int index);
@@ -105,6 +107,7 @@ class IndexNode : public Node {
   IndexNode(
       uint64_t version, const string &hash, uint16_t bitmap,
       const array<tuple<uint64_t, string, Node *>, DMM_NODE_FANOUT> &children);
+  IndexNode(const IndexNode& other);
   void CalculateHash() override;
   void SerializeTo(char *buffer, size_t &current_size,
                    bool is_root) const override;
@@ -114,8 +117,8 @@ class IndexNode : public Node {
                   uint8_t location_in_page, DeltaPage *deltapage);
   void AddChild(int index, Node *child, uint64_t version = 0,
                 const string &hash = "") override;
-  Node *GetChild(int index) override;
-  bool HasChild(int index) override;
+  Node *GetChild(int index) const override;
+  bool HasChild(int index) const override;
   void SetChild(int index, uint64_t version, string hash) override;
   string GetChildHash(int index);
   uint64_t GetChildVersion(int index);
@@ -161,6 +164,7 @@ class DeltaPage : public Page {
   DeltaPage(PageKey last_pagekey = {0, 0, true, ""}, uint16_t update_count = 0,
             uint16_t b_update_count = 0);
   DeltaPage(char *buffer);
+  DeltaPage(const DeltaPage& other);
   void AddIndexNodeUpdate(uint8_t location, uint64_t version,
                           const string &hash, uint8_t index,
                           const string &child_hash);
@@ -188,6 +192,7 @@ class BasePage : public Page {
            const string &pid = "");
   BasePage(DMMTrie *trie, char *buffer);
   BasePage(DMMTrie *trie, string key, string pid, string nibbles);
+  BasePage(const BasePage& other);//deep copy
   ~BasePage();
   void SerializeTo();
   void UpdatePage(uint64_t version,
@@ -202,8 +207,8 @@ class BasePage : public Page {
   DMMTrie *trie_;
   Node *root_;              // the root of the page
   string pid_;              // nibble path serves as page id
-  const uint16_t Td_ = 128;  // update threshold of DeltaPage
-  const uint16_t Tb_ = 256;  // update threshold of BasePage
+  const uint16_t Td_ = 32;  // update threshold of DeltaPage
+  const uint16_t Tb_ = 64;  // update threshold of BasePage
 };
 
 class DMMTrie {

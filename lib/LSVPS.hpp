@@ -10,7 +10,7 @@
 
 // 索引块结构体
 struct IndexBlock {
-  static constexpr size_t OS_PAGE_SIZE = 4096;  // 4KB
+  static constexpr size_t INDEXBLOCK_SIZE = 12288;  // 12KB
 
   struct Mapping {
     PageKey pagekey;
@@ -18,7 +18,7 @@ struct IndexBlock {
   };
 
   static constexpr size_t MAPPINGS_PER_BLOCK =
-      (OS_PAGE_SIZE - sizeof(size_t)) / sizeof(Mapping);
+      (INDEXBLOCK_SIZE - sizeof(size_t)) / sizeof(Mapping);
 
   IndexBlock();
   bool AddMapping(const PageKey &pagekey, uint64_t location);
@@ -40,9 +40,9 @@ struct IndexFile {
 
 // 查找块结构体
 struct LookupBlock {
-  static const size_t BLOCK_SIZE = 4096;  // 4KB
+  static const size_t BLOCK_SIZE = 12288;  // 12KB
   
-  std::vector<std::pair<PageKey, size_t>> entries;
+  std::vector<std::pair<PageKey, size_t>> entries;//mapping indexblock to its location
   bool SerializeTo(std::ostream &out) const;
   bool Deserialize(std::istream &in);
 };
@@ -57,7 +57,7 @@ class LSVPS {
   void AddIndexFile(const IndexFile &index_file);
   int GetNumOfIndexFile();
   void RegisterTrie(DMMTrie *DMM_trie);
-
+  const std::vector<Page *> &GetTable() const;
  private:
   // 块缓存类（占位）
   class blockCache {};

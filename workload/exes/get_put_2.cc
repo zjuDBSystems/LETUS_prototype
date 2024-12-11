@@ -64,7 +64,7 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
 
 int main(int argc, char** argv) {
   int batch_size = 60;  //
-  int n_test = 1;
+  int n_test = 1000;
   int key_len = 5;    // 32
   int value_len = 5;  // 256, 512, 1024, 2048
 
@@ -155,6 +155,9 @@ int main(int argc, char** argv) {
     }
     std::cout << "COMMIT:"
               << "v" << j + 1 << std::endl;
+    if(j == 727){
+      std::cout<<"Ouch!"<<std::endl;
+    }
     trie->Commit(j + 1);
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
