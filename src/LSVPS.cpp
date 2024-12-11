@@ -1,5 +1,5 @@
 #include "LSVPS.hpp"
-#include "commen.hpp"
+#include "common.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -480,8 +480,46 @@ Page *LSVPS::readPageFromIndexFile(
 
     if (mapping == mappings.end()) {  //边界
       for ( ++file_it; file_it != this->index_files_.end(); ++file_it) {
-        Page *page = readPageFromIndexFile(file_it, pagekey, isPrecise);
-        if (page != nullptr) return page;
+        /*
+        std::ifstream in_file_t(file_it->filepath, std::ios::binary);
+        if (!in_file_t) {
+          throw std::runtime_error("Failed to open index file: " + file_it->filepath);
+        }
+
+        // Read LookupBlock from the end of file
+        in_file_t.seekg(-LookupBlock::BLOCK_SIZE, std::ios::end);
+        if (!in_file_t.good()) {
+          throw std::runtime_error("Failed to seek to LookupBlock");
+        }
+
+        LookupBlock lookup_block;
+        if (!lookup_block.Deserialize(in_file)) {
+          throw std::runtime_error("Failed to deserialize LookupBlock");
+        }
+
+        // 验证lookup_block中的entries
+        if (lookup_block.entries.empty()) {
+          return nullptr;
+        }
+        for(auto it : lookup_block.entries){//traverse all index blocks
+          in_file.seekg(it->second);
+          if (!in_file.good()) {
+            throw std::runtime_error("Failed to seek to IndexBlock");
+          }
+
+          IndexBlock index_block;
+          if (!index_block.Deserialize(in_file)) {
+            throw std::runtime_error("Failed to deserialize IndexBlock");
+          }
+
+          // 验证index_block中的映射
+          const auto &mappings = index_block.GetMappings();
+          if (mappings.empty()) {
+            return nullptr;
+          }
+        }
+        */
+
       }
       for (const auto &page : this->table_.GetBuffer()) {
         auto temp_pagekey = page->GetPageKey();

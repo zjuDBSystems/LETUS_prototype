@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "DMMTrie.hpp"
-#include "commen.hpp"
+#include "common.hpp"
 
 // 索引块结构体
 struct IndexBlock {
@@ -76,7 +76,7 @@ class LSVPS {
                         const LookupBlock &lookup_blocks,
                         const std::filesystem::path &filepath);
     std::vector<Page *> buffer_;
-    const size_t max_size_ = 2000;//gurantee that max_size >= one version pages
+    const size_t max_size_ = 200;//gurantee that max_size >= one version pages
     LSVPS &parent_LSVPS_;
   };
 

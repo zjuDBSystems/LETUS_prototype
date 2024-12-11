@@ -178,6 +178,9 @@ int main(int argc, char** argv) {
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
       uint64_t version = versions[i];
+      if(version == 70 && i == 0){
+        std::cout<<""<<std::endl;
+      }
       std::cout << i << " GET:" << key << ", v" << version << std::endl;
       std::string value_2 = trie->Get(0, version, key);
       std::cout << "value = " << value_2 << std::endl;
