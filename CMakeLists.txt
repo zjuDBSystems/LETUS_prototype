@@ -35,11 +35,8 @@ include_directories(workload/lib/)
 
 add_executable(get_put "workload/exes/get_put.cc" ${letus_src})
 target_link_libraries(get_put OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
-<<<<<<< HEAD
-=======
 add_executable(get_put_2 "workload/exes/get_put_2.cc" ${letus_src})
 target_link_libraries(get_put_2 OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
->>>>>>> dev
 
 # add_executable(simple "workload/exes/simple.cc")
 

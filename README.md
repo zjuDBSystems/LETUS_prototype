@@ -5,8 +5,8 @@ This is a prototype implementation of [LETUS: A Log-Structured Efficient Trusted
 * [OpenSSL](https://www.openssl.org/) >= 1.1.0
 
 ## Build
-in `lib/VDLS.hpp` line 26 and line 46
-change the directory to the absolute path of the data directory.
+in `workload/exes/get_put.cc` and `workload/exes/get_put_2.cc`
+change `data_path` to the absolute path of the data directory.
 
 ```
 $ git clone https://github.com/kusakabe/LETUS_prototype.git
