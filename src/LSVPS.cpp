@@ -479,7 +479,7 @@ Page *LSVPS::readPageFromIndexFile(
         });
 
     if (mapping == mappings.end()) {  //边界
-      for (; file_it != this->index_files_.end(); ++file_it) {
+      for ( ++file_it; file_it != this->index_files_.end(); ++file_it) {
         Page *page = readPageFromIndexFile(file_it, pagekey, isPrecise);
         if (page != nullptr) return page;
       }
