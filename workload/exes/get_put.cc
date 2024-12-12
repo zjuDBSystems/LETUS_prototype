@@ -44,21 +44,21 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
   timeval t0;
   gettimeofday(&t0, NULL);
   srand(t0.tv_sec * 10000000000 + t0.tv_usec * 10000);
-
+  uint64_t version = task_i + 1;
   for (int j = 0; j < tlen; j++) {
     std::string key = BuildKeyName(key_generator.Next(), key_len);
     std::string val = "";
     val = val.append(value_len, RandomPrintChar());
-    uint64_t version = task_i + 1;
 
     put_task.keys.emplace_back(key);
     put_task.values.emplace_back(val);
     put_task.ops.emplace_back(1);
     put_task.versions.emplace_back(version);
-    get_task.keys.emplace_back(key);
-    get_task.values.emplace_back(val);
-    get_task.ops.emplace_back(0);
-    get_task.versions.emplace_back(version);
+    for (int i = 0; i < get_task.keys.size(); i++) {
+      if (get_task.keys[i] == key) {
+        get_task.values[i] = val;
+      }
+    }
   }
   return 0;
 }
@@ -158,6 +158,7 @@ int main(int argc, char** argv) {
   // start test
   double put_latency_sum = 0;
   double get_latency_sum = 0;
+  double wrong_cnt = 0;
   for (int j = 0; j < n_test; j++) {
     // put
     auto keys = put_tasks[j].keys;
@@ -165,8 +166,8 @@ int main(int argc, char** argv) {
     auto versions = put_tasks[j].versions;
     auto start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
-      string key = keys[i];
-      string value = values[i];
+      std::string key = keys[i];
+      std::string value = values[i];
       uint64_t version = versions[i];
       std::cout << i << " PUT:" << key << "," << value << ", v" << version
                 << std::endl;
@@ -184,10 +185,14 @@ int main(int argc, char** argv) {
     start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
+      std::string value = values[i];
       uint64_t version = versions[i];
       std::cout << i << " GET:" << key << ", v" << version << std::endl;
       std::string value_2 = trie->Get(0, version, key);
       std::cout << "value = " << value_2 << std::endl;
+      if (value != value_2) {
+        wrong_cnt += 1;
+      }
     }
     trie->Commit(j + 1);
     end = chrono::system_clock::now();
@@ -213,6 +218,7 @@ int main(int argc, char** argv) {
   std::cout << "get= " << batch_size / (get_latency_sum / n_test) << " ops, ";
   std::cout << "put= " << batch_size / (put_latency_sum / n_test) << " ops, ";
   std::cout << std::endl;
+  std::cout << "wrong count = " << wrong_cnt << std::endl;
   rs_file.close();
 
   return 0;

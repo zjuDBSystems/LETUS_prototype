@@ -26,9 +26,9 @@ for batch_size in "${batch_sizes[@]}"; do
     for value_size in "${value_sizes[@]}"; do
         result_path="$PWD/results/get_put/b${batch_size}v${value_size}.csv"
         echo "result_path: $result_path"
-        echo "cmd: ../build/bin/get_put -b $batch_size -v $value_size -n $n_test -d $data_path -r $result_path"
+        echo "cmd: ../build_release/bin/get_put -b $batch_size -v $value_size -n $n_test -d $data_path -r $result_path"
         # 运行测试并提取结果
-        output=$(../build/bin/get_put -b $batch_size -v $value_size -n $n_test -d $data_path -r $result_path)
+        output=$(../build_release/bin/get_put -b $batch_size -v $value_size -n $n_test -d $data_path -r $result_path)
         
         # 使用awk提取平均延迟和吞吐量
         put_latency=$(echo "$output" | grep "latency:" | awk '{print $3}')

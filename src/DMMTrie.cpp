@@ -1,8 +1,4 @@
 #include "DMMTrie.hpp"
-<<<<<<< HEAD
-=======
-
->>>>>>> dev
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 #include "LSVPS.hpp"
