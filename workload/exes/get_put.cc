@@ -9,6 +9,7 @@
 
 #include <unistd.h>
 #include <chrono>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -67,9 +68,11 @@ int main(int argc, char** argv) {
   int n_test = 1;
   int key_len = 5;      // 32
   int value_len = 256;  // 256, 512, 1024, 2048
+  std::string data_path = "/home/xinyu.chen/LETUS_prototype/data/";
+  std::string result_path = "/home/xinyu.chen/LETUS_prototype/exps/results/";
 
   int opt;
-  while ((opt = getopt(argc, argv, "b:n:k:v:")) != -1) {
+  while ((opt = getopt(argc, argv, "b:n:k:v:d:r:")) != -1) {
     switch (opt) {
       case 'b':  // batch size
       {
@@ -111,6 +114,18 @@ int main(int argc, char** argv) {
         break;
       }
 
+      case 'd':  // data path
+      {
+        data_path = optarg;
+        break;
+      }
+
+      case 'r':  // result path
+      {
+        result_path = optarg;
+        break;
+      }
+
       default:
         std::cerr << "Unknown argument " << argv[optind] << std::endl;
         break;
@@ -130,11 +145,15 @@ int main(int argc, char** argv) {
 
   // init database
   LSVPS* page_store = new LSVPS();
-  std::string data_path;
-  data_path = "/home/xinyu.chen/LETUS_prototype/data/";  // your own path
   VDLS* value_store = new VDLS(data_path);
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);
+  ofstream rs_file;
+  rs_file.open(result_path, ios::trunc);
+  rs_file << "version,get_latency,put_latency,get_throughput,put_throughput"
+          << std::endl;
+  rs_file.close();
+  rs_file.open(result_path, ios::app);
 
   // start test
   double put_latency_sum = 0;
@@ -182,19 +201,22 @@ int main(int argc, char** argv) {
 
     put_latency_sum += put_latency;
     get_latency_sum += get_latency;
-    std::cout << "test " << j << ": ";
-    std::cout << "put latency=" << put_latency << " s, ";
-    std::cout << "get latency=" << get_latency << " s, ";
-    std::cout << std::endl;
+
+    rs_file << j + 1 << ",";
+    rs_file << get_latency << ",";
+    rs_file << put_latency << ",";
+    rs_file << batch_size / get_latency << ",";
+    rs_file << batch_size / put_latency << std::endl;
   }
   std::cout << "latency: ";
-  std::cout << "put= " << put_latency_sum / n_test << " s, ";
   std::cout << "get= " << get_latency_sum / n_test << " s, ";
+  std::cout << "put= " << put_latency_sum / n_test << " s, ";
   std::cout << std::endl;
   std::cout << "throughput: ";
-  std::cout << "put= " << batch_size / put_latency_sum << " ops, ";
-  std::cout << "get= " << batch_size / get_latency_sum << " ops, ";
+  std::cout << "get= " << batch_size / (get_latency_sum / n_test) << " ops, ";
+  std::cout << "put= " << batch_size / (put_latency_sum / n_test) << " ops, ";
   std::cout << std::endl;
+  rs_file.close();
 
   return 0;
 }
