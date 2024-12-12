@@ -21,8 +21,10 @@ using namespace std;
 
 string HashFunction(const string &input) {  // hash function SHA-256
   EVP_MD_CTX *ctx = EVP_MD_CTX_new();       // create SHA-256 context
+
   EVP_DigestInit_ex(ctx, EVP_sha256(),
                     nullptr);  // initialize SHA-256 hash computation
+
   EVP_DigestUpdate(ctx, input.c_str(),
                    input.size());  // update the hash with input string
 
@@ -30,17 +32,11 @@ string HashFunction(const string &input) {  // hash function SHA-256
   unsigned int hash_len = 0;
 
   EVP_DigestFinal_ex(ctx, hash, &hash_len);
+
+  EVP_DigestFinal_ex(ctx, hash, &hash_len);
   EVP_MD_CTX_free(ctx);
 
   return string(reinterpret_cast<char *>(hash), hash_len);
-
-  // stringstream ss;
-  // for (unsigned int i = 0; i < hash_len; i++) {
-  //   ss << hex << setw(2) << setfill('0')
-  //      << (int)hash[i];  // convert the resulting hash to a hexadecimal
-  //      string
-  // }
-  // return ss.str();
 }
 
 void Node::CalculateHash() {}

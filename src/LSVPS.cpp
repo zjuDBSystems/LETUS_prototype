@@ -479,7 +479,7 @@ Page *LSVPS::readPageFromIndexFile(
         });
 
     if (mapping == mappings.end()) {  //边界
-      for ( ++file_it; file_it != this->index_files_.end(); ++file_it) {
+      // for ( ++file_it; file_it != this->index_files_.end(); ++file_it) {}
         /*
         std::ifstream in_file_t(file_it->filepath, std::ios::binary);
         if (!in_file_t) {
@@ -520,7 +520,6 @@ Page *LSVPS::readPageFromIndexFile(
         }
         */
 
-      }
       for (const auto &page : this->table_.GetBuffer()) {
         auto temp_pagekey = page->GetPageKey();
         if (temp_pagekey.tid == pagekey.tid &&
