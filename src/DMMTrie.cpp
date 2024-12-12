@@ -514,15 +514,13 @@ void DeltaPage::SerializeTo() {
 
   memcpy(buffer + current_size, &update_count_, sizeof(uint16_t));
   current_size += sizeof(uint16_t);
-  int i = 0;
-  std::cout << "Current_size is " << current_size << std::endl;
+  
   for (const auto &item : deltaitems_) {
     if (current_size + sizeof(DeltaItem) > PAGE_SIZE) {  // exceeds page size
       throw overflow_error(
-          "DeltaPage exceeds PAGE_SIZE during serialization._" + i);
+          "DeltaPage exceeds PAGE_SIZE during serialization._");
     }
     item.SerializeTo(buffer, current_size);
-    i++;
   }
 }
 
@@ -890,8 +888,10 @@ void DMMTrie::Commit(uint64_t version) {
 
   for (auto &it : page_cache_) {
     page_store_->StorePage(it.second);
+    #ifdef DEBUG
     std::cout << "Commit" << version
               << " Store Page: " << it.second->GetPageKey() << std::endl;
+    #endif
   }
   page_cache_.clear();
   put_cache_.clear();

@@ -64,7 +64,7 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
 
 int main(int argc, char** argv) {
   int batch_size = 60;  //
-  int n_test = 1000;
+  int n_test = 100;
   int key_len = 5;    // 32
   int value_len = 5;  // 256, 512, 1024, 2048
 
@@ -154,10 +154,10 @@ int main(int argc, char** argv) {
       trie->Put(0, version, key, value);
     }
     std::cout << "COMMIT:"
-              << "v" << j + 1 << std::endl;
-    if(j == 727){
-      std::cout<<"Ouch!"<<std::endl;
-    }
+              << "v" << j + 1 << std::endl;          
+    // if(j == 727){
+    //   std::cout<<"Ouch!"<<std::endl;
+    // }
     trie->Commit(j + 1);
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
@@ -178,9 +178,6 @@ int main(int argc, char** argv) {
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
       uint64_t version = versions[i];
-      if(version == 70 && i == 0){
-        std::cout<<""<<std::endl;
-      }
       std::cout << i << " GET:" << key << ", v" << version << std::endl;
       std::string value_2 = trie->Get(0, version, key);
       std::cout << "value = " << value_2 << std::endl;
