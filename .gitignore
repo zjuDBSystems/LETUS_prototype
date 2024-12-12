@@ -37,6 +37,8 @@
 # folders
 .vscode/
 build/
+build_debug/
+build_release/
 IndexFile/
 bak/
 data/

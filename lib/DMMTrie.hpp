@@ -13,11 +13,14 @@
 #include <tuple>
 #include <unordered_map>
 #include <vector>
+
 #include "VDLS.hpp"
-#include "commen.hpp"
+#include "common.hpp"
 
 static constexpr size_t HASH_SIZE = 32;
 static constexpr size_t DMM_NODE_FANOUT = 10;
+static constexpr uint16_t Td_ = 128;  // update threshold of DeltaPage
+static constexpr uint16_t Tb_ = 512;  // update threshold of BasePage
 
 using namespace std;
 
@@ -41,7 +44,7 @@ struct DMMTrieProof {
 
 class Node {
  public:
-  virtual ~Node() noexcept = default;
+  virtual ~Node() = default;
 
   virtual void CalculateHash();
   virtual void SerializeTo(char *buffer, size_t &current_size,
@@ -105,7 +108,7 @@ class IndexNode : public Node {
   IndexNode(
       uint64_t version, const string &hash, uint16_t bitmap,
       const array<tuple<uint64_t, string, Node *>, DMM_NODE_FANOUT> &children);
-  IndexNode(const IndexNode& other);
+  IndexNode(const IndexNode &other);
   void CalculateHash() override;
   void SerializeTo(char *buffer, size_t &current_size,
                    bool is_root) const override;
@@ -162,7 +165,7 @@ class DeltaPage : public Page {
   DeltaPage(PageKey last_pagekey = {0, 0, true, ""}, uint16_t update_count = 0,
             uint16_t b_update_count = 0);
   DeltaPage(char *buffer);
-  DeltaPage(const DeltaPage& other);
+  DeltaPage(const DeltaPage &other);
   void AddIndexNodeUpdate(uint8_t location, uint64_t version,
                           const string &hash, uint8_t index,
                           const string &child_hash);
@@ -190,7 +193,7 @@ class BasePage : public Page {
            const string &pid = "");
   BasePage(DMMTrie *trie, char *buffer);
   BasePage(DMMTrie *trie, string key, string pid, string nibbles);
-  BasePage(const BasePage& other);//deep copy
+  BasePage(const BasePage &other);  // deep copy
   ~BasePage();
   void SerializeTo();
   void UpdatePage(uint64_t version,
@@ -203,10 +206,7 @@ class BasePage : public Page {
 
  private:
   DMMTrie *trie_;
-  Node *root_;              // the root of the page
-  string pid_;              // nibble path serves as page id
-  const uint16_t Td_ = 128;  // update threshold of DeltaPage
-  const uint16_t Tb_ = 256;  // update threshold of BasePage
+  Node *root_;  // the root of the page
 };
 
 class DMMTrie {
@@ -225,8 +225,9 @@ class DMMTrie {
   PageKey GetLatestBasePageKey(PageKey pagekey) const;
   void UpdatePageVersion(PageKey pagekey, uint64_t current_version,
                          uint64_t latest_basepage_version);
-  LSVPS *GetPageStore();
   void WritePageCache(PageKey pagekey, Page *page);
+  void AddDeltaPageVersion(const string &pid, uint64_t version);
+  uint64_t GetVersionUpperbound(const string &pid, uint64_t version);
 
  private:
   LSVPS *page_store_;
@@ -246,6 +247,8 @@ class DMMTrie {
       page_versions_;  // current version, latest basepage version
   map<PageKey, Page *> page_cache_;
   map<string, string> put_cache_;  // temporarily store the key of value of Put
+  unordered_map<string, vector<uint64_t>>
+      deltapage_versions_;  // the versions of deltapages for every pid
 
   BasePage *GetPage(const PageKey &pagekey);
   void PutPage(const PageKey &pagekey, BasePage *page);

@@ -9,7 +9,7 @@ cd exps/
 mkdir -p results
 
 # 定义测试参数数组
-batch_sizes=(500 1000 2000 4000)
+batch_sizes=(10 20 30 50)
 value_sizes=(256 512 1024 2048)
 
 # 创建结果文件
@@ -33,4 +33,4 @@ for batch_size in "${batch_sizes[@]}"; do
     done
 done
 
-python plot.py
+python3 plot.py

@@ -6,8 +6,8 @@
  */
 
 #include <sys/time.h>
-
 #include <unistd.h>
+
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -183,9 +183,6 @@ int main(int argc, char** argv) {
     values = get_tasks[j].values;
     start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
-      if (i == 1) {
-        cout << "!" << endl;
-      }
       std::string key = keys[i];
       uint64_t version = versions[i];
       std::cout << i << " GET:" << key << ", v" << version << std::endl;

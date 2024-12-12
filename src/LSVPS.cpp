@@ -1,5 +1,5 @@
 #include "LSVPS.hpp"
-#include "commen.hpp"
+#include "common.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -31,28 +31,56 @@ const std::vector<IndexBlock::Mapping> &IndexBlock::GetMappings() const {
 
 bool IndexBlock::SerializeTo(std::ofstream &out) const {
   try {
+    // Save the starting position of this LookupBlock
+    std::streampos startPos = out.tellp();
     // 写入 mappings 数量
     uint32_t count = static_cast<uint32_t>(mappings_.size());
+    #ifdef DEBUG
+    std::cout << "Serializing IndexBlock with " << count << " mappings" << std::endl;
+    #endif
+    if (count > MAPPINGS_PER_BLOCK) {
+      std::cerr << "Error: count exceeds MAPPINGS_PER_BLOCK" << std::endl;
+      return false;
+    }
+    
     out.write(reinterpret_cast<const char *>(&count), sizeof(count));
-    if (!out.good()) return false;
+    if (!out.good()) {
+      std::cerr << "Error writing count" << std::endl;
+      return false;
+    }
 
     // 写入每个 mapping
     for (const auto &mapping : mappings_) {
-      if (!mapping.pagekey.SerializeTo(out)) return false;
+      if (!mapping.pagekey.SerializeTo(out)) {
+        std::cerr << "Error serializing pagekey" << std::endl;
+        return false;
+      }
       out.write(reinterpret_cast<const char *>(&mapping.location),
                 sizeof(mapping.location));
-      if (!out.good()) return false;
+      if (!out.good()) {
+        std::cerr << "Error writing location" << std::endl;
+        return false;
+      }
+    }
+
+    std::streampos currentPos = out.tellp();
+    if (currentPos == std::streampos(-1)) return false;
+
+    size_t blockPos = static_cast<size_t>(currentPos - startPos);
+
+    if (blockPos > INDEXBLOCK_SIZE) {
+      std::cerr << "Error: written_size exceeds INDEXBLOCK_SIZE" << std::endl;
+      return false;
     }
 
     // 写入填充
-    char padding[OS_PAGE_SIZE] = {0};
-    size_t written_size =
-        sizeof(count) + count * (sizeof(PageKey) + sizeof(size_t));
-    size_t padding_size = OS_PAGE_SIZE - written_size;
+    char padding[INDEXBLOCK_SIZE] = {0};
+    size_t padding_size = INDEXBLOCK_SIZE - blockPos;
     out.write(padding, padding_size);
 
     return out.good();
-  } catch (const std::exception &) {
+  } catch (const std::exception &e) {
+    std::cerr << "Exception in SerializeTo: " << e.what() << std::endl;
     return false;
   }
 }
@@ -60,36 +88,59 @@ bool IndexBlock::SerializeTo(std::ofstream &out) const {
 bool IndexBlock::Deserialize(std::ifstream &in) {
   try {
     // 读取 mappings 数量
-    uint32_t count;
+    std::streampos startPos = in.tellg();
+    uint32_t count = 0;
     in.read(reinterpret_cast<char *>(&count), sizeof(count));
-
-    if (!in.good() || count > MAPPINGS_PER_BLOCK) {
+    #ifdef DEBUG
+    std::cout << "Deserializing IndexBlock with count: " << count << std::endl;
+    #endif
+    if (!in.good()) {
+      std::cerr << "Error reading count" << std::endl;
+      return false;
+    }
+    
+    if (count > MAPPINGS_PER_BLOCK || count == 0) {
+      std::cerr << "Invalid count: " << count << std::endl;
       return false;
     }
 
     // 读取每个 mapping
     mappings_.clear();
     mappings_.reserve(count);
+    
     for (uint32_t i = 0; i < count; ++i) {
       Mapping mapping;
-      if (!mapping.pagekey.Deserialize(in)) return false;
+      if (!mapping.pagekey.Deserialize(in)) {
+        std::cerr << "Error deserializing pagekey at index " << i << std::endl;
+        return false;
+      }
 
       in.read(reinterpret_cast<char *>(&mapping.location),
               sizeof(mapping.location));
 
-      if (!in.good()) return false;
+      if (!in.good()) {
+        std::cerr << "Error reading location at index " << i << std::endl;
+        return false;
+      }
 
       mappings_.push_back(mapping);
     }
 
-    // 跳过填充
-    size_t read_size =
-        sizeof(count) + count * (sizeof(PageKey) + sizeof(size_t));
-    size_t padding_size = OS_PAGE_SIZE - read_size;
-    in.seekg(padding_size, std::ios::cur);
+    // 验证和跳过填充
+    std::streampos currentPos = in.tellg();
+    if (currentPos == std::streampos(-1)) return false;
 
+    size_t blockPos = static_cast<size_t>(currentPos - startPos);
+    if (blockPos > INDEXBLOCK_SIZE) {
+      std::cerr << "Error: read_size exceeds INDEXBLOCK_SIZE" << std::endl;
+      return false;
+    }
+
+    size_t remaining = INDEXBLOCK_SIZE - blockPos;
+    in.seekg(remaining, std::ios::cur);
     return in.good();
-  } catch (const std::exception &) {
+  } catch (const std::exception &e) {
+    std::cerr << "Exception in Deserialize: " << e.what() << std::endl;
     return false;
   }
 }
@@ -203,16 +254,20 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
   if (pagekey.version > trie_->GetLatestBasePageKey(pagekey).version) {
     current_pagekey = active_deltapage->GetLastPageKey();
   } else {
-    Page *replay_sentinal = pageLookup(delta_pagekey, false);
-    if (replay_sentinal != nullptr)
-      current_pagekey = replay_sentinal->GetPageKey();
+    uint64_t replay_version = trie_->GetVersionUpperbound(pagekey.pid, pagekey.version);
+    delta_pagekey.version = replay_version;
+    DeltaPage *replay_sentinal = dynamic_cast<DeltaPage*>(pageLookup(delta_pagekey));
+    if (replay_sentinal != nullptr){
+      delta_pages.push(replay_sentinal);
+      current_pagekey = replay_sentinal->GetLastPageKey();
+    }  
     else {
       current_pagekey = active_deltapage->GetLastPageKey();
     }
   }
   while (current_pagekey.type) {
     DeltaPage *delta_page = dynamic_cast<DeltaPage *>(
-        pageLookup(current_pagekey, true));  // precisely search
+        pageLookup(current_pagekey));  // precisely search
     if (delta_page) {
       delta_pages.push(delta_page);
       current_pagekey = delta_page->GetLastPageKey();
@@ -223,12 +278,13 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
   if (current_pagekey.version == 0)
     basepage = new BasePage(trie_, nullptr, pagekey.pid);
   else {
-    basepage = new BasePage(*dynamic_cast<BasePage *>(pageLookup(current_pagekey, true)));//deep copy
+    basepage = dynamic_cast<BasePage *>(pageLookup(current_pagekey));
     if (basepage == nullptr) {
       std::cerr << "Error: BasePage not found for PageKey: " << current_pagekey
                 << std::endl;
       throw std::runtime_error("BasePage not found for the given PageKey");
     }
+    basepage = new BasePage(*basepage);//deep copy
   }
 
   while (!delta_pages.empty()) {
@@ -241,7 +297,6 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
               << basepage->GetPageKey().version << std::endl;
     return nullptr;  // the version is not found
   }
-  cout << basepage->GetPageKey().pid << endl;
   return basepage;
 }
 
@@ -271,68 +326,16 @@ int LSVPS::GetNumOfIndexFile() { return index_files_.size(); }
 
 void LSVPS::RegisterTrie(DMMTrie *DMM_trie) { trie_ = DMM_trie; }
 
-Page *LSVPS::pageLookup(const PageKey &pagekey, bool isPrecise) {
+Page *LSVPS::pageLookup(const PageKey &pagekey) {
   auto &buffer = table_.GetBuffer();
   Page *smallest_page;
   // first step: search in the buffer
-  if (isPrecise) {
-    for (const auto &page : buffer) {
-      if (page->GetPageKey() == pagekey) return page;
-    }
-  } else {
-    for (const auto &page : buffer) {
-      auto temp_pagekey = page->GetPageKey();
-      if (temp_pagekey.tid == pagekey.tid && temp_pagekey.pid == pagekey.pid) {
-        smallest_page = page;
-        break;
-      }
-    }
-    // if(smallest_page == nullptr) return  => in file
-    if (smallest_page != nullptr && smallest_page->GetPageKey() <= pagekey) {
-      Page *identity_basepage = nullptr;
-      PageKey latest_basepage_pagekey;
-      for (const auto &page : buffer) {
-        auto temp_pagekey = page->GetPageKey();
-        if (temp_pagekey.tid == pagekey.tid &&
-            temp_pagekey.pid == pagekey.pid && temp_pagekey.type) {
-          if (temp_pagekey.version > pagekey.version)
-            return page;
-          else if (temp_pagekey.version == pagekey.version &&
-                   temp_pagekey.type == false) {
-            identity_basepage = page;
-            // latest_basepage_pagekey = temp_pagekey;
-          } else
-            continue;
-        }
-      }
-      if (identity_basepage)
-        return identity_basepage;
-      else {
-        // lookup for the latest basepage
-        PageKey latest_basepage_pagekey = pagekey;
-        latest_basepage_pagekey.type = false;
-        auto file_iterator =
-            std::find_if(index_files_.begin(), index_files_.end(),
-                         [&latest_basepage_pagekey](const IndexFile &file) {
-                           return file.min_pagekey <= latest_basepage_pagekey &&
-                                  latest_basepage_pagekey <= file.max_pagekey;
-                         });
-        if (file_iterator == index_files_.end()) {
-          std::cerr
-              << "Error: LatestBasePage not found in index file for PageKey: "
-              << pagekey << std::endl;
-          return nullptr;
-          // there is no indexfile of the demanding version
-        }
-        // second step:search in the disk
-        return readPageFromIndexFile(file_iterator, latest_basepage_pagekey,
-                                     true);
-      }
-      // throw logic_error("Unreachable code: Previous conditions guarantee
-      // earlier return"); // impossible
-    }
+  if(pagekey.version == 0) return nullptr;
+  //
+  for (const auto &page : buffer) {
+    if (page->GetPageKey() == pagekey) return page;
   }
-  // assumption: one block size <= cfr deltapage size
+   // assumption: one block size <= cfr deltapage size
 
   auto file_iterator = std::find_if(index_files_.begin(), index_files_.end(),
                                     [&pagekey](const IndexFile &file) {
@@ -346,12 +349,11 @@ Page *LSVPS::pageLookup(const PageKey &pagekey, bool isPrecise) {
     // there is no indexfile of the demanding version
   }
   // second step:search in the disk
-  return readPageFromIndexFile(file_iterator, pagekey, isPrecise);
+  return readPageFromIndexFile(file_iterator, pagekey);
 }
 
 Page *LSVPS::readPageFromIndexFile(
-    std::vector<IndexFile>::const_iterator file_it, const PageKey &pagekey,
-    bool isPrecise) {
+    std::vector<IndexFile>::const_iterator file_it, const PageKey &pagekey) {
   PageKey true_pagekey;
   std::ifstream in_file(file_it->filepath, std::ios::binary);
   if (!in_file) {
@@ -373,29 +375,29 @@ Page *LSVPS::readPageFromIndexFile(
   if (lookup_block.entries.empty()) {
     return nullptr;
   }
-
+  #ifdef DEBUG
   std::cout << "Searching for pagekey: " << pagekey << std::endl;
   std::cout << "First entry in lookup_block: "
             << lookup_block.entries.front().first << std::endl;
   std::cout << "Last entry in lookup_block: "
             << lookup_block.entries.back().first << std::endl;
-
-  // 使用 upper_bound 找到第一个大于 pagekey 的元素
-  auto it =
-      std::upper_bound(lookup_block.entries.begin(), lookup_block.entries.end(),
-                       std::make_pair(pagekey, size_t(0)));
+  #endif
+  // 使用自定义比较来找到第一个大于 pagekey 的元素
+  auto it = std::upper_bound(
+      lookup_block.entries.begin(), 
+      lookup_block.entries.end(),
+      std::make_pair(pagekey, 0), // 使用0作为location占位符
+      [](const auto& a, const auto& b) {
+          return a.first < b.first;
+      }
+  );
 
   // 如果找到了大于的元素，且不是第一个元素，就取前一个
   if (it != lookup_block.entries.begin()) {
     --it;  // 回退到前一个元素
-           // 使用 it 指向的元素
   } else {
     // 没有找到合适的元素
     return nullptr;
-  }
-
-  if (it->second >= std::filesystem::file_size(file_it->filepath)) {
-    throw std::runtime_error("Invalid file offset in lookup block");
   }
 
   in_file.seekg(it->second);
@@ -415,43 +417,15 @@ Page *LSVPS::readPageFromIndexFile(
   }
 
   auto mapping = mappings.begin();
-  if (!isPrecise) {
-    mapping = std::find_if(
-        mappings.begin(), mappings.end(), [&pagekey](const auto &m) {
-          // 验证 pid 的合理性
-          if (m.pagekey.pid.size() > 256) {
-            throw std::runtime_error("Invalid PID size in mapping");
-          }
-          return m.pagekey.tid == pagekey.tid && m.pagekey.pid == pagekey.pid &&
-                 m.pagekey.type && m.pagekey > pagekey;
-        });
+  
+  mapping = std::find_if(
+      mappings.begin(), mappings.end(),
+      [&pagekey](const auto &m) { return m.pagekey == pagekey; });
 
-    if (mapping == mappings.end()) {  //边界
-      for (; file_it != this->index_files_.end(); ++file_it) {
-        Page *page = readPageFromIndexFile(file_it, pagekey, isPrecise);
-        if (page != nullptr) return page;
-      }
-      for (const auto &page : this->table_.GetBuffer()) {
-        auto temp_pagekey = page->GetPageKey();
-        if (temp_pagekey.tid == pagekey.tid &&
-            temp_pagekey.pid == pagekey.pid && temp_pagekey.type &&
-            temp_pagekey.version > pagekey.version)
-          return page;
-      }
-      return nullptr;
-      // throw logic_error("Unreachable code: Previous conditions guarantee
-      // earlier return"); //
-    }
-
-  } else {
-    mapping = std::find_if(
-        mappings.begin(), mappings.end(),
-        [&pagekey](const auto &m) { return m.pagekey == pagekey; });
-
-    if (mapping == mappings.end()) {  // basepage没找到
-      return nullptr;
-    }
+  if (mapping == mappings.end()) {  // basepage没找到
+    return nullptr;
   }
+  
   true_pagekey = mapping->pagekey;
   in_file.seekg(mapping->location);
   if (!in_file.good()) {
@@ -538,8 +512,7 @@ void LSVPS::MemIndexTable::Flush() {
     if (!block.GetMappings().empty()) {
       lookup_block.entries.push_back(
           {block.GetMappings()[0].pagekey, indexBlockOffset});
-      indexBlockOffset +=
-          block.GetMappings().size() * sizeof(IndexBlock::Mapping);
+      indexBlockOffset += PAGE_SIZE;
     }
   }
 
