@@ -233,8 +233,6 @@ bool LookupBlock::Deserialize(std::istream &in) {
   }
 }
 
-// LSVPS实现
-LSVPS::LSVPS() : cache_(), table_(*this) {}
 
 Page *LSVPS::PageQuery(uint64_t version) {
   return nullptr;  // unimplemented
@@ -516,7 +514,7 @@ void LSVPS::MemIndexTable::Flush() {
     }
   }
 
-  const std::string dir_path = "IndexFile";
+  const std::string dir_path = parent_LSVPS_.index_file_path_ + "/IndexFile";
   if (!std::filesystem::exists(dir_path)) {
     std::filesystem::create_directory(dir_path);
   }

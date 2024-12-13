@@ -50,7 +50,7 @@ struct LookupBlock {
 // LSVPS类定义
 class LSVPS {
  public:
-  LSVPS();
+  LSVPS(std::string index_file_path = ".") : cache_(), table_(*this), index_file_path_(index_file_path){}
   Page *PageQuery(uint64_t version);
   BasePage *LoadPage(const PageKey &pagekey);
   void StorePage(Page *page);
@@ -89,6 +89,7 @@ class LSVPS {
   MemIndexTable table_;
   DMMTrie *trie_;
   std::vector<IndexFile> index_files_;
+  std::string index_file_path_;
 };
 
 #endif
