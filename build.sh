@@ -9,11 +9,12 @@ print_error() {
     echo -e "\033[1;31m[ERROR]\033[0m $1"
 }
 
-# 设置默认构建类型
+# 设置默认构建类型并转换为小写
 BUILD_TYPE=${1:-Release}
+BUILD_TYPE=$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')
 
 # 验证构建类型
-case $(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]') in
+case "$BUILD_TYPE" in
     debug|release)
         print_status "Build type: ${BUILD_TYPE}"
         ;;
@@ -24,7 +25,7 @@ case $(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]') in
 esac
 
 # 根据构建类型设置目录
-BUILD_DIR="build_$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')"
+BUILD_DIR="build_${BUILD_TYPE}"
 
 # 清理旧的构建目录
 print_status "Cleaning old build directories..."
@@ -43,7 +44,8 @@ cd "${BUILD_DIR}" || {
 
 # 运行 CMAKE
 print_status "Running CMAKE..."
-if ! cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_VERBOSE_MAKEFILE=ON "${PROJECT_ROOT}"; then
+BUILD_TYPE_UPPER=$(echo "$BUILD_TYPE" | tr '[:lower:]' '[:upper:]')
+if ! cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE_UPPER} -DCMAKE_VERBOSE_MAKEFILE=ON "${PROJECT_ROOT}"; then
     print_error "CMAKE configuration failed"
     exit 1
 fi
