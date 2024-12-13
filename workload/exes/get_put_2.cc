@@ -6,8 +6,8 @@
  */
 
 #include <sys/time.h>
-
 #include <unistd.h>
+
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -63,8 +63,8 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
 }
 
 int main(int argc, char** argv) {
-  int batch_size = 60;  //
-  int n_test = 100;
+  int batch_size = 4000;  //
+  int n_test = 10;
   int key_len = 5;    // 32
   int value_len = 5;  // 256, 512, 1024, 2048
 
@@ -131,7 +131,8 @@ int main(int argc, char** argv) {
   // init database
   LSVPS* page_store = new LSVPS();
   std::string data_path;
-  data_path = "/Users/ldz/Code/miniLETUS/data/";  // your own path
+  // data_path = "/Users/ldz/Code/miniLETUS/data/";  // your own path
+  data_path = "/mnt/c/Users/qyf/Desktop/LETUS_prototype/data/";
   VDLS* value_store = new VDLS(data_path);
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);
@@ -154,7 +155,7 @@ int main(int argc, char** argv) {
       trie->Put(0, version, key, value);
     }
     std::cout << "COMMIT:"
-              << "v" << j + 1 << std::endl;          
+              << "v" << j + 1 << std::endl;
     // if(j == 727){
     //   std::cout<<"Ouch!"<<std::endl;
     // }
