@@ -43,12 +43,11 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
   timeval t0;
   gettimeofday(&t0, NULL);
   srand(t0.tv_sec * 10000000000 + t0.tv_usec * 10000);
-
+  uint64_t version = task_i + 1;
   for (int j = 0; j < tlen; j++) {
     std::string key = BuildKeyName(key_generator.Next(), key_len);
     std::string val = "";
     val = val.append(value_len, RandomPrintChar());
-    uint64_t version = task_i + 1;
 
     put_task.keys.emplace_back(key);
     put_task.values.emplace_back(val);
@@ -58,18 +57,26 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
     get_task.values.emplace_back(val);
     get_task.ops.emplace_back(0);
     get_task.versions.emplace_back(version);
+    for (int i = 0; i < get_task.keys.size(); i++) {
+      if (get_task.keys[i] == key) {
+        get_task.values[i] = val;
+      }
+    }
   }
   return 0;
 }
 
 int main(int argc, char** argv) {
-  int batch_size = 60;  //
-  int n_test = 100;
-  int key_len = 5;    // 32
-  int value_len = 5;  // 256, 512, 1024, 2048
+  int n_test = 1;
+  int batch_size = 60;  // 500, 1000, 2000, 3000, 4000
+  int key_len = 5;      // 32
+  int value_len = 256;  // 256, 512, 1024, 2048
+  std::string data_path = "/home/xinyu.chen/LETUS_prototype/data/";
+  std::string index_path = "/home/xinyu.chen/LETUS_prototype/";
+  std::string result_path = "/home/xinyu.chen/LETUS_prototype/exps/results/";
 
   int opt;
-  while ((opt = getopt(argc, argv, "b:n:k:v:")) != -1) {
+  while ((opt = getopt(argc, argv, "b:n:k:v:d:r:i:")) != -1) {
     switch (opt) {
       case 'b':  // batch size
       {
@@ -111,6 +118,24 @@ int main(int argc, char** argv) {
         break;
       }
 
+      case 'd':  // data path
+      {
+        data_path = optarg;
+        break;
+      }
+
+      case 'i':  // index path
+      {
+        index_path = optarg;
+        break;
+      }
+
+      case 'r':  // result path
+      {
+        result_path = optarg;
+        break;
+      }
+
       default:
         std::cerr << "Unknown argument " << argv[optind] << std::endl;
         break;
@@ -129,16 +154,21 @@ int main(int argc, char** argv) {
   }
 
   // init database
-  LSVPS* page_store = new LSVPS();
-  std::string data_path;
-  data_path = "/Users/ldz/Code/miniLETUS/data/";  // your own path
+  LSVPS* page_store = new LSVPS(index_path);
   VDLS* value_store = new VDLS(data_path);
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);
+  ofstream rs_file;
+  rs_file.open(result_path, ios::trunc);
+  rs_file << "version,get_latency,put_latency,get_throughput,put_throughput"
+          << std::endl;
+  rs_file.close();
+  rs_file.open(result_path, ios::app);
 
   // start test
   double put_latency_sum = 0;
   double get_latency_sum = 0;
+  double wrong_cnt = 0;
   for (int j = 0; j < n_test; j++) {
     // put
     auto keys = put_tasks[j].keys;
@@ -146,18 +176,13 @@ int main(int argc, char** argv) {
     auto versions = put_tasks[j].versions;
     auto start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
-      string key = keys[i];
-      string value = values[i];
+      std::string key = keys[i];
+      std::string value = values[i];
       uint64_t version = versions[i];
       std::cout << i << " PUT:" << key << "," << value << ", v" << version
                 << std::endl;
       trie->Put(0, version, key, value);
     }
-    std::cout << "COMMIT:"
-              << "v" << j + 1 << std::endl;          
-    // if(j == 727){
-    //   std::cout<<"Ouch!"<<std::endl;
-    // }
     trie->Commit(j + 1);
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
@@ -177,10 +202,16 @@ int main(int argc, char** argv) {
     auto start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
+      std::string value = values[i];
       uint64_t version = versions[i];
-      std::cout << i << " GET:" << key << ", v" << version << std::endl;
+      std::cout << i << " GET:" << key << "," << value << ", v" << version
+                << std::endl;
       std::string value_2 = trie->Get(0, version, key);
       std::cout << "value = " << value_2 << std::endl;
+      if (value != value_2) {
+        return 1;
+        wrong_cnt += 1;
+      }
     }
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
@@ -202,6 +233,8 @@ int main(int argc, char** argv) {
   std::cout << "put= " << batch_size / put_latency_sum << " ops, ";
   std::cout << "get= " << batch_size / get_latency_sum << " ops, ";
   std::cout << std::endl;
+  std::cout << "wrong count = " << wrong_cnt << std::endl;
+  rs_file.close();
 
   return 0;
 }

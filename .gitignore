@@ -34,6 +34,9 @@
 # log
 *.log
 
+# data
+*.dat
+
 # folders
 .vscode/
 build/
@@ -43,3 +46,4 @@ IndexFile/
 bak/
 data/
 exps/results/
+results/

@@ -5,7 +5,7 @@ import "fmt"
 import "./letus"
 
 func main() {
-   db, ok := letus.NewLetusKVStroage()
+   db, ok := letus.NewLetusKVStroage([]byte("/home/xinyu.chen/LETUS_prototype/data/"))
    if ok != nil{
       panic("Failed to create LetusKVStroage")
    }
@@ -20,9 +20,9 @@ func main() {
    }
    batch.Write(db)
    // db get operations
-   res , _ := db.Get([]byte("11111"))
+   res, _ := db.Get([]byte("11111"))
    if res == nil{
-      panic("Failed to delete")
+      panic("Failed to get")
    }
    fmt.Println(string(res))
    db.Delete([]byte("11111"))

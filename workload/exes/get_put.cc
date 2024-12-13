@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include <chrono>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -43,12 +44,11 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
   timeval t0;
   gettimeofday(&t0, NULL);
   srand(t0.tv_sec * 10000000000 + t0.tv_usec * 10000);
-
+  uint64_t version = task_i + 1;
   for (int j = 0; j < tlen; j++) {
     std::string key = BuildKeyName(key_generator.Next(), key_len);
     std::string val = "";
     val = val.append(value_len, RandomPrintChar());
-    uint64_t version = task_i + 1;
 
     put_task.keys.emplace_back(key);
     put_task.values.emplace_back(val);
@@ -58,18 +58,26 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
     get_task.values.emplace_back(val);
     get_task.ops.emplace_back(0);
     get_task.versions.emplace_back(version);
+    for (int i = 0; i < get_task.keys.size(); i++) {
+      if (get_task.keys[i] == key) {
+        get_task.values[i] = val;
+      }
+    }
   }
   return 0;
 }
 
 int main(int argc, char** argv) {
-  int batch_size = 60;  //
-  int n_test = 100;
-  int key_len = 5;    // 32
-  int value_len = 5;  // 256, 512, 1024, 2048
+  int n_test = 1;
+  int batch_size = 60;  // 500, 1000, 2000, 3000, 4000
+  int key_len = 5;      // 32
+  int value_len = 256;  // 256, 512, 1024, 2048
+  std::string data_path = "/home/xinyu.chen/LETUS_prototype/data/";
+  std::string index_path = "/home/xinyu.chen/LETUS_prototype/";
+  std::string result_path = "/home/xinyu.chen/LETUS_prototype/exps/results/";
 
   int opt;
-  while ((opt = getopt(argc, argv, "b:n:k:v:")) != -1) {
+  while ((opt = getopt(argc, argv, "b:n:k:v:d:r:i:")) != -1) {
     switch (opt) {
       case 'b':  // batch size
       {
@@ -111,6 +119,24 @@ int main(int argc, char** argv) {
         break;
       }
 
+      case 'd':  // data path
+      {
+        data_path = optarg;
+        break;
+      }
+
+      case 'i':  // index path
+      {
+        index_path = optarg;
+        break;
+      }
+
+      case 'r':  // result path
+      {
+        result_path = optarg;
+        break;
+      }
+
       default:
         std::cerr << "Unknown argument " << argv[optind] << std::endl;
         break;
@@ -129,17 +155,21 @@ int main(int argc, char** argv) {
   }
 
   // init database
-  LSVPS* page_store = new LSVPS();
-  std::string data_path;
-  // data_path = "/Users/ldz/Code/miniLETUS/data/";  // your own path
-  data_path = "/mnt/c/Users/qyf/Desktop/LETUS_prototype/data/";
+  LSVPS* page_store = new LSVPS(index_path);
   VDLS* value_store = new VDLS(data_path);
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);
+  ofstream rs_file;
+  rs_file.open(result_path, ios::trunc);
+  rs_file << "version,get_latency,put_latency,get_throughput,put_throughput"
+          << std::endl;
+  rs_file.close();
+  rs_file.open(result_path, ios::app);
 
   // start test
   double put_latency_sum = 0;
   double get_latency_sum = 0;
+  double wrong_cnt = 0;
   for (int j = 0; j < n_test; j++) {
     // put
     auto keys = put_tasks[j].keys;
@@ -147,8 +177,8 @@ int main(int argc, char** argv) {
     auto versions = put_tasks[j].versions;
     auto start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
-      string key = keys[i];
-      string value = values[i];
+      std::string key = keys[i];
+      std::string value = values[i];
       uint64_t version = versions[i];
       std::cout << i << " PUT:" << key << "," << value << ", v" << version
                 << std::endl;
@@ -166,10 +196,14 @@ int main(int argc, char** argv) {
     start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
+      std::string value = values[i];
       uint64_t version = versions[i];
       std::cout << i << " GET:" << key << ", v" << version << std::endl;
       std::string value_2 = trie->Get(0, version, key);
       std::cout << "value = " << value_2 << std::endl;
+      if (value != value_2) {
+        wrong_cnt += 1;
+      }
     }
     trie->Commit(j + 1);
     end = chrono::system_clock::now();
@@ -180,19 +214,23 @@ int main(int argc, char** argv) {
 
     put_latency_sum += put_latency;
     get_latency_sum += get_latency;
-    std::cout << "test " << j << ": ";
-    std::cout << "put latency=" << put_latency << " s, ";
-    std::cout << "get latency=" << get_latency << " s, ";
-    std::cout << std::endl;
+
+    rs_file << j + 1 << ",";
+    rs_file << get_latency << ",";
+    rs_file << put_latency << ",";
+    rs_file << batch_size / get_latency << ",";
+    rs_file << batch_size / put_latency << std::endl;
   }
   std::cout << "latency: ";
-  std::cout << "put= " << put_latency_sum / n_test << " s, ";
   std::cout << "get= " << get_latency_sum / n_test << " s, ";
+  std::cout << "put= " << put_latency_sum / n_test << " s, ";
   std::cout << std::endl;
   std::cout << "throughput: ";
-  std::cout << "put= " << batch_size / put_latency_sum << " ops, ";
-  std::cout << "get= " << batch_size / get_latency_sum << " ops, ";
+  std::cout << "get= " << batch_size / (get_latency_sum / n_test) << " ops, ";
+  std::cout << "put= " << batch_size / (put_latency_sum / n_test) << " ops, ";
   std::cout << std::endl;
+  std::cout << "wrong count = " << wrong_cnt << std::endl;
+  rs_file.close();
 
   return 0;
 }

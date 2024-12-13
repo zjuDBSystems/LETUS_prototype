@@ -35,10 +35,10 @@ type KVStorage interface {
 	// tempDB, so simply iterate the whole tempDB and do persist. After a tempDB is done persisting,
 	// the pointer to that db and all disk files should be deleted. If everything seems fine,
 	// related wals will be deleted afterwards.
-	// [TODO] Commit(seq uint64) error
+	Commit(seq uint64) error
 
 	// GetStableSeqNo return the max seq no in persist db
-	// [TODO] GetStableSeqNo() (uint64, error)
+	GetStableSeqNo() (uint64, error)
 	// Proof return proofPath for the given key.
 	// [TODO] Proof(key []byte, seq uint64) (types.ProofPath, error)
 	// [TODO] SetEngine(engine cryptocom.Engine)
