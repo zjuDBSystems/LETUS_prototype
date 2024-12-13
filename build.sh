@@ -28,11 +28,11 @@ BUILD_DIR="build_$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')"
 
 # 清理旧的构建目录
 print_status "Cleaning old build directories..."
-rm -rf ${BUILD_DIR}/ data/
+rm -rf ${BUILD_DIR}/
 
 # 创建必要的目录
 print_status "Creating directories..."
-mkdir -p ${BUILD_DIR}/ data/
+mkdir -p ${BUILD_DIR}/
 
 # 进入构建目录并保存项目根目录
 PROJECT_ROOT=$(pwd)

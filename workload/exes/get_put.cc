@@ -54,6 +54,10 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
     put_task.values.emplace_back(val);
     put_task.ops.emplace_back(1);
     put_task.versions.emplace_back(version);
+    get_task.keys.emplace_back(key);
+    get_task.values.emplace_back(val);
+    get_task.ops.emplace_back(0);
+    get_task.versions.emplace_back(version);
     for (int i = 0; i < get_task.keys.size(); i++) {
       if (get_task.keys[i] == key) {
         get_task.values[i] = val;
@@ -64,15 +68,16 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
 }
 
 int main(int argc, char** argv) {
-  int batch_size = 60;  //
   int n_test = 1;
+  int batch_size = 60;  // 500, 1000, 2000, 3000, 4000
   int key_len = 5;      // 32
   int value_len = 256;  // 256, 512, 1024, 2048
   std::string data_path = "/home/xinyu.chen/LETUS_prototype/data/";
+  std::string index_path = "/home/xinyu.chen/LETUS_prototype/";
   std::string result_path = "/home/xinyu.chen/LETUS_prototype/exps/results/";
 
   int opt;
-  while ((opt = getopt(argc, argv, "b:n:k:v:d:r:")) != -1) {
+  while ((opt = getopt(argc, argv, "b:n:k:v:d:r:i:")) != -1) {
     switch (opt) {
       case 'b':  // batch size
       {
@@ -120,6 +125,12 @@ int main(int argc, char** argv) {
         break;
       }
 
+      case 'i':  // index path
+      {
+        index_path = optarg;
+        break;
+      }
+
       case 'r':  // result path
       {
         result_path = optarg;
@@ -144,7 +155,7 @@ int main(int argc, char** argv) {
   }
 
   // init database
-  LSVPS* page_store = new LSVPS();
+  LSVPS* page_store = new LSVPS(index_path);
   VDLS* value_store = new VDLS(data_path);
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);

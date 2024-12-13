@@ -32,6 +32,17 @@ print_status "Run type: ${RUN_TYPE_LOWER}"
 # 设置构建目录
 BUILD_DIR="build_${RUN_TYPE_LOWER}"
 
+# 清理旧的数据/日志/结果目录
+print_status "Cleaning old data/results/logs directories..."
+rm -rf data/ results/ logs/
+
+# 创建必要的目录
+print_status "Creating directories..."
+mkdir -p data/ results/ logs/
+DATA_DIR="data/"
+INDEX_DIR="data"
+RES_DIR="results/"
+
 # 验证目录和可执行文件
 if [ ! -d "${BUILD_DIR}" ]; then
     print_error "Build directory '${BUILD_DIR}' not found"
@@ -66,17 +77,16 @@ strict_init_order=1:\
 detect_invalid_pointer_pairs=2"
     
     # 创建日志目录
-    mkdir -p logs
     ASAN_LOG="logs/asan_$(date '+%Y%m%d_%H%M%S').log"
     
     print_status "ASAN output will be written to: ${ASAN_LOG}"
-    if ! "${EXECUTABLE}" "$@" 2>"${ASAN_LOG}"; then
+    if ! "${EXECUTABLE}" "$@" -d "${DATA_DIR}" -i "${INDEX_DIR}" -r "${RES_DIR}" 2>"${ASAN_LOG}"; then
         print_error "Program crashed. Check ${ASAN_LOG} for details"
         exit 1
     fi
 else
     print_status "Running in RELEASE mode"
-    if ! "${EXECUTABLE}" "$@"; then
+    if ! "${EXECUTABLE}" "$@" -d "${DATA_DIR}" -i "${INDEX_DIR}" -r "${RES_DIR}"; then
         print_error "Program crashed"
         exit 1
     fi
