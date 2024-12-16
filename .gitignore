@@ -30,3 +30,20 @@
 *.exe
 *.out
 *.app
+
+# log
+*.log
+
+# data
+*.dat
+
+# folders
+.vscode/
+build/
+build_debug/
+build_release/
+IndexFile/
+bak/
+data/
+exps/results/
+results/
