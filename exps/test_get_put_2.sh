@@ -12,9 +12,9 @@ mkdir -p get_put_2
 cd ..
 
 # 定义测试参数数组
-batch_sizes=(10 20 30 40 50 60)
+batch_sizes=(500 1000 2000 4000 5000)
 value_sizes=(256 512 1024 2048)
-n_test=1000
+n_test=10
 data_path="$PWD/../data/"
 index_path="$PWD/../"
 echo "data_path: $data_path"
@@ -45,7 +45,7 @@ for batch_size in "${batch_sizes[@]}"; do
         get_throughput=$(echo "$output" | grep "throughput:" | awk '{print $6}')
         
         # 保存结果
-        echo "$batch_size,$value_size,$put_latency,$get_latency,$put_throughput,$get_throughput" >> results/get_put_2_results.csv
+        echo "$batch_size,$value_size,$n_test,$put_latency,$get_latency,$put_throughput,$get_throughput" >> results/get_put_2_results.csv
     done
 done
 

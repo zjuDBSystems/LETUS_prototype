@@ -1,9 +1,6 @@
 #ifndef _DMMTRIE_HPP_
 #define _DMMTRIE_HPP_
 
-#include <openssl/evp.h>
-#include <openssl/sha.h>
-
 #include <array>
 #include <cstring>
 #include <iostream>
@@ -20,14 +17,11 @@
 static constexpr size_t HASH_SIZE = 32;
 static constexpr size_t DMM_NODE_FANOUT = 10;
 static constexpr uint16_t Td_ = 128;  // update threshold of DeltaPage
-static constexpr uint16_t Tb_ = 512;  // update threshold of BasePage
+static constexpr uint16_t Tb_ = 256;  // update threshold of BasePage
 
 using namespace std;
 
-struct PageKey;
-class Page;
 class LSVPS;
-class LeafNode;
 class DMMTrie;
 class DeltaPage;
 
@@ -220,6 +214,9 @@ class DMMTrie {
   void CalcRootHash(uint64_t tid, uint64_t version);
   string GetRootHash(uint64_t tid, uint64_t version);
   DMMTrieProof GetProof(uint64_t tid, uint64_t version, const string &key);
+  bool Verify(uint64_t tid, const string &key, const string &value,
+              string root_hash, DMMTrieProof proof);
+  bool Verify(uint64_t tid, uint64_t version, string root_hash);
   DeltaPage *GetDeltaPage(const string &pid);
   pair<uint64_t, uint64_t> GetPageVersion(PageKey pagekey);
   PageKey GetLatestBasePageKey(PageKey pagekey) const;
@@ -239,7 +236,7 @@ class DMMTrie {
                 PageKey::Hash>
       lru_cache_;                             //  use a hash map as lru cache
   list<pair<PageKey, BasePage *>> pagekeys_;  // list to maintain cache order
-  const size_t max_cache_size_ = 32;          // maximum pages in cache
+  const size_t max_cache_size_ = 15000;       // maximum pages in cache
   unordered_map<string, DeltaPage>
       active_deltapages_;  // deltapage of all pages, delta pages are indexed by
                            // pid

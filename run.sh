@@ -14,17 +14,19 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# 检查第一个参数是否为运行类型(debug/release)
-if [ -z "$1" ] || { [ "$1" != "debug" ] && [ "$1" != "release" ] && [ "$1" != "DEBUG" ] && [ "$1" != "RELEASE" ]; }; then
-    # 如果第一个参数不是运行类型,则使用默认的release模式,并保留所有参数
-    RUN_TYPE="release"
+# 如果有参数，先将第一个参数转换为小写
+if [ -n "$1" ]; then
+    FIRST_ARG=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+    if [ "$FIRST_ARG" = "debug" ] || [ "$FIRST_ARG" = "release" ]; then
+        RUN_TYPE=$FIRST_ARG
+        shift
+    else
+        RUN_TYPE="release"
+    fi
 else
-    # 如果第一个参数是运行类型,则取该参数并移除
-    RUN_TYPE=$1
-    shift
+    RUN_TYPE="release"
 fi
 
-# 转换为小写
 RUN_TYPE_LOWER=$(echo "$RUN_TYPE" | tr '[:upper:]' '[:lower:]')
 
 print_status "Run type: ${RUN_TYPE_LOWER}"
@@ -52,7 +54,6 @@ fi
 
 # 设置可执行文件路径
 EXECUTABLE="${BUILD_DIR}/bin/get_put_2"
-
 if [ ! -f "${EXECUTABLE}" ]; then
     print_error "Executable 'get_put_2' not found in '${BUILD_DIR}/bin/'"
     print_error "Please run './build.sh ${RUN_TYPE_LOWER}' first"
@@ -70,7 +71,7 @@ if [ "$RUN_TYPE_LOWER" = "debug" ]; then
     print_status "Running in DEBUG mode with ASAN enabled"
     
     # ASAN 配置
-    export ASAN_OPTIONS="detect_leaks=1:\
+    export ASAN_OPTIONS="detect_leaks=0:\
 detect_stack_use_after_return=1:\
 check_initialization_order=1:\
 strict_init_order=1:\

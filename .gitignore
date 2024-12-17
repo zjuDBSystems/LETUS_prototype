@@ -37,6 +37,9 @@
 # data
 *.dat
 
+# MacOS
+.DS_Store
+
 # folders
 .vscode/
 build/

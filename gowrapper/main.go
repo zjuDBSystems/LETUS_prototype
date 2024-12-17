@@ -1,8 +1,10 @@
 package main
 
+import (
+	"fmt"
 
-import "fmt"
-import "./letus"
+	"./letus"
+)
 
 func main() {
    db, ok := letus.NewLetusKVStroage([]byte("/home/xinyu.chen/LETUS_prototype/data/"))
@@ -28,5 +30,5 @@ func main() {
    db.Delete([]byte("11111"))
    // close db
    _ = db.Close()
-   fmt.Println("Hello, world!")
+   fmt.Println("Pass!")
 }
