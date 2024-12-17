@@ -57,6 +57,7 @@ The project directory should look like this:
 │   ├── test_letus_lib.c    // a simple test for the C interface
 │   └── main.go             // a simple test for the go-wrapper
 └── README.md               // this file
+
 ```
 
 ## Dependencies
