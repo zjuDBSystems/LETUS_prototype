@@ -878,7 +878,9 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
       leafnode = static_cast<LeafNode *>(page->GetRoot());
     }
   }
-
+  tuple<uint64_t, uint64_t, uint64_t> location = leafnode->GetLocation();
+  cout << "location:" << get<0>(location) << " " << get<1>(location) << " "
+       << get<2>(location) << endl;
   string value = value_store_->ReadValue(leafnode->GetLocation());
   cout << "Key " << key << " has value " << value << " at version " << version
        << endl;
@@ -916,27 +918,28 @@ void DMMTrie::Commit(uint64_t version) {
 
     if (page == nullptr) {
       // GetPage returns nullptr means that the pid is new
-      // page = new BasePage(this, path, pid, nibbles);  // create a new page
       page = new BasePage(this, nullptr, pid);
       PutPage(pagekey, page);  // add the newly generated page into cache
     }
 
     DeltaPage *deltapage = GetDeltaPage(pid);
 
-    if (2 * it.second.size() + GetDeltaPage(pid)->GetDeltaPageUpdateCount() >
+    if (2 * it.second.size() + deltapage->GetDeltaPageUpdateCount() >=
         2 * Td_) {
       if_exceed = true;
-      PageKey deltapage_pagekey = {version, 0, true, pagekey.pid};
+      if (deltapage->GetDeltaPageUpdateCount() != 0) {
+        PageKey deltapage_pagekey = {version, 0, true, pagekey.pid};
 
-      DeltaPage *deltapage_copy = new DeltaPage(*deltapage);
-      deltapage_copy->SerializeTo();
-      // store frozen deltapage in cache
-      WritePageCache(deltapage_pagekey, deltapage_copy);
+        DeltaPage *deltapage_copy = new DeltaPage(*deltapage);
+        deltapage_copy->SerializeTo();
+        // store frozen deltapage in cache
+        WritePageCache(deltapage_pagekey, deltapage_copy);
 
-      deltapage->ClearDeltaPage();  // delete all DeltaItems in DeltaPage
-      // record the PageKey of DeltaPage passed to LSVPS
-      deltapage->SetLastPageKey(deltapage_pagekey);
-      AddDeltaPageVersion(pagekey.pid, version);
+        deltapage->ClearDeltaPage();  // delete all DeltaItems in DeltaPage
+        // record the PageKey of DeltaPage passed to LSVPS
+        deltapage->SetLastPageKey(deltapage_pagekey);
+        AddDeltaPageVersion(pagekey.pid, version);
+      }
     }
 
     for (const auto &nibbles : it.second) {
@@ -1121,8 +1124,8 @@ uint64_t DMMTrie::GetVersionUpperbound(const string &pid, uint64_t version) {
   vector<uint64_t> &versions = deltapage_versions_[pid];
   auto it = upper_bound(versions.begin(), versions.end(), version);
   if (it == versions.end()) {
-    return current_version_;  // no deltapage has version larger than
-                              // requested
+    // no deltapage has version larger than requested
+    return current_version_;
   }
   return *it;
 }
