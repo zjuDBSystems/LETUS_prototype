@@ -45,7 +45,7 @@ for batch_size in "${batch_sizes[@]}"; do
         get_throughput=$(echo "$output" | grep "throughput:" | awk '{print $6}')
         
         # 保存结果
-        echo "$batch_size,$value_size,$put_latency,$get_latency,$put_throughput,$get_throughput" >> results/get_put_2_results.csv
+        echo "$batch_size,$value_size,$n_test,$put_latency,$get_latency,$put_throughput,$get_throughput" >> results/get_put_2_results.csv
     done
 done
 
