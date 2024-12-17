@@ -229,8 +229,8 @@ int main(int argc, char** argv) {
   std::cout << "get= " << get_latency_sum / n_test << " s, ";
   std::cout << std::endl;
   std::cout << "throughput: ";
-  std::cout << "put= " << batch_size / put_latency_sum << " ops, ";
-  std::cout << "get= " << batch_size / get_latency_sum << " ops, ";
+  std::cout << "put= " << batch_size / (get_latency_sum / n_test) << " ops, ";
+  std::cout << "get= " << batch_size / (get_latency_sum / n_test) << " ops, ";
   std::cout << std::endl;
   std::cout << "wrong count = " << wrong_cnt << std::endl;
   rs_file.close();
