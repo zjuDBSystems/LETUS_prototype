@@ -56,12 +56,6 @@ LeafNode::LeafNode(uint64_t V, const string &k,
                    const string &h)
     : version_(V), key_(k), location_(l), hash_(h), is_leaf_(true) {}
 
-// LeafNode::LeafNode(LeafNode& other)
-//     : version_(other.version_),
-//       key_(other.key_),
-//       location_(other.location_),
-//       hash_(other.hash_),
-//       is_leaf_(other.is_leaf_) {}
 
 void LeafNode::CalculateHash(const string &value) {
   hash_ = HashFunction(key_ + value);
@@ -888,8 +882,9 @@ void DMMTrie::Commit(uint64_t version) {
 
   for (auto &it : page_cache_) {
     page_store_->StorePage(it.second);
-#ifdef DEBUG std::cout << "Commit" << version
-    << " Store Page: " << it.second->GetPageKey() << std::endl;
+#ifdef DEBUG 
+    std::cout << "Commit" << version
+    std::cout << " Store Page: " << it.second->GetPageKey() << std::endl;
 #endif
   }
   page_cache_.clear();

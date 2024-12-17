@@ -1,12 +1,17 @@
 #!/bin/bash
 
-# 添加颜色输出函数
+# 颜色定义
+BLUE='\033[1;34m'
+RED='\033[1;31m'
+NC='\033[0m' # No Color
+
+# 输出函数
 print_status() {
-    echo -e "\033[1;34m[BUILD]\033[0m $1"
+    echo -e "${BLUE}[BUILD]${NC} $1"
 }
 
 print_error() {
-    echo -e "\033[1;31m[ERROR]\033[0m $1"
+    echo -e "${RED}[ERROR]${NC} $1"
 }
 
 BUILD_TYPE=Release
@@ -39,7 +44,6 @@ done
 
 # 设置默认构建类型并转换为小写
 BUILD_TYPE=$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')
-
 # 验证构建类型
 case "$BUILD_TYPE" in
     debug|release)
@@ -60,10 +64,14 @@ BUILD_DIR="build_${BUILD_TYPE}"
 print_status "Cleaning old build directories..."
 rm -rf ${BUILD_DIR}/
 
+# 清理旧的数据
+print_status "Cleaning old data directories..."
+rm -rf data/*
+
 # 创建必要的目录
 print_status "Creating directories..."
 mkdir -p ${BUILD_DIR}/
-
+mkdir -p data/
 # 进入构建目录并保存项目根目录
 PROJECT_ROOT=$(pwd)
 cd "${BUILD_DIR}" || {
