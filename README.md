@@ -124,7 +124,7 @@ Then, again, the workload iterate `num_version` times, and this time it generate
 As a result, each `GET` task can retrieve the value inserted by the `PUT` task with a specific version.
 
 ## Run experiments
-This command will run put-then-historical-get workload multiple times to scan `batch_size` in `[10,20,30,40,50,60]`, `value_len` in `[256, 512, 1024, 2048]` bytes. The `key_len` is set to 5 bytes and `num_version` is set to 1000.
+This command will run put-then-historical-get workload multiple times to scan `batch_size` in `[500,1000,2000,3000,4000,5000]`, `value_len` in `[256, 512, 1024, 2048]` bytes. The `key_len` is set to 5 bytes and `num_version` is set to 1000.
 ```
 $ cd exps/
 $ ./test_get_put.sh 2> get_put_2.log

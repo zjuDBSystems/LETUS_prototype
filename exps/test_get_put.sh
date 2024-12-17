@@ -12,9 +12,9 @@ mkdir -p get_put
 cd ..
 
 # 定义测试参数数组
-batch_sizes=(10 20 30 40 50 60)
+batch_sizes=(500 1000 2000 3000 4000 5000)
 value_sizes=(256 512 1024 2048)
-n_test=1000
+n_test=10
 data_path="$PWD/../data/"
 index_path="$PWD/../"
 echo "data_path: $data_path"
