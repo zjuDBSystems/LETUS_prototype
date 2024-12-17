@@ -1,6 +1,3 @@
-#ifndef _LETUS_CPP_
-#define _LETUS_CPP_
-
 extern "C" {
 #include "Letus.h"
 }
@@ -46,4 +43,3 @@ char* LetusGet(Letus* p, uint64_t tid, uint64_t version, const char* key_c) {
 
 void LetusCommit(Letus* p, uint64_t version) { p->trie->Commit(version); }
 
-#endif  // _LETUS_CPP_
