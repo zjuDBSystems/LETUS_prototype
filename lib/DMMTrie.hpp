@@ -17,7 +17,7 @@
 static constexpr size_t HASH_SIZE = 32;
 static constexpr size_t DMM_NODE_FANOUT = 10;
 static constexpr uint16_t Td_ = 128;  // update threshold of DeltaPage
-static constexpr uint16_t Tb_ = 512;  // update threshold of BasePage
+static constexpr uint16_t Tb_ = 256;  // update threshold of BasePage
 
 using namespace std;
 

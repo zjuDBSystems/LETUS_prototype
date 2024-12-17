@@ -263,7 +263,7 @@ void IndexNode::SerializeTo(char *buffer, size_t &current_size,
   current_size += sizeof(uint16_t);
 
   for (int i = 0; i < DMM_NODE_FANOUT; i++) {
-    if (bitmap_ & (i << i)) {
+    if (bitmap_ & (1 << i)) {
       uint64_t child_version = get<0>(children_[i]);
       string child_hash = get<1>(children_[i]);
 
@@ -297,7 +297,7 @@ void IndexNode::DeserializeFrom(char *buffer, size_t &current_size,
   current_size += sizeof(uint16_t);
 
   for (int i = 0; i < DMM_NODE_FANOUT; i++) {
-    if (bitmap_ & (i << i)) {
+    if (bitmap_ & (1 << i)) {
       uint64_t child_version =
           *(reinterpret_cast<uint64_t *>(buffer + current_size));
       current_size += sizeof(uint64_t);
@@ -892,8 +892,6 @@ void DMMTrie::Commit(uint64_t version) {
     cout << "Commit version incompatible" << endl;
   }
 
-  // set<pair<string, string>, decltype(ComparePairs)> paths(ComparePairs);
-
   map<string, set<string>, decltype(CompareStrings)> updates(CompareStrings);
 
   for (const auto &it : put_cache_) {
@@ -901,7 +899,6 @@ void DMMTrie::Commit(uint64_t version) {
                                           : it.first.size() - 1;
          i >= 0; i -= 2) {
       // store the pid and nibbles of each page updated in every put
-      // paths.insert({it.first.substr(0, i), it.first.substr(i, 2)});
       updates[it.first.substr(0, i)].insert(it.first.substr(i, 2));
     }
   }
@@ -926,11 +923,13 @@ void DMMTrie::Commit(uint64_t version) {
 
     if (2 * it.second.size() + deltapage->GetDeltaPageUpdateCount() >=
         2 * Td_) {
+      // the updates in page is more than the capacity of two deltapages
       if_exceed = true;
       if (deltapage->GetDeltaPageUpdateCount() != 0) {
         PageKey deltapage_pagekey = {version, 0, true, pagekey.pid};
 
         DeltaPage *deltapage_copy = new DeltaPage(*deltapage);
+        deltapage_copy->SetPageKey(deltapage_pagekey);
         deltapage_copy->SerializeTo();
         // store frozen deltapage in cache
         WritePageCache(deltapage_pagekey, deltapage_copy);
@@ -950,7 +949,6 @@ void DMMTrie::Commit(uint64_t version) {
       string value, child_hash;
       if (nibbles.size() == 2) {  // indexnode + indexnode
         child_hash = GetPage({version, 0, false, path})->GetRoot()->GetHash();
-        // cout << "a";
       } else {  // (indexnode + leafnode) or leafnode
         value = put_cache_[path];
         location = value_store_->WriteValue(version, path, value);
@@ -963,6 +961,7 @@ void DMMTrie::Commit(uint64_t version) {
                          deltapage, pagekey);
       }
     }
+
     if (if_exceed) {
       BasePage *basepage_copy = new BasePage(*page);
       basepage_copy->SerializeTo();
@@ -974,39 +973,6 @@ void DMMTrie::Commit(uint64_t version) {
     }
     UpdatePageKey(old_pagekey, pagekey);
   }
-
-  /*for (const auto &pair : paths) {
-    string pid = pair.first, nibbles = pair.second;
-    // path is key when page is leaf page, pid of child page when page is
-    // index page
-    string path = pid + nibbles;
-    tuple<uint64_t, uint64_t, uint64_t> location;
-    string value, child_hash;
-    if (nibbles.size() == 2) {  // indexnode + indexnode
-      child_hash = GetPage({version, 0, false, path})->GetRoot()->GetHash();
-      // cout << "a";
-    } else {  // (indexnode + leafnode) or leafnode
-      value = put_cache_[path];
-      location = value_store_->WriteValue(version, path, value);
-    }
-
-    // get the latest version number of a page
-    uint64_t page_version = GetPageVersion({0, 0, false, pid}).first;
-    PageKey pagekey = {version, 0, false, pid},
-            old_pagekey = {page_version, 0, false, pid};
-    BasePage *page = GetPage(old_pagekey);  // load the page into lru cache
-
-    if (page == nullptr) {
-      // GetPage returns nullptr means that the pid is new
-      page = new BasePage(this, path, pid, nibbles);  // create a new page
-      PutPage(pagekey, page);  // add the newly generated page into cache
-    }
-
-    DeltaPage *deltapage = GetDeltaPage(pid);
-    page->UpdatePage(version, location, value, nibbles, child_hash, deltapage,
-                     pagekey);
-    UpdatePageKey(old_pagekey, pagekey);
-  }*/
 
   for (const auto &it : page_cache_) {
     page_store_->StorePage(it.second);
