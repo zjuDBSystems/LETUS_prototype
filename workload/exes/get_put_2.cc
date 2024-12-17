@@ -207,7 +207,7 @@ int main(int argc, char** argv) {
       uint64_t version = versions[i];
       std::cout << i << " GET:" << key << "," << value << ", v" << version
                 << std::endl;
-       if( i == 6 && key == "00000" ){
+      if( i == 6 && key == "00000" ){
         std::cout << "Ouch" << std::endl;
       }
       std::string value_2 = trie->Get(0, version, key);

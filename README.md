@@ -1,6 +1,7 @@
 # LETUS_prototype
-[![LICENSE](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://github.com/apecloud/foxlake/blob/main/LICENSE) 
-![Language](https://img.shields.io/badge/Language-C%2B%2B-blue)
+![LICENSE](https://img.shields.io/badge/License-MIT-brightgreen) 
+![Language](https://img.shields.io/badge/Language-C%2B%2B17-blue)
+
 
 This is a prototype implementation of [LETUS: A Log-Structured Efficient Trusted Universal BlockChain Storage](https://doi.org/10.1145/3626246.3653390).
 
