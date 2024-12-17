@@ -106,7 +106,7 @@ The put-then-get workload is characterized by four parameters.
 The workload iterate `num_version` times, and in each iteration, it test LETUS with `batch_size` of put operations and `batch_size` of get operations.
 
 In an iteration, the workload first generates a batch of `PUT(key, value)` tasks. Each task insert a key-value record into LETUS. The generation of a key-value record is described as follow.
-- key: we randomly sample a key from a zipfian distribution. To make each key has a same length (`key_len`), we set the upperbound of the sampling to $10^{\text{key\_len}}$.
+- key: we randomly sample a key from a zipfian distribution. To make each key has a same length (`key_len`), we set the upperbound of the sampling to 10^`key_len`.
 - value: we randomly pick an ASCII charater, and repeat it `value_len` times.
 
 Then, the workload generates a batch of `GET(key)` tasks. Each `GET` task is correspond to one `PUT` task in the batch of `PUT` tasks, and a pair of corresponding tasks have a same key.
