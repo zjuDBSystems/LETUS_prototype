@@ -200,14 +200,14 @@ int main(int argc, char** argv) {
     auto values = get_tasks[j].values;
     auto versions = get_tasks[j].versions;
     auto start = chrono::system_clock::now();
-   
+
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
       std::string value = values[i];
       uint64_t version = versions[i];
       std::cout << i << " GET:" << key << "," << value << ", v" << version
                 << std::endl;
-      if( i == 6 && key == "00000" ){
+      if (i == 6 && key == "00000") {
         std::cout << "Ouch" << std::endl;
       }
       std::string value_2 = trie->Get(0, version, key);
@@ -233,8 +233,8 @@ int main(int argc, char** argv) {
   std::cout << "get= " << get_latency_sum / n_test << " s, ";
   std::cout << std::endl;
   std::cout << "throughput: ";
-  std::cout << "put= " << batch_size / put_latency_sum << " ops, ";
-  std::cout << "get= " << batch_size / get_latency_sum << " ops, ";
+  std::cout << "put= " << batch_size / (put_latency_sum / n_test) << " ops, ";
+  std::cout << "get= " << batch_size / (get_latency_sum / n_test) << " ops, ";
   std::cout << std::endl;
   std::cout << "wrong count = " << wrong_cnt << std::endl;
   rs_file.close();
