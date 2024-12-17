@@ -32,6 +32,7 @@ The project directory should look like this:
 ├── exps                    // experiment directory
 │   ├── get_put.sh          // bash script to run experiment
 │   ├── get_put_2.sh
+│   ├── build.sh
 │   └── plot.py             // python script to plot the experiment results
 ├── lib
 |   ├── LSVPS.hpp           // LSVPS header file
@@ -41,7 +42,8 @@ The project directory should look like this:
 │   └── Letus.h             // LETUS interface for C
 ├── src
 |   ├── LSVPS.cpp           // LSVPS implementation
-│   └── DMMTrie.cpp         // DMMTrie implementation
+│   ├── DMMTrie.cpp         // DMMTrie implementation
+│   └── Letus.cpp           // LETUS interface implementation
 ├── workload
 |   ├── get_put.cc          // test LETUS with 
 │   ├── get_put_2.cc        // test LETUS with
