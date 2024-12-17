@@ -43,8 +43,9 @@ The project directory should look like this:
 |   ├── LSVPS.cpp           // LSVPS implementation
 │   └── DMMTrie.cpp         // DMMTrie implementation
 ├── workload
-|   ├── get_put.cc          // test LETUS with 
-│   ├── get_put_2.cc        // test LETUS with
+|   ├── exes
+|   |   ├── get_put.cc      // test LETUS with 
+│   |   └── get_put_2.cc    // test LETUS with
 │   └── lib/                // utility functions for workload generator
 ├── gowrapper               // go wrapper for LETUS
 │   ├── go-build.sh         // bash script to build the go-wrapper

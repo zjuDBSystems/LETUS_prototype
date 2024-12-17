@@ -41,8 +41,9 @@ struct IndexFile {
 // 查找块结构体
 struct LookupBlock {
   static const size_t BLOCK_SIZE = 12288;  // 12KB
-  
-  std::vector<std::pair<PageKey, size_t>> entries;//mapping indexblock to its location
+
+  std::vector<std::pair<PageKey, size_t>>
+      entries;  // mapping indexblock to its location
   bool SerializeTo(std::ostream &out) const;
   bool Deserialize(std::istream &in);
 };
@@ -50,7 +51,8 @@ struct LookupBlock {
 // LSVPS类定义
 class LSVPS {
  public:
-  LSVPS(std::string index_file_path = ".") : cache_(), table_(*this), index_file_path_(index_file_path){}
+  LSVPS(std::string index_file_path = ".")
+      : cache_(), table_(*this), index_file_path_(index_file_path) {}
   Page *PageQuery(uint64_t version);
   BasePage *LoadPage(const PageKey &pagekey);
   void StorePage(Page *page);
@@ -58,6 +60,7 @@ class LSVPS {
   int GetNumOfIndexFile();
   void RegisterTrie(DMMTrie *DMM_trie);
   const std::vector<Page *> &GetTable() const;
+
  private:
   // 块缓存类（占位）
   class blockCache {};
@@ -76,12 +79,14 @@ class LSVPS {
                         const LookupBlock &lookup_blocks,
                         const std::filesystem::path &filepath);
     std::vector<Page *> buffer_;
-    const size_t max_size_ = 200;//gurantee that max_size >= one version pages
+    // gurantee that max_size >= one version pages
+    const size_t max_size_ = 20000;
     LSVPS &parent_LSVPS_;
   };
 
   Page *pageLookup(const PageKey &pagekey);
-  Page *readPageFromIndexFile(std::vector<IndexFile>::const_iterator file_it, const PageKey &pagekey);
+  Page *readPageFromIndexFile(std::vector<IndexFile>::const_iterator file_it,
+                              const PageKey &pagekey);
   void applyDelta(BasePage *basepage, const DeltaPage *deltapage,
                   PageKey pagekey);
 
