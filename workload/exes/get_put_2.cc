@@ -71,9 +71,9 @@ int main(int argc, char** argv) {
   int batch_size = 60;  // 500, 1000, 2000, 3000, 4000
   int key_len = 5;      // 32
   int value_len = 256;  // 256, 512, 1024, 2048
-  std::string data_path = "/home/xinyu.chen/LETUS_prototype/data/";
-  std::string index_path = "/home/xinyu.chen/LETUS_prototype/";
-  std::string result_path = "/home/xinyu.chen/LETUS_prototype/exps/results/";
+  std::string data_path = "/Users/ldz/Code/miniLETUS/data/";
+  std::string index_path = "/Users/ldz/Code/miniLETUS/";
+  std::string result_path = "/Users/ldz/Code/miniLETUS/exps/results/";
 
   int opt;
   while ((opt = getopt(argc, argv, "b:n:k:v:d:r:i:")) != -1) {
@@ -200,12 +200,16 @@ int main(int argc, char** argv) {
     auto values = get_tasks[j].values;
     auto versions = get_tasks[j].versions;
     auto start = chrono::system_clock::now();
+   
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
       std::string value = values[i];
       uint64_t version = versions[i];
       std::cout << i << " GET:" << key << "," << value << ", v" << version
                 << std::endl;
+       if( i == 6 && key == "00000" ){
+        std::cout << "Ouch" << std::endl;
+      }
       std::string value_2 = trie->Get(0, version, key);
       std::cout << "value = " << value_2 << std::endl;
       if (value != value_2) {

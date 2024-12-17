@@ -889,7 +889,7 @@ void DMMTrie::Commit(uint64_t version) {
   for (auto &it : page_cache_) {
     page_store_->StorePage(it.second);
 #ifdef DEBUG std::cout << "Commit" << version
-    << " Store Page: " << it.second->GetPageKey() << std::endl;
+    std::cout << " Store Page: " << it.second->GetPageKey() << std::endl;
 #endif
   }
   page_cache_.clear();
