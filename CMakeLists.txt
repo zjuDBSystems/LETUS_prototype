@@ -30,8 +30,8 @@ if(APPLE)
     set(CMAKE_CXX_COMPILER "${LLVM_PREFIX}/bin/clang++")
 endif()
 
-# set(CMAKE_CXX_COMPILER "g++")
-# set(CMAKE_CXX_COMPILER "clang")
+# set(CMAKE_CXX_COMPILER "g++-11")
+# set(CMAKE_CXX_COMPILER "clang++")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O2 -pthread -lssl -Wall -Wno-unused-function -fPIC")
 # 添加 AddressSanitizer 标志
 set(CMAKE_CXX_STANDARD 17)

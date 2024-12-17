@@ -213,7 +213,6 @@ int main(int argc, char** argv) {
       std::string value_2 = trie->Get(0, version, key);
       std::cout << "value = " << value_2 << std::endl;
       if (value != value_2) {
-        return 1;
         wrong_cnt += 1;
       }
     }
