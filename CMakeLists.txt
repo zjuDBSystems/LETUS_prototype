@@ -61,6 +61,8 @@ add_executable(get_put "workload/exes/get_put.cc" ${letus_src})
 target_link_libraries(get_put OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
 add_executable(get_put_2 "workload/exes/get_put_2.cc" ${letus_src})
 target_link_libraries(get_put_2 OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
+add_executable(ycsb_simple "workload/exes/ycsb_simple.cc" ${letus_src})
+target_link_libraries(ycsb_simple OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
 # add_executable(LSVPStest ${letus_tests})
 # target_link_libraries(LSVPStest letus GTest::GTest GTest::Main)
 
