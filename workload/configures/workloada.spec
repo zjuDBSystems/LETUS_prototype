@@ -19,7 +19,7 @@ insertproportion=0
 
 requestdistribution=zipfian
 
-
+maxscanlength=10
 keylenghth=5
 valuelength=256
 batchsize=500

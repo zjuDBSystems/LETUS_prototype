@@ -34,6 +34,10 @@ class Workload {
   static const std::string READMODIFYWRITE_PROPORTION_PROPERTY;
   static const std::string READMODIFYWRITE_PROPORTION_DEFAULT;
 
+  /// The name of the property for the max scan length (number of records).
+  static const std::string MAX_SCAN_LENGTH_PROPERTY;
+  static const std::string MAX_SCAN_LENGTH_DEFAULT;
+
   static const std::string RECORD_COUNT_PROPERTY;
   static const std::string OPERATION_COUNT_PROPERTY;
 
@@ -51,9 +55,7 @@ class Workload {
   std::string NextTransactionKey();  /// Used for transactions
   std::string NextRandomValue();
   Operation NextOperation() { return op_chooser_.Next(); }
-  void recordInsertCallback(uint64_t key) {
-    max_record_key_ = std::max(max_record_key_, key);
-  }
+  size_t NextScanLength() { return scan_len_chooser_->Next(); }
   uint64_t GetBatchSize() { return batch_size_; }
   uint64_t GetRecordCount() { return record_count_; }
   uint64_t GetOperationCount() { return operation_count_; }
@@ -61,15 +63,16 @@ class Workload {
  private:
   Generator<uint64_t> *key_generator_;
   Generator<uint64_t> *key_chooser_;
+  Generator<uint64_t> *scan_len_chooser_;
   DiscreteGenerator<Operation> op_chooser_;
   uint64_t record_count_;  // number of records before transactions
   uint64_t operation_count_;
   uint64_t batch_size_;
   uint64_t min_key_;
   uint64_t max_key_;
-  uint64_t max_record_key_;
   uint64_t key_len_;
   uint64_t value_len_;
+  uint64_t max_scan_len_;
 };
 
 /// The name of the property for the proportion of read transactions.
@@ -93,6 +96,9 @@ const std::string Workload::SCAN_PROPORTION_DEFAULT = "0.0";
 const std::string Workload::READMODIFYWRITE_PROPORTION_PROPERTY =
     "readmodifywriteproportion";
 const std::string Workload::READMODIFYWRITE_PROPORTION_DEFAULT = "0.0";
+
+const string Workload::MAX_SCAN_LENGTH_PROPERTY = "maxscanlength";
+const string Workload::MAX_SCAN_LENGTH_DEFAULT = "1000";
 
 const std::string Workload::RECORD_COUNT_PROPERTY = "recordcount";
 const std::string Workload::OPERATION_COUNT_PROPERTY = "operationcount";
@@ -126,10 +132,9 @@ Workload::Workload(utils::Properties &p) {
       std::stoi(p.GetProperty(VALUE_LENGTH_PROPERTY, VALUE_LENGTH_DEFAULT));
   min_key_ = 0;
   max_key_ = pow(10, key_len_ + 1) - 1;
-  max_record_key_ = 0;
   key_chooser_ = new ZipfianGenerator(min_key_, max_key_);
   key_generator_ = new CounterGenerator(min_key_);
-
+  scan_len_chooser_ = new UniformGenerator(1, max_scan_len_);
   if (read_proportion > 0) {
     op_chooser_.AddValue(READ, read_proportion);
   }
@@ -174,7 +179,7 @@ std::string Workload::NextTransactionKey() {
   uint64_t key_num;
   do {
     key_num = key_chooser_->Next();
-  } while (key_num > max_record_key_);
+  } while (key_num > key_generator_.Last());
   return utils::BuildKeyName(key_num, key_len_);
 }
 

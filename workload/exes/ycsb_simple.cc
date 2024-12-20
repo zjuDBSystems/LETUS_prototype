@@ -6,13 +6,17 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <utility>
 
 #include <json/json.h>
 
 #include "DMMTrie.hpp"
 #include "LSVPS.hpp"
+#include "kv_buffer.hpp"
 #include "properties.hpp"
 #include "workload.hpp"
+#include "workload_utilis.hpp"
+using namespace std;
 
 void UsageMessage(const char *command);
 bool StrStartWith(const char *str, const char *pre);
@@ -20,28 +24,68 @@ void ParseCommandLine(int argc, const char *argv[], std::string &data_path,
                       std::string &index_path, std::string &result_path,
                       std::string &config_path);
 
-using namespace std;
-uint64_t loading(DMMTrie *trie, Workload *wl) {
+TransactionRead uint64_t loading(DMMTrie *trie, Workload *wl) {
   int num_op = wl->GetRecordCount();
   int batch_size = wl->GetBatchSize();
-  uint64_t version = 1;
+  uint64_t version = 0;
   for (int i = 0; i < num_op; i++) {
     trie->Put(0, version, wl->NextSequenceKey(), wl->NextRandomValue());
     if (i % batch_size == 0) {
-      trie->Commit(version);
       version++;
+      trie->Commit(version);
     }
   }
   return version;
 }
 
-uint64_t transaction(DMMTrie *trie, Workload *wl, uint64_t version) {
+void transaction(DMMTrie *trie, Workload &wl, uint64_t version,
+                 KVBuffer &unverified_keys;) {
   int num_op = wl->GetOperationCount();
   int batch_size = wl->GetBatchSize();
+  uint64_t current_version = version;
   for (int i = 0; i < num_op; i++) {
-    // TODO
+    switch (wl.NextOperation()) {
+      case READ:
+        uint64_t ver = current_version;
+        std::string k = wl.NextTransactionKey();
+        std::string v;
+        status = TransactionRead(trie, ver, k, &v);
+        unverified_keys.put(ver, k, v);
+        break;
+      case UPDATE:
+        uint64_t ver = current_version + 1;
+        std::string k = wl.NextTransactionKey();
+        std::string v = wl.NextRandomValue();
+        status = TransactionUpdate(trie, ver, k, v);
+        unverified_keys.put(ver, k, v);
+        break;
+      case INSERT:
+        ver = current_version + 1;
+        std::string k = wl.NextSequenceKey();
+        std::string v = wl.NextRandomValue();
+        status = TransactionInsert(trie, ver, k, v);
+        unverified_keys.put(ver, k, v);
+        break;
+      case SCAN:
+        ver = current_version;
+        status = TransactionScan(ver, k, wl.NextScanLength());
+        break;
+      case READMODIFYWRITE:
+        status = TransactionReadModifyWrite();
+        break;
+      default:
+        throw utils::Exception("Operation request is not recognized!");
+    }
+    if (i % batch_size == 0) {
+      current_version++;
+      trie->Commit(version);
+    }
   }
   return version;
+}
+
+void verification(DMMTrie *trie, KVBuffer &unverified_keys) {
+  // TODO
 }
 
 int main(const int argc, const char *argv[]) {
@@ -75,12 +119,17 @@ int main(const int argc, const char *argv[]) {
   VDLS *value_store = new VDLS(data_path);
   DMMTrie *trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);
-
+  // init workload
   Workload wl(props);
+
+  // init a buffer for unverified keys
+  KVBuffer unverified_keys;
   // loading phase
   uint64_t version = loading(trie, &wl);
   // transaction phase
-  transaction(trie, &wl, version);
+  transaction(trie, &wl, version, unverified_keys);
+  // verification
+  verification(trie, unverified_keys);
 }
 
 void ParseCommandLine(int argc, const char *argv[], std::string &data_path,
