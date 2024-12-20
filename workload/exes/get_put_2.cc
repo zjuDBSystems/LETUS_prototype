@@ -166,8 +166,8 @@ int main(int argc, char** argv) {
   rs_file.open(result_path, ios::app);
 
   // start test
-  double put_latency_sum = 0;
-  double get_latency_sum = 0;
+  double put_latency_l[n_test];
+  double get_latency_l[n_test];
   double wrong_cnt = 0;
   for (int j = 0; j < n_test; j++) {
     // put
@@ -179,20 +179,16 @@ int main(int argc, char** argv) {
       std::string key = keys[i];
       std::string value = values[i];
       uint64_t version = versions[i];
-      std::cout << i << " PUT:" << key << "," << value << ", v" << version
-                << std::endl;
+      // std::cout << i << " PUT:" << key << "," << value << ", v" << version
+      //           << std::endl;
       trie->Put(0, version, key, value);
     }
     trie->Commit(j + 1);
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
-    double put_latency = double(duration.count()) *
-                         chrono::microseconds::period::num /
-                         chrono::microseconds::period::den;
-    put_latency_sum += put_latency;
-    std::cout << "test " << j << ": ";
-    std::cout << "put latency=" << put_latency << " s, ";
-    std::cout << std::endl;
+    put_latency_l[j] = double(duration.count()) *
+                       chrono::microseconds::period::num /
+                       chrono::microseconds::period::den;
   }
   for (int j = 0; j < n_test; j++) {
     // get
@@ -200,33 +196,34 @@ int main(int argc, char** argv) {
     auto values = get_tasks[j].values;
     auto versions = get_tasks[j].versions;
     auto start = chrono::system_clock::now();
-
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
       std::string value = values[i];
       uint64_t version = versions[i];
-      std::cout << i << " GET:" << key << "," << value << ", v" << version
-                << std::endl;
-      if (i == 6 && key == "00000") {
-        std::cout << "Ouch" << std::endl;
-      }
+      // std::cout << i << " GET:" << key << "," << value << ", v" << version
+      // << std::endl;
       std::string value_2 = trie->Get(0, version, key);
-      std::cout << "value = " << value_2 << std::endl;
+      // std::cout << "value = " << value_2 << std::endl;
       if (value != value_2) {
         wrong_cnt += 1;
       }
     }
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
-    double get_latency = double(duration.count()) *
-                         chrono::microseconds::period::num /
-                         chrono::microseconds::period::den;
-
-    get_latency_sum += get_latency;
-    std::cout << "test " << j << ": ";
-
-    std::cout << "get latency=" << get_latency << " s, ";
-    std::cout << std::endl;
+    get_latency_l[j] = double(duration.count()) *
+                       chrono::microseconds::period::num /
+                       chrono::microseconds::period::den;
+  }
+  double put_latency_sum = 0;
+  double get_latency_sum = 0;
+  for (int j = 0; j < n_test; j++) {
+    rs_file << j + 1 << ",";
+    rs_file << get_latency_l[j] << ",";
+    rs_file << put_latency_l[j] << ",";
+    rs_file << batch_size / get_latency_l[j] << ",";
+    rs_file << batch_size / put_latency_l[j] << std::endl;
+    get_latency_sum += get_latency_l[j];
+    put_latency_sum += put_latency_l[j];
   }
   std::cout << "latency: ";
   std::cout << "put= " << put_latency_sum / n_test << " s, ";
