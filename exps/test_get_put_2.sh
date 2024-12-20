@@ -12,9 +12,9 @@ mkdir -p get_put_2
 cd ..
 
 # 定义测试参数数组
-batch_sizes=(500 1000 2000 4000 5000)
+batch_sizes=(500 1000 2000 4000)
 value_sizes=(256 512 1024 2048)
-n_test=1000
+n_test=10
 data_path="$PWD/../data/"
 index_path="$PWD/../"
 echo "data_path: $data_path"
@@ -36,16 +36,18 @@ for batch_size in "${batch_sizes[@]}"; do
         echo "result_path: $result_path"
         echo "cmd: ../build_release/bin/get_put_2 -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path"
         # 运行测试并提取结果
-        output=$(../build_release/bin/get_put_2 -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path)
+        ../build_release/bin/get_put_2 -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path
+        # output=$(../build_release/bin/get_put_2 -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path)
         
         # 使用awk提取平均延迟和吞吐量
-        put_latency=$(echo "$output" | grep "latency:" | awk '{print $3}')
-        get_latency=$(echo "$output" | grep "latency:" | awk '{print $6}')
-        put_throughput=$(echo "$output" | grep "throughput:" | awk '{print $3}')
-        get_throughput=$(echo "$output" | grep "throughput:" | awk '{print $6}')
+        # put_latency=$(echo "$output" | grep "latency:" | awk '{print $3}')
+        # get_latency=$(echo "$output" | grep "latency:" | awk '{print $6}')
+        # put_throughput=$(echo "$output" | grep "throughput:" | awk '{print $3}')
+        # get_throughput=$(echo "$output" | grep "throughput:" | awk '{print $6}')
         
         # 保存结果
         echo "$batch_size,$value_size,$n_test,$put_latency,$get_latency,$put_throughput,$get_throughput" >> results/get_put_2_results.csv
+        sleep 5
     done
 done
 
