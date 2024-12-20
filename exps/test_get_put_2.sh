@@ -1,5 +1,5 @@
 #!/bin/bash
-
+export ASAN_OPTIONS=detect_leaks=0
 # 编译项目
 cd ../
 ./build.sh
@@ -14,7 +14,7 @@ cd ..
 # 定义测试参数数组
 batch_sizes=(500 1000 2000 4000 5000)
 value_sizes=(256 512 1024 2048)
-n_test=10
+n_test=1000
 data_path="$PWD/../data/"
 index_path="$PWD/../"
 echo "data_path: $data_path"
@@ -49,4 +49,4 @@ for batch_size in "${batch_sizes[@]}"; do
     done
 done
 
-python plot.py get_put_2
+python3 plot.py get_put_2

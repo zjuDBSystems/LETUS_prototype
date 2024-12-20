@@ -18,6 +18,8 @@ for entry in os.listdir(detail_dir):
     if os.path.isfile(full_path) and entry.endswith('.csv'):
         detail_files.append(full_path)
 for f in detail_files:
+    fname = f.split('/')[-1].split('.')[0]
+    bz = 
     df = pd.read_csv(f)
     plt.figure(figsize=(15, 10))
     plt.plot(df['version'].to_numpy(), df['get_throughput'].to_numpy()/1000, 
