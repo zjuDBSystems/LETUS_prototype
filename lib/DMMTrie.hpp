@@ -18,6 +18,7 @@ static constexpr size_t HASH_SIZE = 32;
 static constexpr size_t DMM_NODE_FANOUT = 10;
 static constexpr uint16_t Td_ = 128;  // update threshold of DeltaPage
 static constexpr uint16_t Tb_ = 256;  // update threshold of BasePage
+static constexpr uint16_t MAX_THREADS = 32;
 
 using namespace std;
 
@@ -250,6 +251,7 @@ class DMMTrie {
   BasePage *GetPage(const PageKey &pagekey);
   void PutPage(const PageKey &pagekey, BasePage *page);
   void UpdatePageKey(const PageKey &old_pagekey, const PageKey &new_pagekey);
+  string RecursiveVerify(PageKey pagekey);
 };
 
 #endif

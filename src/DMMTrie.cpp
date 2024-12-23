@@ -1,7 +1,7 @@
 #include "DMMTrie.hpp"
+
 #include <openssl/evp.h>
 #include <openssl/sha.h>
-#include "LSVPS.hpp"
 
 #include <algorithm>
 #include <array>
@@ -40,34 +40,12 @@ string HashFunction(const string &input) {  // hash function SHA-256
   return string(reinterpret_cast<char *>(hash), hash_len);
 }
 
-std::function<bool(const std::pair<std::string, std::string> &,
-                   const std::pair<std::string, std::string> &)>
-    ComparePairs = [](const std::pair<std::string, std::string> &a,
-                      const std::pair<std::string, std::string> &b) {
-      if (a.first.size() != b.first.size()) {
-        return a.first.size() > b.first.size();  // 长度优先
-      }
-      if (a.first != b.first) {
-        return a.first < b.first;  // 字典顺序
-      }
-      return a.second < b.second;
-    };
-
 auto CompareStrings = [](const std::string &a, const std::string &b) {
   if (a.size() != b.size()) {
-    return a.size() > b.size();  // 长度优先
+    return a.size() > b.size();  // first compare length
   }
-  return a < b;  // 字典顺序
+  return a < b;  // then compare alphabetical order
 };
-
-// std::function<bool(const std::string &, const std::string &)> CompareStrings
-// =
-//     [](const std::string &a, const std::string &b) {
-//       if (a.size() != b.size()) {
-//         return a.size() < b.size();  // 长度优先
-//       }
-//       return a < b;  // 字典顺序
-//     };
 
 void Node::CalculateHash() {}
 void Node::AddChild(int index, Node *child, uint64_t version,
@@ -85,7 +63,6 @@ LeafNode::LeafNode(uint64_t V, const string &k,
                    const tuple<uint64_t, uint64_t, uint64_t> &l,
                    const string &h)
     : version_(V), key_(k), location_(l), hash_(h), is_leaf_(true) {}
-
 
 void LeafNode::CalculateHash(const string &value) {
   hash_ = HashFunction(key_ + value);
@@ -394,6 +371,7 @@ NodeProof IndexNode::GetNodeProof(int index) {
   for (int i = 0; i < DMM_NODE_FANOUT; i++) {
     node_proof.sibling_hash.push_back(GetChildHash(i));
   }
+  return node_proof;
 }
 
 DeltaPage::DeltaItem::DeltaItem(uint8_t loc, bool leaf, uint64_t ver,
@@ -704,7 +682,8 @@ void BasePage::UpdatePage(uint64_t version,
     }
     int index = nibbles[0] - '0';
     if (!root_->HasChild(index)) {
-      Node *child_node = new LeafNode(0, pagekey.pid, {}, "");
+      Node *child_node =
+          new LeafNode(0, pagekey.pid + to_string(index), {}, "");
       root_->AddChild(index, child_node, 0, "");
     }
     static_cast<LeafNode *>(root_->GetChild(index))
@@ -720,7 +699,7 @@ void BasePage::UpdatePage(uint64_t version,
     }
     int index = nibbles[0] - '0', child_index = nibbles[1] - '0';
     if (!root_->HasChild(index)) {
-      Node *child_node = new IndexNode(0, "", 1 << index);
+      Node *child_node = new IndexNode(0, "", 1 << child_index);
       root_->AddChild(index, child_node, 0, "");
     }
     static_cast<IndexNode *>(root_->GetChild(index))
@@ -804,10 +783,6 @@ void BasePage::UpdateDeltaItem(DeltaPage::DeltaItem deltaitem) {
       node = root_->GetChild(deltaitem.location_in_page - 1);
     }
 
-    // if (node == nullptr) {
-    //   node = new IndexNode();
-    // }
-
     node->SetVersion(deltaitem.version);
     node->SetHash(deltaitem.hash);
     node->SetChild(deltaitem.index, deltaitem.version, deltaitem.child_hash);
@@ -836,8 +811,8 @@ DMMTrie::DMMTrie(uint64_t tid, LSVPS *page_store, VDLS *value_store,
 }
 
 void DMMTrie::Put(uint64_t tid, uint64_t version, const string &key,
-                  const string &value) {
-  if (version < current_version_) {  // version invalid
+                  const string &value) {  // 返回bool!!!!!!!!!!!!!!!!
+  if (version < current_version_) {       // version invalid
     cout << "Version " << version << " is outdated!" << endl;
     return;
   }
@@ -845,6 +820,7 @@ void DMMTrie::Put(uint64_t tid, uint64_t version, const string &key,
   put_cache_[key] = value;
 }
 
+// 传入string &value, 返回bool，后续添加delete函数!!!!!!!!!!!!!!!!
 string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
   string nibble_path = key;
   uint64_t page_version = version;
@@ -1024,15 +1000,70 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
     }
   }
   merkle_proof.value = value_store_->ReadValue(leafnode->GetLocation());
+  reverse(merkle_proof.proofs.begin(), merkle_proof.proofs.end());
   return merkle_proof;
 }
 
 bool DMMTrie::Verify(uint64_t tid, const string &key, const string &value,
                      string root_hash, DMMTrieProof proof) {
-  return true;
+  string hash = HashFunction(key + value);
+  for (const auto &node_proof : proof.proofs) {
+    string concatenated_hash;
+    for (int i = 0; i < DMM_NODE_FANOUT; i++) {
+      if (i == node_proof.index) {
+        concatenated_hash += hash;
+      } else {
+        concatenated_hash += node_proof.sibling_hash[i];
+      }
+    }
+    hash = HashFunction(concatenated_hash);
+  }
+  return hash == root_hash;
 }
+
 bool DMMTrie::Verify(uint64_t tid, uint64_t version, string root_hash) {
-  return true;
+  return RecursiveVerify({version, tid, false, ""}) == root_hash;
+}
+
+string DMMTrie::RecursiveVerify(PageKey pagekey) {
+  BasePage *page = GetPage(pagekey);
+  if (page == nullptr) {
+    return "";
+  }
+
+  if (page->GetRoot()->IsLeaf()) {
+    // first level is indexnode
+    string value = value_store_->ReadValue(
+        static_cast<LeafNode *>(page->GetRoot())->GetLocation());
+    return HashFunction(pagekey.pid + value);
+  }
+
+  string concatenated_hash;
+  for (int i = 0; i < DMM_NODE_FANOUT; i++) {
+    if (!page->GetRoot()->HasChild(i)) {
+      continue;
+    }
+    Node *child = page->GetRoot()->GetChild(i);
+    if (!child->IsLeaf()) {
+      // second level is indexnode
+      string child_concatenated_hash;
+      for (int j = 0; j < DMM_NODE_FANOUT; j++) {
+        if (!child->HasChild(j)) {
+          continue;
+        }
+        // call RecusiveVerify to calculate hash in child page
+        child_concatenated_hash +=
+            RecursiveVerify({pagekey.version, pagekey.tid, false,
+                             pagekey.pid + to_string(i) + to_string(j)});
+      }
+      concatenated_hash += HashFunction(child_concatenated_hash);
+    } else {
+      string value = value_store_->ReadValue(
+          static_cast<LeafNode *>(child)->GetLocation());
+      concatenated_hash += HashFunction(pagekey.pid + to_string(i) + value);
+    }
+  }
+  return HashFunction(concatenated_hash);
 }
 
 DeltaPage *DMMTrie::GetDeltaPage(const string &pid) {
@@ -1104,9 +1135,9 @@ BasePage *DMMTrie::GetPage(
   if (!page) {  // page is not found in disk
     return nullptr;
   }
-  if (!page->GetRoot()) {  // page is not found in disk
-    return nullptr;
-  }
+  // if (!page->GetRoot()) {  // page is not found in disk
+  //   return nullptr;
+  // }
   PutPage(pagekey, page);
   return page;
 }
