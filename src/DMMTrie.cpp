@@ -86,7 +86,6 @@ LeafNode::LeafNode(uint64_t V, const string &k,
                    const string &h)
     : version_(V), key_(k), location_(l), hash_(h), is_leaf_(true) {}
 
-
 void LeafNode::CalculateHash(const string &value) {
   hash_ = HashFunction(key_ + value);
 }
@@ -394,6 +393,7 @@ NodeProof IndexNode::GetNodeProof(int index) {
   for (int i = 0; i < DMM_NODE_FANOUT; i++) {
     node_proof.sibling_hash.push_back(GetChildHash(i));
   }
+  return node_proof;
 }
 
 DeltaPage::DeltaItem::DeltaItem(uint8_t loc, bool leaf, uint64_t ver,

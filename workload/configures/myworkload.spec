@@ -21,5 +21,5 @@ requestdistribution=zipfian
 
 maxscanlength=10
 keylenghth=5
-valuelength=256
+valuelength=3
 batchsize=2

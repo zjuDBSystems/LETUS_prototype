@@ -28,6 +28,7 @@ bool TransactionRead(DMMTrie *trie, uint64_t version, const string &key,
                      string &value, KVBuffer &unverified_keys) {
 #ifdef DEBUG
   cout << "[TransactionRead]";
+  cout << "version: " << version << ",";
   cout << "key: " << key << endl;
 #endif
   value = trie->Get(0, version, key);
@@ -38,6 +39,7 @@ bool TransactionUpdate(DMMTrie *trie, uint64_t version, const string &key,
                        const string &value, KVBuffer &unverified_keys) {
 #ifdef DEBUG
   cout << "[TransactionUpdate]";
+  cout << "version: " << version << ",";
   cout << "key: " << key << ",";
   cout << "value: " << value << endl;
 #endif
@@ -49,6 +51,7 @@ bool TransactionInsert(DMMTrie *trie, uint64_t version, const string &key,
                        const string &value, KVBuffer &unverified_keys) {
 #ifdef DEBUG
   cout << "[TransactionInsert]";
+  cout << "version: " << version << ",";
   cout << "key: " << key << ",";
   cout << "value: " << value << endl;
 #endif
@@ -60,6 +63,7 @@ bool TransactionScan(DMMTrie *trie, uint64_t version, const string &key,
                      uint64_t len, KVBuffer &unverified_keys) {
 #ifdef DEBUG
   cout << "[TransactionScan]";
+  cout << "version: " << version << ",";
   cout << "key: " << key << ",";
   cout << "len: " << len << endl;
 #endif
@@ -76,6 +80,7 @@ bool TransactionReadModifyWrite(DMMTrie *trie, uint64_t version,
                                 KVBuffer &unverified_keys) {
 #ifdef DEBUG
   cout << "[TransactionReadModifyWrite]";
+  cout << "version: " << version << ",";
   cout << "key: " << key << ",";
   cout << "value: " << value << endl;
 #endif
@@ -91,14 +96,18 @@ uint64_t loading(DMMTrie *trie, Workload *wl) {
   int num_op = wl->GetRecordCount();
   int batch_size = wl->GetBatchSize();
   uint64_t version = 1;
-  for (int i = 0; i < num_op; i++) {
+  int i;
+  for (i = 0; i < num_op; i++) {
     trie->Put(0, version, wl->NextSequenceKey(), wl->NextRandomValue());
-    if (i % batch_size == 0) {
+    if (i && i % batch_size == 0) {
       trie->Commit(version);
       version++;
     }
   }
-  return version - 1;
+  if ((i - 1) % batch_size) {
+    trie->Commit(version);
+  }
+  return version;
 }
 
 void transaction(DMMTrie *trie, Workload &wl, uint64_t version,
@@ -144,11 +153,23 @@ void transaction(DMMTrie *trie, Workload &wl, uint64_t version,
       default:
         throw utils::Exception("Operation request is not recognized!");
     }
-    if (put_count % batch_size == 0) {
+    if (put_count && put_count % batch_size == 0) {
       // TODO: unverfied keys is only readable after commit
       current_version++;
       trie->Commit(current_version);
+      put_count = 0;
+#ifdef DEBUG
+      cout << "[commit] version:" << current_version << endl;
+#endif
     }
+  }
+  if (put_count) {
+    // TODO: unverfied keys is only readable after commit
+    current_version++;
+    trie->Commit(current_version);
+#ifdef DEBUG
+    cout << "[commit] version:" << current_version << endl;
+#endif
   }
 }
 
@@ -158,13 +179,17 @@ void verification(DMMTrie *trie, KVBuffer &unverified_keys) {
     uint64_t version = get<0>(result);
     auto key = get<1>(result);
     auto value = get<2>(result);
-    // string root_hash = trie->GetRootHash(0, version);
-    // DMMTrieProof proof = trie->GetProof(0, version, key);
-    // bool vs = trie->Verify(0, key, value, root_hash, proof);
+    string root_hash = trie->GetRootHash(0, version);
+    DMMTrieProof proof = trie->GetProof(0, version, key);
+    bool vs = trie->Verify(0, key, value, root_hash, proof);
     // TODO: verify
+#ifdef DEBUG
+    cout << "[verification]";
     cout << "ver: " << version << ", ";
     cout << "key: " << key << ", ";
-    cout << "value: " << value << endl;
+    cout << "value: " << value << ", ";
+    cout << "verified? " << (vs ? "true" : "false") << endl;
+#endif
   }
 }
 
