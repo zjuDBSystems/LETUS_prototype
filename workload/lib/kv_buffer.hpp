@@ -5,28 +5,21 @@
 #include <string>
 #include <vector>
 
+#include <tuple>
+
 class KVBuffer {
  public:
-  KVBuffer() : version_i(0), record_i(0) {}
-  void ReadBegin() { read_i = 0; }
+  KVBuffer() {}
 
-  std::pair<uint64_t, std::pair<std::string, std::string>> Next() {
-    if (version_i >= buffer.size()) {
-      return nullptr;
-    }
-    if (record_i >= buffer[version_i].second.size()) {
-      version_i++;
-      record_i = 0;
-      if (version_i >= buffer.size()) {
-        return nullptr;
-      }
-      if (record_i >= buffer[version_i].second.size()) {
-        return nullptr;
+  std::vector<std::tuple<uint64_t, std::string, std::string>> Read() {
+    std::vector<std::tuple<uint64_t, std::string, std::string>> results;
+    for (auto& version_block : buffer) {
+      for (auto& kv : version_block.second) {
+        results.push_back(
+            std::make_tuple(version_block.first, kv.first, kv.second));
       }
     }
-    auto version = buffer[version_i].first;
-    auto record = buffer[version_i].second[record_i];
-    return {version, record};
+    return results;
   }
 
   void Put(uint64_t version, const std::string& key, const std::string& value) {
@@ -39,10 +32,7 @@ class KVBuffer {
   }
 
  private:
-  int version_i;
-  int record_i;
   // it is a nested list: [(version, [(key, value),(key, value),...]), ...]
-  std::map<uint64_t, std::map<string, string>>>> buffer;
-  std::vector<std::pair<uint64_t, std::pair<string, string>>> read_list;
+  std::map<uint64_t, std::map<string, string>> buffer;
 };
 #endif

@@ -179,7 +179,7 @@ std::string Workload::NextTransactionKey() {
   uint64_t key_num;
   do {
     key_num = key_chooser_->Next();
-  } while (key_num > key_generator_.Last());
+  } while (key_num > key_generator_->Last());
   return utils::BuildKeyName(key_num, key_len_);
 }
 

@@ -20,72 +20,152 @@ using namespace std;
 
 void UsageMessage(const char *command);
 bool StrStartWith(const char *str, const char *pre);
-void ParseCommandLine(int argc, const char *argv[], std::string &data_path,
-                      std::string &index_path, std::string &result_path,
-                      std::string &config_path);
+void ParseCommandLine(int argc, const char *argv[], string &data_path,
+                      string &index_path, string &result_path,
+                      string &config_path);
 
-TransactionRead uint64_t loading(DMMTrie *trie, Workload *wl) {
+bool TransactionRead(DMMTrie *trie, uint64_t version, const string &key,
+                     string &value, KVBuffer &unverified_keys) {
+#ifdef DEBUG
+  cout << "[TransactionRead]";
+  cout << "key: " << key << endl;
+#endif
+  value = trie->Get(0, version, key);
+  unverified_keys.Put(version, key, value);
+  return true;
+}
+bool TransactionUpdate(DMMTrie *trie, uint64_t version, const string &key,
+                       const string &value, KVBuffer &unverified_keys) {
+#ifdef DEBUG
+  cout << "[TransactionUpdate]";
+  cout << "key: " << key << ",";
+  cout << "value: " << value << endl;
+#endif
+  trie->Put(0, version, key, value);
+  unverified_keys.Put(version, key, value);
+  return true;
+}
+bool TransactionInsert(DMMTrie *trie, uint64_t version, const string &key,
+                       const string &value, KVBuffer &unverified_keys) {
+#ifdef DEBUG
+  cout << "[TransactionInsert]";
+  cout << "key: " << key << ",";
+  cout << "value: " << value << endl;
+#endif
+  trie->Put(0, version, key, value);
+  unverified_keys.Put(version, key, value);
+  return true;
+}
+bool TransactionScan(DMMTrie *trie, uint64_t version, const string &key,
+                     uint64_t len, KVBuffer &unverified_keys) {
+#ifdef DEBUG
+  cout << "[TransactionScan]";
+  cout << "key: " << key << ",";
+  cout << "len: " << len << endl;
+#endif
+  for (int i = 0; i < len; i++) {
+    string k = to_string(stoul(key) + i);
+    string v = trie->Get(0, version, k);
+    unverified_keys.Put(version, k, v);
+  }
+  return true;
+}
+
+bool TransactionReadModifyWrite(DMMTrie *trie, uint64_t version,
+                                const string &key, string &value,
+                                KVBuffer &unverified_keys) {
+#ifdef DEBUG
+  cout << "[TransactionReadModifyWrite]";
+  cout << "key: " << key << ",";
+  cout << "value: " << value << endl;
+#endif
+  string value_read = trie->Get(0, version, key);
+  unverified_keys.Put(version, key, value_read);
+  trie->Put(0, version + 1, key, value);
+  unverified_keys.Put(version + 1, key, value);
+  value = value_read;
+  return true;
+}
+
+uint64_t loading(DMMTrie *trie, Workload *wl) {
   int num_op = wl->GetRecordCount();
   int batch_size = wl->GetBatchSize();
-  uint64_t version = 0;
+  uint64_t version = 1;
   for (int i = 0; i < num_op; i++) {
     trie->Put(0, version, wl->NextSequenceKey(), wl->NextRandomValue());
     if (i % batch_size == 0) {
-      version++;
       trie->Commit(version);
+      version++;
     }
   }
-  return version;
+  return version - 1;
 }
 
 void transaction(DMMTrie *trie, Workload &wl, uint64_t version,
-                 KVBuffer &unverified_keys;) {
-  int num_op = wl->GetOperationCount();
-  int batch_size = wl->GetBatchSize();
+                 KVBuffer &unverified_keys) {
+  int put_count = 0;
+  int num_op = wl.GetOperationCount();
+  int batch_size = wl.GetBatchSize();
   uint64_t current_version = version;
+  bool status;
+  uint64_t ver;
+  string k, v;
   for (int i = 0; i < num_op; i++) {
     switch (wl.NextOperation()) {
       case READ:
-        uint64_t ver = current_version;
-        std::string k = wl.NextTransactionKey();
-        std::string v;
-        status = TransactionRead(trie, ver, k, &v);
-        unverified_keys.put(ver, k, v);
+        ver = current_version;
+        k = wl.NextTransactionKey();
+        v = "";
+        status = TransactionRead(trie, ver, k, v, unverified_keys);
         break;
       case UPDATE:
-        uint64_t ver = current_version + 1;
-        std::string k = wl.NextTransactionKey();
-        std::string v = wl.NextRandomValue();
-        status = TransactionUpdate(trie, ver, k, v);
-        unverified_keys.put(ver, k, v);
+        ver = current_version + 1;
+        k = wl.NextTransactionKey();
+        v = wl.NextRandomValue();
+        status = TransactionUpdate(trie, ver, k, v, unverified_keys);
+        put_count += 1;
         break;
       case INSERT:
         ver = current_version + 1;
-        std::string k = wl.NextSequenceKey();
-        std::string v = wl.NextRandomValue();
-        status = TransactionInsert(trie, ver, k, v);
-        unverified_keys.put(ver, k, v);
+        k = wl.NextSequenceKey();
+        v = wl.NextRandomValue();
+        put_count += 1;
+        status = TransactionInsert(trie, ver, k, v, unverified_keys);
         break;
       case SCAN:
         ver = current_version;
-        status = TransactionScan(ver, k, wl.NextScanLength());
+        k = wl.NextTransactionKey();
+        status =
+            TransactionScan(trie, ver, k, wl.NextScanLength(), unverified_keys);
         break;
       case READMODIFYWRITE:
-        status = TransactionReadModifyWrite();
+        status = TransactionReadModifyWrite(trie, ver, k, v, unverified_keys);
         break;
       default:
         throw utils::Exception("Operation request is not recognized!");
     }
-    if (i % batch_size == 0) {
+    if (put_count % batch_size == 0) {
+      // TODO: unverfied keys is only readable after commit
       current_version++;
-      trie->Commit(version);
+      trie->Commit(current_version);
     }
   }
-  return version;
 }
 
 void verification(DMMTrie *trie, KVBuffer &unverified_keys) {
-  // TODO
+  vector<tuple<uint64_t, string, string>> results = unverified_keys.Read();
+  for (auto result : results) {
+    uint64_t version = get<0>(result);
+    auto key = get<1>(result);
+    auto value = get<2>(result);
+    // string root_hash = trie->GetRootHash(0, version);
+    // DMMTrieProof proof = trie->GetProof(0, version, key);
+    // bool vs = trie->Verify(0, key, value, root_hash, proof);
+    // TODO: verify
+    cout << "ver: " << version << ", ";
+    cout << "key: " << key << ", ";
+    cout << "value: " << value << endl;
+  }
 }
 
 int main(const int argc, const char *argv[]) {
@@ -94,12 +174,18 @@ int main(const int argc, const char *argv[]) {
   uint64_t batch_size = 60;  // 500, 1000, 2000, 3000, 4000
   uint64_t key_len = 5;      // 32
   uint64_t value_len = 256;  // 256, 512, 1024, 2048
-  std::string data_path = "data/";
-  std::string index_path = ".";
-  std::string result_path = "exps/results/";
-  std::string config_path = "workloads/configures/workloada.spec";
+  string data_path = "data/";
+  string index_path = ".";
+  string result_path = "exps/results/";
+  string config_path = "workloads/configures/workloada.spec";
   ParseCommandLine(argc, argv, data_path, index_path, result_path, config_path);
 
+#ifdef DEBUG
+  cout << "data_path: " << data_path << endl;
+  cout << "index_path: " << index_path << endl;
+  cout << "result_path: " << result_path << endl;
+  cout << "config_path: " << config_path << endl;
+#endif
   utils::Properties props;
   ifstream input(config_path);
   try {
@@ -108,12 +194,6 @@ int main(const int argc, const char *argv[]) {
     cout << message << endl;
     exit(0);
   }
-#ifdef DEBUG
-  std::cout << "data_path: " << data_path << std::endl;
-  std::cout << "index_path: " << index_path << std::endl;
-  std::cout << "result_path: " << result_path << std::endl;
-  std::cout << "config_path: " << config_path << std::endl;
-#endif
   // init database
   LSVPS *page_store = new LSVPS(index_path);
   VDLS *value_store = new VDLS(data_path);
@@ -123,18 +203,21 @@ int main(const int argc, const char *argv[]) {
   Workload wl(props);
 
   // init a buffer for unverified keys
+  // TODO: make it thread safe
   KVBuffer unverified_keys;
   // loading phase
   uint64_t version = loading(trie, &wl);
   // transaction phase
-  transaction(trie, &wl, version, unverified_keys);
+  // TODO: run this in one thread
+  transaction(trie, wl, version, unverified_keys);
   // verification
+  // TODO: run this in another thread
   verification(trie, unverified_keys);
 }
 
-void ParseCommandLine(int argc, const char *argv[], std::string &data_path,
-                      std::string &index_path, std::string &result_path,
-                      std::string &config_path) {
+void ParseCommandLine(int argc, const char *argv[], string &data_path,
+                      string &index_path, string &result_path,
+                      string &config_path) {
   int argindex = 1;
   while (argindex < argc && StrStartWith(argv[argindex], "-")) {
     if (strcmp(argv[argindex], "-datapath") == 0) {
@@ -169,23 +252,7 @@ void ParseCommandLine(int argc, const char *argv[], std::string &data_path,
       }
       config_path = argv[argindex];
       argindex++;
-    }
-    // else if (strcmp(argv[argindex], "-rcnt") == 0) {
-    //   argindex++;
-    //   if (argindex >= argc) {
-    //     UsageMessage(argv[0]);
-    //     exit(0);
-    //   }
-    //   char *end;
-    //   record_count =
-    //       strtoul(argv[argindex], &end, 10);    // 使用 strtoul 进行转换
-    //   if (*end != '\0' || record_count <= 0) {  // 检查转换是否成功
-    //     UsageMessage(argv[0]);
-    //     exit(0);
-    //   }
-    //   argindex++;
-    // }
-    else {
+    } else {
       cout << "Unknown option '" << argv[argindex] << "'" << endl;
       exit(0);
     }
