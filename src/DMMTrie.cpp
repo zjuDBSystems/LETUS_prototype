@@ -57,7 +57,7 @@ string Node::GetChildHash(int index) {}
 uint64_t Node::GetChildVersion(int index) {}
 void Node::UpdateNode() {}
 void Node::SetLocation(tuple<uint64_t, uint64_t, uint64_t> location) {}
-NodeProof Node::GetNodeProof(int index) {}
+NodeProof Node::GetNodeProof(int level, int index) {}
 
 LeafNode::LeafNode(uint64_t V, const string &k,
                    const tuple<uint64_t, uint64_t, uint64_t> &l,
@@ -366,8 +366,8 @@ void IndexNode::SetHash(string hash) { hash_ = hash; }
 
 bool IndexNode::IsLeaf() const { return is_leaf_; }
 
-NodeProof IndexNode::GetNodeProof(int index) {
-  NodeProof node_proof = {index, bitmap_};
+NodeProof IndexNode::GetNodeProof(int level, int index) {
+  NodeProof node_proof = {level, index, bitmap_};
   for (int i = 0; i < DMM_NODE_FANOUT; i++) {
     node_proof.sibling_hash.push_back(GetChildHash(i));
   }
@@ -981,13 +981,13 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
     if (!page->GetRoot()->IsLeaf()) {
       // first level in page is indexnode
       merkle_proof.proofs.push_back(
-          page->GetRoot()->GetNodeProof(nibble_path[i] - '0'));
+          page->GetRoot()->GetNodeProof(i, nibble_path[i] - '0'));
       if (!page->GetRoot()->GetChild(nibble_path[i] - '0')->IsLeaf()) {
         // second level is indexnode
         merkle_proof.proofs.push_back(
             page->GetRoot()
                 ->GetChild(nibble_path[i] - '0')
-                ->GetNodeProof(nibble_path[i + 1] - '0'));
+                ->GetNodeProof(i + 1, nibble_path[i + 1] - '0'));
         page_version = page->GetRoot()
                            ->GetChild(nibble_path[i] - '0')
                            ->GetChildVersion(nibble_path[i + 1] - '0');

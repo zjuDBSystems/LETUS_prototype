@@ -27,6 +27,7 @@ class DMMTrie;
 class DeltaPage;
 
 struct NodeProof {
+  int level;
   int index;
   uint16_t bitmap;
   vector<string> sibling_hash;
@@ -63,7 +64,7 @@ class Node {
 
   virtual bool IsLeaf() const = 0;
 
-  virtual NodeProof GetNodeProof(int index);
+  virtual NodeProof GetNodeProof(int level, int index);
 };
 
 class LeafNode : public Node {
@@ -123,7 +124,7 @@ class IndexNode : public Node {
   void SetVersion(uint64_t version);
   void SetHash(string hash);
   bool IsLeaf() const override;
-  NodeProof GetNodeProof(int index);
+  NodeProof GetNodeProof(int level, int index);
 
  private:
   uint64_t version_;
