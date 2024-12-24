@@ -1,2 +1,0 @@
-有可能出现多个delta page是同一个版本的问题，这个时候这些delta page的page key出现了重复。极端情况是root节点，任意更新都会在其delta page里增加一条。
-所以需要保证同版本的更新次数小于一个delta page的容量。

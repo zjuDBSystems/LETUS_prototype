@@ -249,17 +249,18 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
   const DeltaPage *active_deltapage = trie_->GetDeltaPage(pagekey.pid);
   /*pid足够了 因为一个LSVPS绑定一个trie也就绑定一个tid*/
   delta_pages.push(active_deltapage);
+  /*由于目前不用遍历文件了 所以这里由大于号改成了大于等于号 并且由于batch size扩大的要求 导致必须包含等于号*/
   if (pagekey.version >= trie_->GetLatestBasePageKey(pagekey).version) {
     current_pagekey = active_deltapage->GetLastPageKey();
   } else {
     uint64_t replay_version =
         trie_->GetVersionUpperbound(pagekey.pid, pagekey.version);
     delta_pagekey.version = replay_version;
-    DeltaPage *replay_sentinal =
+    DeltaPage *replay_sentinel =
         dynamic_cast<DeltaPage *>(pageLookup(delta_pagekey));
-    if (replay_sentinal != nullptr) {
-      delta_pages.push(replay_sentinal);
-      current_pagekey = replay_sentinal->GetLastPageKey();
+    if (replay_sentinel != nullptr) {
+      delta_pages.push(replay_sentinel);
+      current_pagekey = replay_sentinel->GetLastPageKey();
     } else {
       current_pagekey = active_deltapage->GetLastPageKey();
     }
