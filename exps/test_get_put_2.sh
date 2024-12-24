@@ -14,7 +14,7 @@ cd ..
 # 定义测试参数数组
 batch_sizes=(500 1000 2000 4000)
 value_sizes=(256 512 1024 2048)
-n_test=10
+n_test=100
 data_path="$PWD/../data/"
 index_path="$PWD/../"
 echo "data_path: $data_path"
