@@ -849,11 +849,15 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
     }
   }
   tuple<uint64_t, uint64_t, uint64_t> location = leafnode->GetLocation();
+#ifdef DEBUG
   cout << "location:" << get<0>(location) << " " << get<1>(location) << " "
        << get<2>(location) << endl;
+#endif
   string value = value_store_->ReadValue(leafnode->GetLocation());
+#ifdef DEBUG
   cout << "Key " << key << " has value " << value << " at version " << version
        << endl;
+#endif
   return value;
 }
 
@@ -954,7 +958,9 @@ void DMMTrie::Commit(uint64_t version) {
 
   page_cache_.clear();
   put_cache_.clear();
+#ifdef DEBUG
   cout << "Version " << version << " committed" << endl;
+#endif
 }
 
 void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) { return; }
