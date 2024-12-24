@@ -18,6 +18,7 @@ static constexpr size_t HASH_SIZE = 32;
 static constexpr size_t DMM_NODE_FANOUT = 10;
 static constexpr uint16_t Td_ = 128;  // update threshold of DeltaPage
 static constexpr uint16_t Tb_ = 256;  // update threshold of BasePage
+static constexpr uint16_t MAX_THREADS = 32;
 
 using namespace std;
 
@@ -26,6 +27,7 @@ class DMMTrie;
 class DeltaPage;
 
 struct NodeProof {
+  int level;
   int index;
   uint16_t bitmap;
   vector<string> sibling_hash;
@@ -62,7 +64,7 @@ class Node {
 
   virtual bool IsLeaf() const = 0;
 
-  virtual NodeProof GetNodeProof(int index);
+  virtual NodeProof GetNodeProof(int level, int index);
 };
 
 class LeafNode : public Node {
@@ -122,7 +124,7 @@ class IndexNode : public Node {
   void SetVersion(uint64_t version);
   void SetHash(string hash);
   bool IsLeaf() const override;
-  NodeProof GetNodeProof(int index);
+  NodeProof GetNodeProof(int level, int index);
 
  private:
   uint64_t version_;
@@ -250,6 +252,7 @@ class DMMTrie {
   BasePage *GetPage(const PageKey &pagekey);
   void PutPage(const PageKey &pagekey, BasePage *page);
   void UpdatePageKey(const PageKey &old_pagekey, const PageKey &new_pagekey);
+  string RecursiveVerify(PageKey pagekey);
 };
 
 #endif

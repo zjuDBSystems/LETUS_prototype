@@ -67,13 +67,17 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
 }
 
 int main(int argc, char** argv) {
-  int n_test = 1;
-  int batch_size = 60;  // 500, 1000, 2000, 3000, 4000
-  int key_len = 5;      // 32
-  int value_len = 256;  // 256, 512, 1024, 2048
-  std::string data_path = "/Users/ldz/Code/miniLETUS/data/";
-  std::string index_path = "/Users/ldz/Code/miniLETUS/";
-  std::string result_path = "/Users/ldz/Code/miniLETUS/exps/results/";
+  int batch_size = 60;  //
+  int n_test = 200;
+  int key_len = 5;    // 32
+  int value_len = 5;  // 256, 512, 1024, 2048
+  // std::string data_path = "/Users/ldz/Code/miniLETUS/data/";
+  // std::string index_path = "/Users/ldz/Code/miniLETUS/";
+  // std::string result_path = "/Users/ldz/Code/miniLETUS/exps/results/";
+  std::string data_path = "/mnt/c/Users/qyf/Desktop/LETUS_prototype/data/";
+  std::string index_path = "/mnt/c/Users/qyf/Desktop/LETUS_prototype/";
+  std::string result_path =
+      "/mnt/c/Users/qyf/Desktop/LETUS_prototype/exps/results/";
 
   int opt;
   while ((opt = getopt(argc, argv, "b:n:k:v:d:r:i:")) != -1) {
