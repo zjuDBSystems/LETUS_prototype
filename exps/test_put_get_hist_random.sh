@@ -12,9 +12,11 @@ mkdir -p get_put_2
 cd ..
 
 # 定义测试参数数组
-batch_sizes=(500 1000 2000 4000)
-value_sizes=(256 512 1024 2048)
-n_test=100
+# batch_sizes=(500 1000 2000 4000)
+# value_sizes=(256 512 1024 2048)
+batch_sizes=(5)
+value_sizes=(5)
+n_test=2
 data_path="$PWD/../data/"
 index_path="$PWD/../"
 echo "data_path: $data_path"
@@ -32,12 +34,12 @@ for batch_size in "${batch_sizes[@]}"; do
         rm -rf "${index_path}/IndexFile/"
         mkdir -p "${index_path}/IndexFile/"
         
-        result_path="$PWD/results/get_put_2/b${batch_size}v${value_size}.csv"
+        result_path="$PWD/results/put_get_hist_random/b${batch_size}v${value_size}.csv"
         echo "result_path: $result_path"
-        echo "cmd: ../build_release/bin/get_put_2 -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path"
+        echo "cmd: ../build_release/bin/put_get_hist_random -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path"
         # 运行测试并提取结果
-        ../build_release/bin/get_put_2 -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path
-        # output=$(../build_release/bin/get_put_2 -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path)
+        ../build_release/bin/put_get_hist_random -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path
+        # output=$(../build_release/bin/put_get_hist_random -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path)
         
         # 使用awk提取平均延迟和吞吐量
         # put_latency=$(echo "$output" | grep "latency:" | awk '{print $3}')
