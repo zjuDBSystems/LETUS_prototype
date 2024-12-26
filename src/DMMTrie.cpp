@@ -810,22 +810,26 @@ DMMTrie::DMMTrie(uint64_t tid, LSVPS *page_store, VDLS *value_store,
   deltapage_versions_.clear();
 }
 
-void DMMTrie::Put(uint64_t tid, uint64_t version, const string &key,
-                  const string &value) {  // 返回bool!!!!!!!!!!!!!!!!
-  if (version < current_version_) {       // version invalid
+bool DMMTrie::Put(uint64_t tid, uint64_t version, const string &key,
+                  const string &value) {
+  if (version < current_version_) {  // version invalid
     cout << "Version " << version << " is outdated!" << endl;
-    return;
+    return false;
+  }
+  if (value == "") {
+    cout << "Value cannot be empty string" << endl;
+    return false;
   }
   current_version_ = version;
   put_cache_[key] = value;
+  return true;
 }
 
-// 传入string &value, 返回bool，后续添加delete函数!!!!!!!!!!!!!!!!
 string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
   string nibble_path = key;
   uint64_t page_version = version;
   LeafNode *leafnode = nullptr;
-  for (int i = 0; i < key.size(); i += 2) {
+  for (int i = 0; i <= key.size(); i += 2) {
     string pid = nibble_path.substr(0, i);
     BasePage *page =
         GetPage({page_version, 0, false, pid});  // false means basepage
@@ -855,6 +859,10 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
   cout << "Key " << key << " has value " << value << " at version " << version
        << endl;
   return value;
+}
+
+void DMMTrie::Delete(uint64_t tid, uint64_t version, const string &key) {
+  put_cache_[key] = "";
 }
 
 void DMMTrie::Commit(uint64_t version) {

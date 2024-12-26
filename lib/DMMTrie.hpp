@@ -26,6 +26,8 @@ class LSVPS;
 class DMMTrie;
 class DeltaPage;
 
+string HashFunction(const string &input);
+
 struct NodeProof {
   int level;
   int index;
@@ -209,9 +211,10 @@ class DMMTrie {
  public:
   DMMTrie(uint64_t tid, LSVPS *page_store, VDLS *value_store,
           uint64_t current_version = 0);
-  void Put(uint64_t tid, uint64_t version, const string &key,
+  bool Put(uint64_t tid, uint64_t version, const string &key,
            const string &value);
   string Get(uint64_t tid, uint64_t version, const string &key);
+  void Delete(uint64_t tid, uint64_t version, const string &key);
   void Commit(uint64_t version);
   void CalcRootHash(uint64_t tid, uint64_t version);
   string GetRootHash(uint64_t tid, uint64_t version);

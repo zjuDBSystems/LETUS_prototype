@@ -64,9 +64,9 @@ class VDLS {
            record_size);
 
     // 同步更改到磁盘
-    if (msync(write_map_, MaxFileSize, MS_SYNC) == -1) {
-      throw runtime_error("Failed to sync changes to disk");
-    }
+    // if (msync(write_map_, MaxFileSize, MS_SYNC) == -1) {
+    //   throw runtime_error("Failed to sync changes to disk");
+    // }
 
     current_offset_ += record_size;
 
