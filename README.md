@@ -127,6 +127,18 @@ Then, again, the workload iterate `num_version` times, and this time it generate
 
 As a result, each `GET` task can retrieve the value inserted by the `PUT` task with a specific version.
 
+## ycsb_simple workload
+Parameters: `key_len`, `value_len`, `batch_size`, `record_count`, `op_count`.
+The ycsb_simple workload comprimise two phrases: loading phrase, transaction phrase.
+**Loading phrase**: The ycsb_simple workload insert `record_count` key-value records into the database. Every `batch_size` insertions form one batch and is assigned a version number.
+**Transaction phrase**: The ycsb_simple workload generate `op_count` operations. Each operation is randomly chosen from `[Read, Update, Insert, Scan, ReadModifyWrite]` operations.
+- `Read`: the workload randomly selects a key that was inserted in the loading phrase, and read the value of this key.
+- `Update`: the workload randomly selects a key that was inserted in the loading phrase, and update its value with a random value.
+- `Insert`: the workload generates a new key that was not inserted in the loading phrase, and insert it into the database with a random value.
+- `Scan`: the workload randomly selects a key that was inserted in the loading phrase, randomly select a scan length, and reads the values of the scaned keys in the database.
+- `ReadModifyWrite`: the workload randomly select a key, and perform a ReadModifyWrite operation on it. The workload first reads the value of this key, then modify the value to a with a random value, and finally write the modified value back to the database.
+All the key-value read or written during the transaction phrase are recorded and verify in a verification function/thread.
+
 ## Run experiments
 This command will run put-then-historical-get workload multiple times to scan `batch_size` in `[500,1000,2000,3000,4000,5000]`, `value_len` in `[256, 512, 1024, 2048]` bytes. The `key_len` is set to 5 bytes and `num_version` is set to 1000.
 ```
@@ -143,5 +155,12 @@ $ cd exps/
 $ ./test_get_put_2.sh 2> get_put_2.log
 ```
 <img src="README.assets/put-then-historical-get.png" style="zoom:30%;" />
+
+This command will run the ycsb_simple workload.
+```
+$ cd exps/
+$ ./test_ycsb_simple.sh
+```
+
 
 # Citation

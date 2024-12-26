@@ -75,6 +75,14 @@ inline std::string Trim(const std::string &str) {
           .base());
 }
 
+std::string BuildKeyName(uint64_t key_num, int key_len) {
+  std::string key_num_str = std::to_string(key_num);
+  int zeros = key_len - key_num_str.length();
+  zeros = std::max(0, zeros);
+  std::string key_name = "";
+  return key_name.append(zeros, '0').append(key_num_str);
+}
+
 }  // namespace utils
 
 #endif  // _UTILS_HPP_
