@@ -5,7 +5,7 @@ import "unsafe"
 
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../lib
-#cgo LDFLAGS: -L${SRCDIR}/../../build -lletus -lssl -lcrypto -lstdc++ -fsanitize=address
+#cgo LDFLAGS: -L${SRCDIR}/../../build_release -lletus -lssl -lcrypto -lstdc++ -fsanitize=address
 #include "Letus.h"
 #include <stdio.h>
 */
@@ -79,7 +79,13 @@ func (s *LetusKVStroage) GetStableSeqNo() (uint64, error) {
 func (s *LetusKVStroage) GetCurrentSeqNo() (uint64, error) {
 	return s.current_seq_no, nil
 }
+
 func (s *LetusKVStroage) Proof(key []byte, seq uint64) (types.ProofPath, error){
+	proofPath := make(ProofPath, 0)
+	for i := uint64(0); i <= seq; i++ {
+		proofPath = append(proofPath, s.Get(key))
+	}
+	return proofPath, nil
 
 }
 func (s *LetusKVStroage) SetEngine(engine cryptocom.Engine) {}

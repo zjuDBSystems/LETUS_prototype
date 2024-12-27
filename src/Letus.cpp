@@ -12,6 +12,11 @@ struct Letus {
   DMMTrie* trie;
 };
 
+string fakeHashFunction(const string& input) {
+  string output = input;
+  return output;
+}
+
 struct Letus* OpenLetus(const char* path_c) {
   std::string path(path_c);
   LSVPS* page_store = new LSVPS();
@@ -43,7 +48,73 @@ char* LetusGet(Letus* p, uint64_t tid, uint64_t version, const char* key_c) {
 
 void LetusCommit(Letus* p, uint64_t version) { p->trie->Commit(version); }
 
-void LetusProof(Letus* p, uint64_t tid, uint64_t version, const char* key_c) {
+void LetusProof(Letus* p, uint64_t tid, uint64_t version, const char* key_c,
+                LetusProofNode** proof_nodes_, int* proof_size_) {
   std::string key(key_c);
+  std::string value = p->trie->Get(tid, version, key);
+
   DMMTrieProof proof = p->trie->GetProof(tid, version, key);
+  int proof_size = proof.proofs.size();
+  LetusProofNode* proof_nodes = new LetusProofNode[proof_size];
+
+  string hash = fakeHashFunction(key + value);
+  for (int i = 0; i < proof_size; ++i) {
+    int nibble_size = proof_size - i;
+    proof_nodes[i].index = nibble_size - 1;
+    proof_nodes[i].is_data = (i == 0);
+    proof_nodes[i].key = new char[nibble_size + 1];
+    strcpy(proof_nodes[i].key, key.substr(0, nibble_size).c_str());
+    proof_nodes[i].hash = new char[hash.size() + 1];
+    strcpy(proof_nodes[i].hash, hash.c_str());
+    proof_nodes[i].inodes = new LetusINode[DMM_NODE_FANOUT];
+    NodeProof& node_proof = proof.proofs[i];
+    string concatenated_hash;
+    for (int j = 0; j < DMM_NODE_FANOUT; j++) {
+      if (j == proof.proofs[i].index) {
+        concatenated_hash += hash;
+      } else {
+        concatenated_hash += node_proof.sibling_hash[j];
+      }
+      proof_nodes[i].inodes[j].key = new char[nibble_size + 1];
+      strcpy(proof_nodes[i].inodes[j].key, key.substr(0, nibble_size).c_str());
+      proof_nodes[i].inodes[j].key[nibble_size - 1] = '0' + j;
+      proof_nodes[i].inodes[j].hash =
+          new char[node_proof.sibling_hash[j].size() + 1];
+      strcpy(proof_nodes[i].inodes[j].hash, node_proof.sibling_hash[j].c_str());
+    }
+    cout << concatenated_hash << endl;
+    cout << hash << endl;
+    hash = fakeHashFunction(concatenated_hash);
+  }
+  *proof_size_ = proof_size;
+  *proof_nodes_ = proof_nodes;
 }
+
+// functions for DMMTrieProof
+// int LetusGetPtoofSize(DMMTrieProof* proof) { return proof->proofs.size(); }
+// NodeProof* GetNodeProof(DMMTrieProof* proof, int index) {
+//   return &proof->proofs[index];
+// }
+
+// functions for NodeProof
+// char* GetKey(NodeProof* proof) { return ""; }
+// char* GetHash(NodeProof* proof) { return ""; }
+// bool GetIsData(NodeProof* proof) {
+//   // TODO: is leaf node of index node
+//   return true;
+// }
+// int GetIndex(NodeProof* proof) {
+//   // order from top to button
+//   return 1;
+// }
+// int GetSize(NodeProof* proof) { return proof->sibling_hash.size(); }
+
+// char* GetSiblingHash(NodeProof* proof, int index) {
+//   char* hash = new char[proof->sibling_hash[index].size() + 1];
+//   strcpy(hash, proof->sibling_hash[index].c_str());
+//   return hash;
+// }
+// char* GetSiblingKey(NodeProof* proof, int index) {
+//   char* key = new char[10];
+//   return key;
+// }
