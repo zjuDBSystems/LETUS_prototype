@@ -25,6 +25,8 @@ func main() {
       panic("Failed to get")
    }
    fmt.Println(string(res))
+   seq, _ := db.GetStableSeqNo()
+   db.Proof([]byte("11111"), seq)
    db.Delete([]byte("11111"))
    // close db
    _ = db.Close()

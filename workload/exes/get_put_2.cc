@@ -18,7 +18,7 @@
 #include "generator.hpp"
 
 // common values
-uint64_t MAX_KEY = 99999;
+uint64_t MAX_KEY = pow(2, 32) - 1;
 ZipfianGenerator key_generator(1, MAX_KEY);
 
 struct Task {
@@ -183,9 +183,9 @@ int main(int argc, char** argv) {
       std::string key = keys[i];
       std::string value = values[i];
       uint64_t version = versions[i];
-      #ifdef DEBUG
+#ifdef DEBUG
       std::cout << i << " PUT:" << key << "," << value << ", v" << version
-      << std::endl;
+                << std::endl;
 #endif
       trie->Put(0, version, key, value);
     }
@@ -208,7 +208,7 @@ int main(int argc, char** argv) {
       uint64_t version = versions[i];
 #ifdef DEBUG
       std::cout << i << " GET:" << key << "," << value << ", v" << version
-      << std::endl;
+                << std::endl;
 #endif
       std::string value_2 = trie->Get(0, version, key);
 #ifdef DEBUG

@@ -46,7 +46,6 @@ type KVStorage interface {
 	// FSync fsync all data before seq.
 	FSync(seq uint64) error
 }
-
 ```
 
 Batch接口：
@@ -61,9 +60,8 @@ type Batch interface {
 	Len() uint64
 	Release() error
 }
-
-
 ```
+
 通用型Iterator接口：
 
 ```go

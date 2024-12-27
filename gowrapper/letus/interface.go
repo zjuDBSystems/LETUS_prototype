@@ -2,6 +2,7 @@
 package letus
 
 // import "crypto"
+import "../types"
 
 // KVStorage is a interface that provides managing k/v.
 type KVStorage interface {
@@ -41,7 +42,7 @@ type KVStorage interface {
 	GetStableSeqNo() (uint64, error)
 	// Proof return proofPath for the given key.
 	Proof(key []byte, seq uint64) (types.ProofPath, error)
-	SetEngine(engine cryptocom.Engine)
+	// SetEngine(engine cryptocom.Engine)
 	// FSync fsync all data before seq.
 	FSync(seq uint64) error
 }
@@ -65,24 +66,3 @@ type Iterator interface {
 	Prev() bool
 	Error() error
 }
-
-// Inode struct
-type Inode struct {
-	Key  []byte `json:"key,omitempty"`
-	Hash []byte `json:"hash,omitempty"`
-}
-
-// Inodes struct
-type Inodes []*Inode
-
-// ProofNode struct
-type ProofNode struct {
-	IsData bool   `json:"isData"`
-	Key    []byte `json:"key,omitempty"`
-	Hash   []byte `json:"hash,omitempty"`
-	Inodes Inodes `json:"inodes,omitempty"`
-	Index  int    `json:"index"`
-}
-
-// ProofPath struct
-type ProofPath []*ProofNode

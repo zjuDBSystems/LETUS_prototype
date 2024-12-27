@@ -84,7 +84,8 @@ for value_size in sorted(df['value_size'].unique()):
     plt.plot(data['batch_size'].to_numpy(), data['get_throughput'].to_numpy()/1000, 
              marker='o', label=f'Value Size={value_size}B')
 
-plt.ylim(0,100)
+plt.ylim(0, None)
+# plt.ylim(0,100)
 plt.title('Get Throughput vs Batch Size')
 plt.xlabel('Batch Size')
 plt.ylabel('Throughput (KOPS)')
@@ -98,6 +99,7 @@ for value_size in sorted(df['value_size'].unique()):
              marker='o', label=f'Value Size={value_size}B')
 
 # plt.ylim(0,60)
+plt.ylim(0, None)
 plt.title('Put Throughput vs Batch Size')
 plt.xlabel('Batch Size')
 plt.ylabel('Throughput (KOPS)')
