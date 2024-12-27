@@ -31,4 +31,4 @@ void LetusCommit(Letus *p, uint64_t version);
 // char *GetHash(NodeProof *node_proof);
 // bool GetIsData(NodeProof *node_proof);
 // int GetIndex(NodeProof *node_proof);
-#endif // _LETUS_H_
+#endif  // _LETUS_H_
