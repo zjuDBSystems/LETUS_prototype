@@ -12,6 +12,8 @@ import "unsafe"
 import "C"
 
 type cgo_Letus C.struct_Letus
+type cgo_ProofNode C.struct_LetusProofNode
+type C.struct_LetusINode
 
 
 // LetusKVStroage is an implementation of KVStroage.
@@ -81,9 +83,10 @@ func (s *LetusKVStroage) GetCurrentSeqNo() (uint64, error) {
 }
 
 func (s *LetusKVStroage) Proof(key []byte, seq uint64) (types.ProofPath, error){
+	var c_proof_path *interface{}
 	proofPath := make(ProofPath, 0)
 	for i := uint64(0); i <= seq; i++ {
-		proofPath = append(proofPath, s.Get(key))
+		proofPath = append(proofPath)
 	}
 	return proofPath, nil
 

@@ -26,6 +26,8 @@ class LSVPS;
 class DMMTrie;
 class DeltaPage;
 
+string HashFunction(const string &input);
+
 struct NodeProof {
   int level;
   int index;

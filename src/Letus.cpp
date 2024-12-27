@@ -12,11 +12,6 @@ struct Letus {
   DMMTrie* trie;
 };
 
-string fakeHashFunction(const string& input) {
-  string output = input;
-  return output;
-}
-
 struct Letus* OpenLetus(const char* path_c) {
   std::string path(path_c);
   LSVPS* page_store = new LSVPS();
@@ -57,7 +52,7 @@ void LetusProof(Letus* p, uint64_t tid, uint64_t version, const char* key_c,
   int proof_size = proof.proofs.size();
   LetusProofNode* proof_nodes = new LetusProofNode[proof_size];
 
-  string hash = fakeHashFunction(key + value);
+  string hash = HashFunction(key + value);
   for (int i = 0; i < proof_size; ++i) {
     int nibble_size = proof_size - i;
     proof_nodes[i].index = nibble_size - 1;
@@ -84,37 +79,8 @@ void LetusProof(Letus* p, uint64_t tid, uint64_t version, const char* key_c,
     }
     cout << concatenated_hash << endl;
     cout << hash << endl;
-    hash = fakeHashFunction(concatenated_hash);
+    hash = HashFunction(concatenated_hash);
   }
   *proof_size_ = proof_size;
   *proof_nodes_ = proof_nodes;
 }
-
-// functions for DMMTrieProof
-// int LetusGetPtoofSize(DMMTrieProof* proof) { return proof->proofs.size(); }
-// NodeProof* GetNodeProof(DMMTrieProof* proof, int index) {
-//   return &proof->proofs[index];
-// }
-
-// functions for NodeProof
-// char* GetKey(NodeProof* proof) { return ""; }
-// char* GetHash(NodeProof* proof) { return ""; }
-// bool GetIsData(NodeProof* proof) {
-//   // TODO: is leaf node of index node
-//   return true;
-// }
-// int GetIndex(NodeProof* proof) {
-//   // order from top to button
-//   return 1;
-// }
-// int GetSize(NodeProof* proof) { return proof->sibling_hash.size(); }
-
-// char* GetSiblingHash(NodeProof* proof, int index) {
-//   char* hash = new char[proof->sibling_hash[index].size() + 1];
-//   strcpy(hash, proof->sibling_hash[index].c_str());
-//   return hash;
-// }
-// char* GetSiblingKey(NodeProof* proof, int index) {
-//   char* key = new char[10];
-//   return key;
-// }
