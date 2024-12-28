@@ -20,7 +20,7 @@ type KVStorage interface {
 	// NewBatch return a storage batch.
 	NewBatch() (Batch, error)
 	// NewBatchWithEngine return a storage batch.
-	// [TODO] NewBatchWithEngine() (Batch, error)
+	NewBatchWithEngine() (Batch, error)
 	
 	// NewIterator returns an iterator of the storage.
 	//TODO: NewIterator should return error
@@ -66,3 +66,5 @@ type Iterator interface {
 	Prev() bool
 	Error() error
 }
+
+

@@ -5,7 +5,8 @@ import "fmt"
 import "./letus"
 
 func main() {
-   db, ok := letus.NewLetusKVStroage([]byte("/home/xinyu.chen/LETUS_prototype/data/"))
+   config := letus.GetDefaultConfig()
+   db, ok := letus.NewLetusKVStroage(config)
    if ok != nil{
       panic("Failed to create LetusKVStroage")
    }

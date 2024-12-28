@@ -24,9 +24,11 @@ type LetusKVStroage struct {
 	current_seq_no uint64
 }
 
-func NewLetusKVStroage(path []byte) (KVStorage, error) {
+func NewLetusKVStroage(config *LetusConfig) (KVStorage, error) {
+	path := config.GetDataPath()
 	s := &LetusKVStroage{
-		c: (*cgo_Letus)(C.OpenLetus((*C.char)(unsafe.Pointer(&path[0])))),
+		c: (*cgo_Letus)(C.OpenLetus(C.CString(path))),
+		// c: (*cgo_Letus)(C.OpenLetus((*C.char)(unsafe.Pointer(&path[0])))),
 		tid: 0,
 		stable_seq_no: 0,
 		current_seq_no: 1,
@@ -70,6 +72,10 @@ func (s *LetusKVStroage) NewBatch() (Batch, error) {
 	return NewLetusBatch()
 }
 
+func (s *LetusKVStroage) NewBatchWithEngine() (Batch, error) {
+	return NewLetusBatch()
+}
+
 func (s *LetusKVStroage) SetSeqNo(seq uint64) error { 
 	s.current_seq_no = seq
 	return nil 
@@ -107,3 +113,37 @@ func (s *LetusKVStroage) Proof(key []byte, seq uint64) (types.ProofPath, error){
 
 // func (s *LetusKVStroage) SetEngine(engine cryptocom.Engine) {}
 func (s *LetusKVStroage) FSync(seq uint64) error { return nil }
+
+
+type LetusConfig struct {
+	DataPath      string
+	CheckInterval uint64
+	Compress      bool
+	Encrypt       bool
+	BucketMode    bool
+	VlogSize      uint64
+	sync          bool
+}
+
+
+func GetDefaultConfig() *LetusConfig {
+	DefaultSync := false
+	DefaultEncryption := false
+	DefaultCheckInterval := uint64(100)
+	DefaultDataPath := "./data"
+	DefaultBucketMode := false
+	DefaultVlogSize := uint64(1024 * 1024)
+	return &LetusConfig{
+		sync:          DefaultSync,
+		Encrypt:       DefaultEncryption,
+		Compress:      true,
+		CheckInterval: DefaultCheckInterval,
+		DataPath:      DefaultDataPath,
+		BucketMode:    DefaultBucketMode,
+		VlogSize:      DefaultVlogSize,
+	}
+}
+
+func (v LetusConfig) GetDataPath() string {
+	return v.DataPath
+}
