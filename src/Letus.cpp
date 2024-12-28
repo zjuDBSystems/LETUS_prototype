@@ -29,8 +29,8 @@ struct LetusProofPath {
 
 struct Letus* OpenLetus(const char* path_c) {
   std::string path(path_c);
-  LSVPS* page_store = new LSVPS();
-  VDLS* value_store = new VDLS(path);
+  LSVPS* page_store = new LSVPS(path);
+  VDLS* value_store = new VDLS(path + "/");
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);
   struct Letus* p = new Letus();
