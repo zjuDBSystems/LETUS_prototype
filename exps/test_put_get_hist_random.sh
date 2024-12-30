@@ -12,7 +12,8 @@ mkdir -p put_get_hist_random
 cd ..
 
 # 定义测试参数数组
-batch_sizes=(500 1000 2000 4000)
+key_size=32
+batch_sizes=(500 1000 2000 3000 4000 5000)
 value_sizes=(256 512 1024 2048)
 n_test=8
 data_path="$PWD/../data/"
@@ -34,9 +35,9 @@ for batch_size in "${batch_sizes[@]}"; do
         
         result_path="$PWD/results/put_get_hist_random/b${batch_size}v${value_size}.csv"
         echo "result_path: $result_path"
-        echo "cmd: ../build_release/bin/put_get_hist_random -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path"
+        echo "cmd: ../build_release/bin/put_get_hist_random -b $batch_size -k $key_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path"
         # 运行测试并提取结果
-        ../build_release/bin/put_get_hist_random -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path
+        ../build_release/bin/put_get_hist_random -b $batch_size -k $key_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path
         # output=$(../build_release/bin/put_get_hist_random -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path)
         
         # 使用awk提取平均延迟和吞吐量

@@ -1,5 +1,5 @@
 #!/bin/bash
-export ASAN_OPTIONS=detect_leaks=0
+
 # 编译项目
 cd ../
 ./build.sh

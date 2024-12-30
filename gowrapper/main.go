@@ -1,11 +1,14 @@
 package main
 
+import (
+	"fmt"
 
-import "fmt"
-import "./letus"
+	"./letus"
+)
 
 func main() {
-   db, ok := letus.NewLetusKVStroage([]byte("/home/xinyu.chen/LETUS_prototype/data/"))
+   config := letus.GetDefaultConfig()
+   db, ok := letus.NewLetusKVStroage(config)
    if ok != nil{
       panic("Failed to create LetusKVStroage")
    }
@@ -25,6 +28,8 @@ func main() {
       panic("Failed to get")
    }
    fmt.Println(string(res))
+   seq, _ := db.GetStableSeqNo()
+   db.Proof([]byte("11111"), seq)
    db.Delete([]byte("11111"))
    // close db
    _ = db.Close()

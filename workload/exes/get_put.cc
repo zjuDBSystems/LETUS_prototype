@@ -19,7 +19,7 @@
 #include "generator.hpp"
 
 // common values
-uint64_t MAX_KEY = 99999;
+uint64_t MAX_KEY = pow(2, 32) - 1;
 ZipfianGenerator key_generator(1, MAX_KEY);
 
 struct Task {

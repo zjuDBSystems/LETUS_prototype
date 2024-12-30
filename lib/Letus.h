@@ -4,24 +4,23 @@
 #include <stdint.h>
 
 typedef struct Letus Letus;
-typedef struct DMMTrieProof DMMTrieProof;
-typedef struct NodeProof NodeProof;
-typedef struct {
-  char *key;
-  char *hash;
-} LetusINode;
-typedef struct {
-  bool is_data;
-  char *key;
-  char *hash;
-  LetusINode *inodes;
-  int index;
-} LetusProofNode;
-extern struct Letus *OpenLetus(const char *path_c);
-void LetusPut(Letus *p, uint64_t tid, uint64_t version, const char *key_c,
-              const char *value_c);
-char *LetusGet(Letus *p, uint64_t tid, uint64_t version, const char *key_c);
-void LetusProof(Letus *p, uint64_t tid, uint64_t version, const char *key_c,
-                LetusProofNode **proof_nodes_, int *proof_size_);
-void LetusCommit(Letus *p, uint64_t version);
+typedef struct LetusProofPath LetusProofPath;
+
+extern struct Letus* OpenLetus(const char* path_c);
+void LetusPut(Letus* p, uint64_t tid, uint64_t version, const char* key_c,
+              const char* value_c);
+char* LetusGet(Letus* p, uint64_t tid, uint64_t version, const char* key_c);
+void LetusCommit(Letus* p, uint64_t version);
+LetusProofPath* LetusProof(Letus* p, uint64_t tid, uint64_t version,
+                           const char* key_c);
+uint64_t LetusGetProofPathSize(LetusProofPath* path);
+bool LetusGetProofNodeIsData(LetusProofPath* path, uint64_t node_index);
+int LetusGetProofNodeIndex(LetusProofPath* path, uint64_t node_index);
+char* LetusGetProofNodeKey(LetusProofPath* path, uint64_t node_index);
+char* LetusGetProofNodeHash(LetusProofPath* path, uint64_t node_index);
+uint64_t LetusGetProofNodeSize(LetusProofPath* path, uint64_t node_index);
+char* LetusGetINodeKey(LetusProofPath* path, uint64_t node_index,
+                       uint64_t inode_index);
+char* LetusGetINodeHash(LetusProofPath* path, uint64_t node_index,
+                        uint64_t inode_index);
 #endif  // _LETUS_H_

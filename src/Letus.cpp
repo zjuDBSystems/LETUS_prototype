@@ -11,11 +11,26 @@ extern "C" {
 struct Letus {
   DMMTrie* trie;
 };
+struct LetusINode {
+  char* key;
+  char* hash;
+};
+struct LetusProofNode {
+  bool is_data;
+  char* key;
+  char* hash;
+  LetusINode* inodes;
+  int index;
+};
+struct LetusProofPath {
+  LetusProofNode* proof_nodes;
+  uint64_t proof_size;
+};
 
 struct Letus* OpenLetus(const char* path_c) {
   std::string path(path_c);
-  LSVPS* page_store = new LSVPS();
-  VDLS* value_store = new VDLS(path);
+  LSVPS* page_store = new LSVPS(path);
+  VDLS* value_store = new VDLS(path + "/");
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);
   struct Letus* p = new Letus();
@@ -43,8 +58,8 @@ char* LetusGet(Letus* p, uint64_t tid, uint64_t version, const char* key_c) {
 
 void LetusCommit(Letus* p, uint64_t version) { p->trie->Commit(version); }
 
-void LetusProof(Letus* p, uint64_t tid, uint64_t version, const char* key_c,
-                LetusProofNode** proof_nodes_, int* proof_size_) {
+LetusProofPath* LetusProof(Letus* p, uint64_t tid, uint64_t version,
+                           const char* key_c) {
   std::string key(key_c);
   std::string value = p->trie->Get(tid, version, key);
 
@@ -77,10 +92,37 @@ void LetusProof(Letus* p, uint64_t tid, uint64_t version, const char* key_c,
           new char[node_proof.sibling_hash[j].size() + 1];
       strcpy(proof_nodes[i].inodes[j].hash, node_proof.sibling_hash[j].c_str());
     }
-    cout << concatenated_hash << endl;
-    cout << hash << endl;
     hash = HashFunction(concatenated_hash);
   }
-  *proof_size_ = proof_size;
-  *proof_nodes_ = proof_nodes;
+  LetusProofPath* path = new LetusProofPath();
+  path->proof_nodes = proof_nodes;
+  path->proof_size = proof_size;
+  return path;
+}
+
+uint64_t LetusGetProofPathSize(LetusProofPath* path) {
+  return path->proof_size;
+}
+bool LetusGetProofNodeIsData(LetusProofPath* path, uint64_t node_index) {
+  return path->proof_nodes[node_index].is_data;
+}
+int LetusGetProofNodeIndex(LetusProofPath* path, uint64_t node_index) {
+  return path->proof_nodes[node_index].index;
+}
+char* LetusGetProofNodeKey(LetusProofPath* path, uint64_t node_index) {
+  return path->proof_nodes[node_index].key;
+}
+char* LetusGetProofNodeHash(LetusProofPath* path, uint64_t node_index) {
+  return path->proof_nodes[node_index].hash;
+}
+uint64_t LetusGetProofNodeSize(LetusProofPath* path, uint64_t node_index) {
+  return DMM_NODE_FANOUT;
+}
+char* LetusGetINodeKey(LetusProofPath* path, uint64_t node_index,
+                       uint64_t inode_index) {
+  return path->proof_nodes[node_index].inodes[inode_index].key;
+}
+char* LetusGetINodeHash(LetusProofPath* path, uint64_t node_index,
+                        uint64_t inode_index) {
+  return path->proof_nodes[node_index].inodes[inode_index].hash;
 }
