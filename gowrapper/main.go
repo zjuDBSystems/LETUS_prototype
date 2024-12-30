@@ -1,8 +1,10 @@
 package main
 
+import (
+	"fmt"
 
-import "fmt"
-import "./letus"
+	"./letus"
+)
 
 func main() {
    db, ok := letus.NewLetusKVStroage([]byte("/home/xinyu.chen/LETUS_prototype/data/"))

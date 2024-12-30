@@ -148,12 +148,18 @@ $ ./test_get_put.sh 2> get_put_2.log
 The execution will produce a plot of latency and throughput in `exps/results`.
 <img src="README.assets/put-then-get.png" style="zoom:30%;" />
 
-This command will run put-then-historical-get workload multiple times to scan `batch_size` in `[10,20,30,40,50,60]`, `value_len` in `[256, 512, 1024, 2048]` bytes. The `key_len` is set to 5 bytes and `num_version` is set to 1000.
-The execution will produce a plot of latency and throughput in `exps/results`.
+This command will run put-then-historical-get workload multiple times to scan `batch_size` in `[10,20,30,40,50,60]`, `value_len` in `[256, 512, 1024, 2048]` bytes. The `key_len` is set to 32 bytes and `num_version` is set to 8.
 ```
 $ cd exps/
 $ ./test_get_put_2.sh 2> get_put_2.log
 ```
+The execution will produce a plot of latency and throughput in `exps/results`.
+our experiment results is obtain within an experiment environment described as follows.
+1. **OS**：Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-177-generic x86_64)
+2. **CPU**: 72-core Intel(R) Xeon(R) Gold 6240C CPU @ 2.60GHz
+3. **Memory**: 32GB x 12devices = 384GB
+4. **Disk（SSD）**: Intel DC P3600 SSD 1.6tb NVMe PCIe 3.0 X 4 MLC HHHL AIC 20nm SSDPEDME016T4F, Read/Write Throughput: up to 2600/1700 MB/s, Random I/O Operations Read/Write: Up to 450/56 K-IOPS
+
 <img src="README.assets/put-then-historical-get.png" style="zoom:30%;" />
 
 This command will run the ycsb_simple workload.
