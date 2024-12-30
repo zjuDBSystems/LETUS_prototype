@@ -33,7 +33,7 @@ for batch_size in "${batch_sizes[@]}"; do
         rm -rf "${index_path}/IndexFile/"
         mkdir -p "${index_path}/IndexFile/"
         
-        result_path="$PWD/results/get_put_2/b${batch_size}v${value_size}.csv"
+        result_path="$PWD/results/get_put/b${batch_size}v${value_size}.csv"
         echo "result_path: $result_path"
         echo "cmd: ../build_release/bin/get_put -b $batch_size -k $key_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path"
         # 运行测试并提取结果

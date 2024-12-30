@@ -8,8 +8,6 @@
 #include <string>
 #include <utility>
 
-#include <json/json.h>
-
 #include "DMMTrie.hpp"
 #include "LSVPS.hpp"
 #include "kv_buffer.hpp"
