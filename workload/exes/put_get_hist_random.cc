@@ -183,9 +183,9 @@ int main(int argc, char** argv) {
       std::string key = keys[i];
       std::string value = values[i];
       uint64_t version = versions[i];
-      #ifdef DEBUG
+#ifdef DEBUG
       std::cout << i << " PUT:" << key << "," << value << ", v" << version
-      << std::endl;
+                << std::endl;
 #endif
       trie->Put(0, version, key, value);
     }
@@ -196,6 +196,14 @@ int main(int argc, char** argv) {
                        chrono::microseconds::period::num /
                        chrono::microseconds::period::den;
   }
+  // shuffle get_tasks
+  // 使用随机数生成器
+  // std::random_device rd;
+  uint64_t seed = 1882;
+  // uint64_t seed =
+  // std::chrono::system_clock::now().time_since_epoch().count();
+  std::mt19937 g(seed);
+  std::shuffle(get_tasks, get_tasks + n_test, g);
   for (int j = 0; j < n_test; j++) {
     // get
     auto keys = get_tasks[j].keys;
@@ -208,7 +216,7 @@ int main(int argc, char** argv) {
       uint64_t version = versions[i];
 #ifdef DEBUG
       std::cout << i << " GET:" << key << "," << value << ", v" << version
-      << std::endl;
+                << std::endl;
 #endif
       std::string value_2 = trie->Get(0, version, key);
 #ifdef DEBUG

@@ -43,3 +43,7 @@ char* LetusGet(Letus* p, uint64_t tid, uint64_t version, const char* key_c) {
 
 void LetusCommit(Letus* p, uint64_t version) { p->trie->Commit(version); }
 
+void LetusProof(Letus* p, uint64_t tid, uint64_t version, const char* key_c) {
+  std::string key(key_c);
+  DMMTrieProof proof = p->trie->GetProof(tid, version, key);
+}

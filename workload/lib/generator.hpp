@@ -9,10 +9,12 @@
 #ifndef _GENERATOR_HPP_
 #define _GENERATOR_HPP_
 
+#include <atomic>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <mutex>
+#include <random>
 #include "workload_utilis.hpp"
 
 template <typename Value>
@@ -124,6 +126,84 @@ inline uint64_t ZipfianGenerator::Next(uint64_t num) {
 inline uint64_t ZipfianGenerator::Last() {
   std::lock_guard<std::mutex> lock(mutex_);
   return last_value_;
+}
+
+class CounterGenerator : public Generator<uint64_t> {
+ public:
+  CounterGenerator(uint64_t start) : counter_(start) {}
+  uint64_t Next() { return counter_.fetch_add(1); }
+  uint64_t Last() { return counter_.load() - 1; }
+  void Set(uint64_t start) { counter_.store(start); }
+
+ private:
+  std::atomic<uint64_t> counter_;
+};
+
+template <typename Value>
+class DiscreteGenerator : public Generator<Value> {
+ public:
+  DiscreteGenerator() : sum_(0) {}
+  void AddValue(Value value, double weight);
+
+  Value Next();
+  Value Last() { return last_; }
+
+ private:
+  std::vector<std::pair<Value, double>> values_;
+  double sum_;
+  std::atomic<Value> last_;
+  std::mutex mutex_;
+};
+
+template <typename Value>
+inline void DiscreteGenerator<Value>::AddValue(Value value, double weight) {
+  if (values_.empty()) {
+    last_ = value;
+  }
+  values_.push_back(std::make_pair(value, weight));
+  sum_ += weight;
+}
+
+template <typename Value>
+inline Value DiscreteGenerator<Value>::Next() {
+  mutex_.lock();
+  double chooser = utils::RandomDouble();
+  mutex_.unlock();
+
+  for (auto p = values_.cbegin(); p != values_.cend(); ++p) {
+    if (chooser < p->second / sum_) {
+      return last_ = p->first;
+    }
+    chooser -= p->second / sum_;
+  }
+
+  assert(false);
+  return last_;
+}
+
+class UniformGenerator : public Generator<uint64_t> {
+ public:
+  // Both min and max are inclusive
+  UniformGenerator(uint64_t min, uint64_t max) : dist_(min, max) { Next(); }
+
+  uint64_t Next();
+  uint64_t Last();
+
+ private:
+  std::mt19937_64 generator_;
+  std::uniform_int_distribution<uint64_t> dist_;
+  uint64_t last_int_;
+  std::mutex mutex_;
+};
+
+inline uint64_t UniformGenerator::Next() {
+  std::lock_guard<std::mutex> lock(mutex_);
+  return last_int_ = dist_(generator_);
+}
+
+inline uint64_t UniformGenerator::Last() {
+  std::lock_guard<std::mutex> lock(mutex_);
+  return last_int_;
 }
 
 #endif  // _GENERATOR_HPP_

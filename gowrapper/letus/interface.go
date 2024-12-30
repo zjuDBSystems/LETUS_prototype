@@ -40,10 +40,10 @@ type KVStorage interface {
 	// GetStableSeqNo return the max seq no in persist db
 	GetStableSeqNo() (uint64, error)
 	// Proof return proofPath for the given key.
-	// [TODO] Proof(key []byte, seq uint64) (types.ProofPath, error)
-	// [TODO] SetEngine(engine cryptocom.Engine)
+	Proof(key []byte, seq uint64) (types.ProofPath, error)
+	SetEngine(engine cryptocom.Engine)
 	// FSync fsync all data before seq.
-	// [TODO] FSync(seq uint64) error
+	FSync(seq uint64) error
 }
 
 // Batch is a write batch interface for KVStorage.
@@ -57,6 +57,7 @@ type Batch interface {
 	Release() error
 }
 
+
 type Iterator interface {
 	// LedgerIterator
 	First() bool
@@ -64,3 +65,24 @@ type Iterator interface {
 	Prev() bool
 	Error() error
 }
+
+// Inode struct
+type Inode struct {
+	Key  []byte `json:"key,omitempty"`
+	Hash []byte `json:"hash,omitempty"`
+}
+
+// Inodes struct
+type Inodes []*Inode
+
+// ProofNode struct
+type ProofNode struct {
+	IsData bool   `json:"isData"`
+	Key    []byte `json:"key,omitempty"`
+	Hash   []byte `json:"hash,omitempty"`
+	Inodes Inodes `json:"inodes,omitempty"`
+	Index  int    `json:"index"`
+}
+
+// ProofPath struct
+type ProofPath []*ProofNode

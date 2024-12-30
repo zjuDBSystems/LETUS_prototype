@@ -79,3 +79,8 @@ func (s *LetusKVStroage) GetStableSeqNo() (uint64, error) {
 func (s *LetusKVStroage) GetCurrentSeqNo() (uint64, error) {
 	return s.current_seq_no, nil
 }
+func (s *LetusKVStroage) Proof(key []byte, seq uint64) (types.ProofPath, error){
+
+}
+func (s *LetusKVStroage) SetEngine(engine cryptocom.Engine) {}
+func (s *LetusKVStroage) FSync(seq uint64) error { return nil }

@@ -12,13 +12,20 @@ detail_dir = f'results/{args.test_name}'
 summary_file = f'results/{args.test_name}_results.csv'
 summary_plot_file = f'results/{args.test_name}_results.png'
 
+summary_dict = {"batch_size":[], "value_size":[], 
+                "get_latency":[], "put_latency":[],
+                "get_throughput":[], "put_throughput":[]}
 detail_files = []
 for entry in os.listdir(detail_dir):
     full_path = os.path.join(detail_dir, entry)
     if os.path.isfile(full_path) and entry.endswith('.csv'):
-        detail_files.append(full_path)
-for f in detail_files:
-    df = pd.read_csv(f)
+        fname = full_path.split('/')[-1].split('.')[0]
+        bz, vl = fname.split('v')
+        bz, vl = int(bz.strip('b')), int(vl)
+        detail_files.append((bz, vl, fname, full_path))
+detail_files = sorted(detail_files)
+for bz, vl, fn, fp in detail_files:
+    df = pd.read_csv(fp)
     plt.figure(figsize=(15, 10))
     plt.plot(df['version'].to_numpy(), df['get_throughput'].to_numpy()/1000, 
                 marker='o', label=f'get throughput')
@@ -29,12 +36,21 @@ for f in detail_files:
     plt.ylabel('throughput (KOPS)')
     plt.legend()
     plt.grid(True)
-    plt_f = f"{'.'.join(f.split('.')[:-1])}.png"
+    plt_f = f"{'.'.join(fp.split('.')[:-1])}.png"
     plt.savefig(plt_f, dpi=300, bbox_inches='tight')
     plt.close()
+    summary_dict["batch_size"].append(bz)
+    summary_dict["value_size"].append(vl)
+    summary_dict["get_latency"].append(np.mean(df['get_latency'].to_numpy()))
+    summary_dict["put_latency"].append(np.mean(df['put_latency'].to_numpy()))
+    summary_dict["get_throughput"].append(np.mean(df['get_throughput'].to_numpy()))
+    summary_dict["put_throughput"].append(np.mean(df['put_throughput'].to_numpy()))
+    
 
 # plot summary
-df = pd.read_csv(summary_file)
+# df = pd.read_csv(summary_file)
+df =  pd.DataFrame(summary_dict)
+print(df)
 
 plt.figure(figsize=(9, 6))
 
@@ -81,7 +97,7 @@ for value_size in sorted(df['value_size'].unique()):
     plt.plot(data['batch_size'].to_numpy(), data['put_throughput'].to_numpy()/1000, 
              marker='o', label=f'Value Size={value_size}B')
 
-plt.ylim(0,60)
+# plt.ylim(0,60)
 plt.title('Put Throughput vs Batch Size')
 plt.xlabel('Batch Size')
 plt.ylabel('Throughput (KOPS)')
