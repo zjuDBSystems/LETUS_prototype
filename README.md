@@ -1,6 +1,7 @@
 # LETUS_prototype Go-wrapper
 ![LICENSE](https://img.shields.io/badge/License-MIT-brightgreen) 
 ![Language](https://img.shields.io/badge/Language-C%2B%2B17-blue)
+![Language](https://img.shields.io/badge/Language-Go-blue)
 
 
 This is a prototype implementation of [LETUS: A Log-Structured Efficient Trusted Universal BlockChain Storage](https://doi.org/10.1145/3626246.3653390).
