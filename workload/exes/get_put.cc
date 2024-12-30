@@ -180,8 +180,10 @@ int main(int argc, char** argv) {
       std::string key = keys[i];
       std::string value = values[i];
       uint64_t version = versions[i];
+#ifdef DEBUG
       std::cout << i << " PUT:" << key << "," << value << ", v" << version
                 << std::endl;
+#endif
       trie->Put(0, version, key, value);
     }
     trie->Commit(j + 1);
@@ -198,9 +200,13 @@ int main(int argc, char** argv) {
       std::string key = keys[i];
       std::string value = values[i];
       uint64_t version = versions[i];
+#ifdef DEBUG
       std::cout << i << " GET:" << key << ", v" << version << std::endl;
+#endif
       std::string value_2 = trie->Get(0, version, key);
+#ifdef DEBUG
       std::cout << "value = " << value_2 << std::endl;
+#endif
       if (value != value_2) {
         wrong_cnt += 1;
       }

@@ -148,10 +148,10 @@ $ ./test_get_put.sh 2> get_put_2.log
 The execution will produce a plot of latency and throughput in `exps/results`.
 <img src="README.assets/put-then-get.png" style="zoom:30%;" />
 
-This command will run put-then-historical-get workload multiple times to scan `batch_size` in `[10,20,30,40,50,60]`, `value_len` in `[256, 512, 1024, 2048]` bytes. The `key_len` is set to 32 bytes and `num_version` is set to 8.
+This command will run put-then-historical-get workload multiple times to scan `batch_size` in `[500,1000,2000,3000,4000,5000]`, `value_len` in `[256, 512, 1024, 2048]` bytes. The `key_len` is set to 32 bytes and `num_version` is set to 8.
 ```
 $ cd exps/
-$ ./test_get_put_2.sh 2> get_put_2.log
+$ ./test_put_get_hist_random.sh 2> test_put_get_hist_random.log
 ```
 The execution will produce a plot of latency and throughput in `exps/results`.
 our experiment results is obtain within an experiment environment described as follows.
