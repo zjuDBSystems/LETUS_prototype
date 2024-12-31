@@ -44,7 +44,7 @@ The project directory should look like this:
 
 ## Dependencies
 Developers are required to install the following dependencies:
-* [Go](https://golang.org/) >= 1.17
+* [Go](https://golang.org/) >= 1.18
 * [OpenSSL](https://www.openssl.org/) >= 1.1.0
 
 ## Build
@@ -53,6 +53,7 @@ The go-wrapper is tested in `gowrapper/main.go`.
 To build the go-wrapper, developers just run the following command.
 ```
 $ cd gowrapper
+$ go mod init letus
 $ ./go-build.sh
 ```
 To test the go-wrapper, developers can run the following command.

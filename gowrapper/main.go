@@ -1,8 +1,9 @@
 package main
 
-
-import "fmt"
-import "./letus"
+import (
+	"fmt"
+	"letus/letus"
+)
 
 func main() {
    config := letus.GetDefaultConfig()
