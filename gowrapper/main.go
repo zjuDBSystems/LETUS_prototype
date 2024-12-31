@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-
-	"./letus"
+	"letus/letus"
 )
 
 func main() {

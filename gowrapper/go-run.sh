@@ -1,2 +1,3 @@
-export GOPATH=/home/xinyu.chen/LETUS_prototype/gowrapper;
+rm -rf ./data;
+mkdir -p data;
 go run main.go;

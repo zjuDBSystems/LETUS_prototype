@@ -2,7 +2,7 @@ package letus
 
 import "fmt"
 import "unsafe"
-import "../types"
+import "letus/types"
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../lib
 #cgo LDFLAGS: -L${SRCDIR}/../../build_release -lletus -lssl -lcrypto -lstdc++
@@ -12,13 +12,10 @@ import "../types"
 */
 import "C"
 
-type cgo_Letus C.struct_Letus
-type cgo_LetusProofPath C.struct_LetusProofPath
-
 
 // LetusKVStroage is an implementation of KVStroage.
 type LetusKVStroage struct {
-	c *cgo_Letus
+	c *C.Letus
 	tid uint64
 	stable_seq_no uint64
 	current_seq_no uint64
@@ -27,8 +24,7 @@ type LetusKVStroage struct {
 func NewLetusKVStroage(config *LetusConfig) (KVStorage, error) {
 	path := config.GetDataPath()
 	s := &LetusKVStroage{
-		c: (*cgo_Letus)(C.OpenLetus(C.CString(path))),
-		// c: (*cgo_Letus)(C.OpenLetus((*C.char)(unsafe.Pointer(&path[0])))),
+		c: C.OpenLetus(C.CString(path)),
 		tid: 0,
 		stable_seq_no: 0,
 		current_seq_no: 1,
@@ -57,7 +53,7 @@ func (s *LetusKVStroage) Delete(key []byte) error {
 }
 
 func (s* LetusKVStroage) Commit(seq uint64) error { 
-	fmt.Println("Letus commit!")
+	fmt.Println("Letus commit! version=", seq)
 	C.LetusCommit(s.c, C.uint64_t(seq))
 	s.stable_seq_no = seq
 	s.current_seq_no = seq + 1

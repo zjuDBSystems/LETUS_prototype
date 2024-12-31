@@ -3,8 +3,8 @@ package letus
 import "fmt"
 
 type KVPair struct {
-    key  []byte
-    value []byte
+    key  string
+    value string
 }
 
 type LetusBatch struct {
@@ -21,8 +21,8 @@ func NewLetusBatch() (Batch, error) {
 func (b *LetusBatch) Put(key, value []byte) error {
   	// 创建一个新的KVPair
 	pair := KVPair{
-		key:   key,
-		value: value,
+		key:   string(key),
+		value: string(value),
 	}
 
 	// 将新的KVPair添加到kv切片中
@@ -33,7 +33,7 @@ func (b *LetusBatch) Put(key, value []byte) error {
 func (b *LetusBatch) Delete(key []byte) error {
 	// 遍历kv切片
 	for i := 0; i < len(b.kv); i++ {
-		if string(b.kv[i].key) == string(key) {
+		if b.kv[i].key == string(key) {
 			// 如果找到匹配的键，使用切片的删除方法
 			b.kv = append(b.kv[:i], b.kv[i+1:]...)
 			return nil // 成功删除，返回nil
@@ -47,7 +47,7 @@ func (b *LetusBatch) Delete(key []byte) error {
 func (b *LetusBatch) Write(db interface{}) error { 
 	db_ := db.(*LetusKVStroage)
 	for i := 0; i < len(b.kv); i++ {
-		ok := db_.Put(b.kv[i].key, b.kv[i].value)
+		ok := db_.Put([]byte(b.kv[i].key), []byte(b.kv[i].value))
 		if ok != nil { return ok }
 	}
 	seq, ok := db_.GetCurrentSeqNo()
