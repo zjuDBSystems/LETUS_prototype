@@ -83,12 +83,18 @@ The go-wrapper is tested in `gowrapper/main.go`.
 To build the go-wrapper, developers just run the following command.
 ```
 $ cd gowrapper
+$ go mod init letus
 $ ./go-build.sh
 ```
-To test the go-wrapper, developers can run the following command.
+
+#### use Docker container
+Build a docker image with the following command.
 ```
-$ cd gowrapper
-$ ./go-run.sh
+$ docker build -t letus-go .
+```
+Run a docker container
+```
+$ docker run -it -v ${PWD}:/home -w /home letus-go /bin/bash
 ```
 
 ## Run
@@ -97,6 +103,13 @@ This command will test LETUS with the put-then-historical-get workload (describe
 $ ./run.sh -b [batch_size] -v [value_len] -k [key_len] -n [num_version] 2>run.log
 ```
 > Note: in current state, the execution result is still `[ERROR] Program crashed`.
+
+
+To test the go-wrapper, developers can run the following command.
+```
+$ cd gowrapper
+$ ./go-run.sh
+```
 
 # Experiments
 We test LETUS with two workloads: put-then-get and put-then-historical-get.
