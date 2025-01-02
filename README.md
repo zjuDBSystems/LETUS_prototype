@@ -56,10 +56,15 @@ $ cd gowrapper
 $ go mod init letus
 $ ./go-build.sh
 ```
-To test the go-wrapper, developers can run the following command.
+
+#### use Docker container
+Build a docker image with the following command.
 ```
-$ cd gowrapper
-$ ./go-run.sh
+$ docker build -t letus-go .
+```
+Run a docker container
+```
+$ docker run -it -v ${PWD}:/home -w /home letus-go /bin/bash
 ```
 
 
