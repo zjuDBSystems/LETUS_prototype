@@ -1,0 +1,13 @@
+name: check commit message
+
+on: [push, pull_request]
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Check commit message
+              uses: zjuDBSystems/commit-message-validator@v1.0.0
