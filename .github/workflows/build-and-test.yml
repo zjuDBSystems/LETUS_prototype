@@ -1,0 +1,21 @@
+name: build and test
+
+on: [push, pull_request]
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Set up go
+              uses: actions/setup-go@v5
+              with:
+                go-version: 1.18
+
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Build
+              run: cd gowrapper && go mod init letus && ./go-build.sh
+
+            - name: Test
+              run: cd gowrapper && ./go-run.sh
