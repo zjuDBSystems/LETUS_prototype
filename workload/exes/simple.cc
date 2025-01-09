@@ -35,4 +35,7 @@ int main() {
 
   cout << boolalpha << trie->Verify(0, 1, root_hash1)
        << endl;  // 在此打断点手动修改data_file_0中数据
+  trie->Delete(0, 3, "12345");
+  trie->Commit(3);
+  cout << trie->Get(0, 3, "12345") << endl;
 }

@@ -134,7 +134,12 @@ void LeafNode::UpdateNode(uint64_t version,
                           DeltaPage *deltapage) {
   version_ = version;
   location_ = location;
-  hash_ = HashFunction(key_ + value);
+  if (value == "") {  // value是空字符串代表Delete节点，此时将哈希改为空串
+    hash_ = "";
+  } else {
+    hash_ = HashFunction(key_ + value);
+  }
+
   if (deltapage != nullptr) {
     deltapage->AddLeafNodeUpdate(location_in_page, version, hash_,
                                  get<0>(location), get<1>(location),
@@ -866,6 +871,11 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
 }
 
 void DMMTrie::Delete(uint64_t tid, uint64_t version, const string &key) {
+  if (version < current_version_) {  // version invalid
+    cout << "Version " << version << " is outdated!" << endl;
+    return;
+  }
+  current_version_ = version;
   put_cache_[key] = "";
 }
 
