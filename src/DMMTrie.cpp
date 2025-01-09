@@ -1090,6 +1090,10 @@ string DMMTrie::RecursiveVerify(PageKey pagekey) {
   return HashFunction(concatenated_hash);
 }
 
+void DMMTrie::Flush(uint64_t tid, uint64_t version) {}
+
+void DMMTrie::Revert(uint64_t tid, uint64_t version) {}
+
 DeltaPage *DMMTrie::GetDeltaPage(const string &pid) {
   auto it = active_deltapages_.find(pid);
   if (it != active_deltapages_.end()) {

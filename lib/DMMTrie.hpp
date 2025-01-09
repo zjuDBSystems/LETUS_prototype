@@ -15,10 +15,9 @@
 #include "common.hpp"
 
 static constexpr size_t HASH_SIZE = 32;
-static constexpr size_t DMM_NODE_FANOUT = 10;
+static constexpr size_t DMM_NODE_FANOUT = 16;
 static constexpr uint16_t Td_ = 128;  // update threshold of DeltaPage
 static constexpr uint16_t Tb_ = 256;  // update threshold of BasePage
-static constexpr uint16_t MAX_THREADS = 32;
 
 using namespace std;
 
@@ -222,6 +221,8 @@ class DMMTrie {
   bool Verify(uint64_t tid, const string &key, const string &value,
               string root_hash, DMMTrieProof proof);
   bool Verify(uint64_t tid, uint64_t version, string root_hash);
+  void Flush(uint64_t tid, uint64_t version);
+  void Revert(uint64_t tid, uint64_t version);
   DeltaPage *GetDeltaPage(const string &pid);
   pair<uint64_t, uint64_t> GetPageVersion(PageKey pagekey);
   PageKey GetLatestBasePageKey(PageKey pagekey) const;
