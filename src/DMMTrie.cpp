@@ -47,6 +47,19 @@ auto CompareStrings = [](const std::string &a, const std::string &b) {
   return a < b;  // then compare alphabetical order
 };
 
+// convert hexadecimal digit to corresponding index 0~15
+int GetIndex(char ch) {
+  if (isdigit(ch)) {
+    return ch - '0';
+  } else if (ch >= 'a' && ch <= 'f') {
+    return ch - 'a' + 10;
+  } else if (ch >= 'A' && ch <= 'F') {
+    return ch - 'A' + 10;
+  } else {
+    return -1;
+  }
+}
+
 void Node::CalculateHash() {}
 void Node::AddChild(int index, Node *child, uint64_t version,
                     const string &hash) {}
@@ -616,15 +629,15 @@ BasePage::BasePage(DMMTrie *trie, string key, string pid, string nibbles)
     Node *child_node = new LeafNode(0, key, {}, "");
     root_ = new IndexNode(0, "", 0);
 
-    int index = nibbles[0] - '0';
+    int index = GetIndex(nibbles[0]);
     root_->AddChild(index, child_node, 0, "");
   } else {  // indexnode->indexnode
-    int index = nibbles[1] - '0';
+    int index = GetIndex(nibbles[1]);
     // second level of indexnode should route its child by bitmap
     Node *child_node = new IndexNode(0, "", 1 << index);
     root_ = new IndexNode(0, "", 0);
 
-    index = nibbles[0] - '0';
+    index = GetIndex(nibbles[0]);
     root_->AddChild(index, child_node, 0, "");
   }
 }
@@ -685,7 +698,7 @@ void BasePage::UpdatePage(uint64_t version,
     if (!root_) {
       root_ = new IndexNode(0, "", 0);
     }
-    int index = nibbles[0] - '0';
+    int index = GetIndex(nibbles[0]);
     if (!root_->HasChild(index)) {
       Node *child_node =
           new LeafNode(0, pagekey.pid + to_string(index), {}, "");
@@ -702,7 +715,7 @@ void BasePage::UpdatePage(uint64_t version,
     if (!root_) {
       root_ = new IndexNode(0, "", 0);
     }
-    int index = nibbles[0] - '0', child_index = nibbles[1] - '0';
+    int index = GetIndex(nibbles[0]), child_index = GetIndex(nibbles[1]);
     if (!root_->HasChild(index)) {
       Node *child_node = new IndexNode(0, "", 1 << child_index);
       root_->AddChild(index, child_node, 0, "");
@@ -844,14 +857,14 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
     }
 
     if (!page->GetRoot()->IsLeaf()) {  // first level in page is indexnode
-      if (!page->GetRoot()->GetChild(nibble_path[i] - '0')->IsLeaf()) {
+      if (!page->GetRoot()->GetChild(GetIndex(nibble_path[i]))->IsLeaf()) {
         // second level is indexnode
         page_version = page->GetRoot()
-                           ->GetChild(nibble_path[i] - '0')
-                           ->GetChildVersion(nibble_path[i + 1] - '0');
+                           ->GetChild(GetIndex(nibble_path[i]))
+                           ->GetChildVersion(GetIndex(nibble_path[i + 1]));
       } else {  // second level is leafnode
         leafnode = static_cast<LeafNode *>(
-            page->GetRoot()->GetChild(nibble_path[i] - '0'));
+            page->GetRoot()->GetChild(GetIndex(nibble_path[i])));
       }
     } else {  // first level is leafnode
       leafnode = static_cast<LeafNode *>(page->GetRoot());
@@ -1005,19 +1018,19 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
     if (!page->GetRoot()->IsLeaf()) {
       // first level in page is indexnode
       merkle_proof.proofs.push_back(
-          page->GetRoot()->GetNodeProof(i, nibble_path[i] - '0'));
-      if (!page->GetRoot()->GetChild(nibble_path[i] - '0')->IsLeaf()) {
+          page->GetRoot()->GetNodeProof(i, GetIndex(nibble_path[i])));
+      if (!page->GetRoot()->GetChild(GetIndex(nibble_path[i]))->IsLeaf()) {
         // second level is indexnode
         merkle_proof.proofs.push_back(
             page->GetRoot()
-                ->GetChild(nibble_path[i] - '0')
-                ->GetNodeProof(i + 1, nibble_path[i + 1] - '0'));
+                ->GetChild(GetIndex(nibble_path[i]))
+                ->GetNodeProof(i + 1, GetIndex(nibble_path[i + 1])));
         page_version = page->GetRoot()
-                           ->GetChild(nibble_path[i] - '0')
-                           ->GetChildVersion(nibble_path[i + 1] - '0');
+                           ->GetChild(GetIndex(nibble_path[i]))
+                           ->GetChildVersion(GetIndex(nibble_path[i + 1]));
       } else {  // second level is leafnode
         leafnode = static_cast<LeafNode *>(
-            page->GetRoot()->GetChild(nibble_path[i] - '0'));
+            page->GetRoot()->GetChild(GetIndex(nibble_path[i])));
       }
     } else {  // first level is leafnode
       leafnode = static_cast<LeafNode *>(page->GetRoot());
