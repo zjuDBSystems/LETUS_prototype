@@ -1,12 +1,8 @@
 package letus
 
-import (
-    "crypto/sha1"
-    "encoding/hex"
-    "fmt"
-	"unsafe"
-	"letus/types"
-)
+import "fmt"
+import "unsafe"
+import "letus/types"
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../lib
 #cgo LDFLAGS: -L${SRCDIR}/../../build_release -lletus -lssl -lcrypto -lstdc++
@@ -16,13 +12,6 @@ import (
 */
 import "C"
 
-func hashKey(key []byte) []byte { 
-	h := sha1.New()
-	h.Write(key)
-	keyhash := h.Sum(nil)
-	keyhashstr := []byte(hex.EncodeToString(keyhash))
-	return keyhashstr
-}
 
 // LetusKVStroage is an implementation of KVStroage.
 type LetusKVStroage struct {
@@ -44,19 +33,17 @@ func NewLetusKVStroage(config *LetusConfig) (KVStorage, error) {
 }
 
 func (s *LetusKVStroage) Put(key []byte, value []byte) error {
-	sha1key := hashKey(key)
-	fmt.Println("Letus Put!", s.tid, s.current_seq_no, string(sha1key), string(value))
-	C.LetusPut(s.c, C.uint64_t(s.tid), C.uint64_t(s.current_seq_no), (*C.char)(unsafe.Pointer(&sha1key[0])), (*C.char)(unsafe.Pointer(&value[0])))
+	C.LetusPut(s.c, C.uint64_t(s.tid), C.uint64_t(s.current_seq_no), (*C.char)(unsafe.Pointer(&key[0])), (*C.char)(unsafe.Pointer(&value[0])))
+	fmt.Println("Letus Put!", s.tid, s.current_seq_no, string(key), string(value))
 	return nil
 }
 
 func (s *LetusKVStroage) Get(key []byte) ([]byte, error) {
-	sha1key := hashKey(key)
-    value := C.LetusGet(s.c, C.uint64_t(s.tid), C.uint64_t(s.stable_seq_no), (*C.char)(unsafe.Pointer(&sha1key[0])))
+    value := C.LetusGet(s.c, C.uint64_t(s.tid), C.uint64_t(s.stable_seq_no), (*C.char)(unsafe.Pointer(&key[0])))
     if value == nil {
 		return nil, fmt.Errorf("key not found")
     }
-	fmt.Println("Letus Get!", s.tid, s.stable_seq_no, string(sha1key), C.GoString(value))
+	fmt.Println("Letus Get!", s.tid, s.stable_seq_no, string(key), C.GoString(value))
 	return []byte(C.GoString(value)), nil
 }
 
