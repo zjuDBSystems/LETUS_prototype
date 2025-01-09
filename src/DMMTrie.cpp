@@ -805,9 +805,9 @@ void BasePage::UpdateDeltaItem(const DeltaPage::DeltaItem &deltaitem) {
     node->SetHash(deltaitem.hash);
     node->SetChild(deltaitem.index, deltaitem.version, deltaitem.child_hash);
   }
-  PageKey old_pagekey = GetPageKey();
+  const auto& old_pagekey = GetPageKey();
   SetPageKey(
-      {deltaitem.version, old_pagekey.tid, old_pagekey.type, old_pagekey.pid});
+      PageKey{deltaitem.version, old_pagekey.tid, old_pagekey.type, old_pagekey.pid});
 }
 
 Node *BasePage::GetRoot() const { return root_; }
