@@ -458,7 +458,7 @@ Page *LSVPS::readPageFromIndexFile(
 
 void LSVPS::applyDelta(BasePage *basepage, const DeltaPage *deltapage,
                        PageKey pagekey) {
-  for (auto deltapage_item : deltapage->GetDeltaItems()) {
+  for (auto const &deltapage_item : deltapage->GetDeltaItems()) {
     if (deltapage_item.version > pagekey.version) break;
     basepage->UpdateDeltaItem(deltapage_item);
   }
