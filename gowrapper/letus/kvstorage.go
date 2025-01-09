@@ -1,12 +1,8 @@
 package letus
 
-import (
-    "crypto/sha1"
-    "encoding/hex"
-    "fmt"
-	"unsafe"
-	"letus/types"
-)
+import "fmt"
+import "unsafe"
+import "letus/types"
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../lib
 #cgo LDFLAGS: -L${SRCDIR}/../../build_debug -fsanitize=address -lletus -lssl -lcrypto -lstdc++
