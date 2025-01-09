@@ -8,12 +8,14 @@ type KVPair struct {
 }
 
 type LetusBatch struct {
+	db *LetusKVStroage
 	kv []KVPair
 }
 
-func NewLetusBatch() (Batch, error) {
+func NewLetusBatch(db_ *LetusKVStroage) (Batch, error) {
 	b := &LetusBatch{
 		kv: make([]KVPair, 0),
+		db: db_
 	}
 	return b, nil
 }
@@ -44,21 +46,19 @@ func (b *LetusBatch) Delete(key []byte) error {
 
 // Persist batch content
 
-func (b *LetusBatch) Write(db interface{}) error { 
-	db_ := db.(*LetusKVStroage)
+func (b *LetusBatch) Write(seq interface{}) error { 
 	for i := 0; i < len(b.kv); i++ {
 		ok := db_.Put([]byte(b.kv[i].key), []byte(b.kv[i].value))
 		if ok != nil { return ok }
 	}
-	seq, ok := db_.GetCurrentSeqNo()
-	if ok != nil { return ok }
-	ok = db_.Commit(seq)
+	// [TODO]: db.Flush()
+	ok = db.Commit(seq.(uint64))
 	if ok != nil { return ok }
 	return nil 
 }
 
 func (b *LetusBatch) Hash(seq uint64) error {
-	// [TODO]
+	ok = db.Commit(seq)
 	return nil
 }
 
