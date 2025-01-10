@@ -551,7 +551,7 @@ void DeltaPage::ClearDeltaPage() {
   update_count_ = 0;
 }
 
-vector<DeltaPage::DeltaItem> DeltaPage::GetDeltaItems() const {
+const vector<DeltaPage::DeltaItem> &DeltaPage::GetDeltaItems() const {
   return deltaitems_;
 }
 
@@ -765,7 +765,7 @@ void BasePage::UpdatePage(uint64_t version,
   trie_->UpdatePageVersion(pagekey, version, page_version.second);
 }
 
-void BasePage::UpdateDeltaItem(DeltaPage::DeltaItem deltaitem) {
+void BasePage::UpdateDeltaItem(const DeltaPage::DeltaItem &deltaitem) {
   // add one update from deltapage to basepage
   Node *node = nullptr;
   if (root_ == nullptr) {
@@ -805,9 +805,9 @@ void BasePage::UpdateDeltaItem(DeltaPage::DeltaItem deltaitem) {
     node->SetHash(deltaitem.hash);
     node->SetChild(deltaitem.index, deltaitem.version, deltaitem.child_hash);
   }
-  PageKey old_pagekey = GetPageKey();
+  const auto& old_pagekey = GetPageKey();
   SetPageKey(
-      {deltaitem.version, old_pagekey.tid, old_pagekey.type, old_pagekey.pid});
+      PageKey{deltaitem.version, old_pagekey.tid, old_pagekey.type, old_pagekey.pid});
 }
 
 Node *BasePage::GetRoot() const { return root_; }

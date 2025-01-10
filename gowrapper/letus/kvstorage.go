@@ -5,13 +5,24 @@ import "unsafe"
 import "letus/types"
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../lib
-#cgo LDFLAGS: -L${SRCDIR}/../../build_release -lletus -lssl -lcrypto -lstdc++
+#cgo LDFLAGS: -L${SRCDIR}/../../build_debug -fsanitize=address -lletus -lssl -lcrypto -lstdc++
 #include "Letus.h"
 #include <stdio.h>
 #include <stdlib.h>
 */
 import "C"
 
+func sha1hash(key []byte) []byte { 
+	h := sha1.New()
+	h.Write(key)
+	keyhash := h.Sum(nil)
+	keyhashstr := []byte(hex.EncodeToString(keyhash))
+	return keyhashstr
+}
+
+func getCPtr(data []byte) *C.char {
+	return (*C.char)(unsafe.Pointer(&[]byte(string(data))[0]))
+}
 
 // LetusKVStroage is an implementation of KVStroage.
 type LetusKVStroage struct {
@@ -33,17 +44,27 @@ func NewLetusKVStroage(config *LetusConfig) (KVStorage, error) {
 }
 
 func (s *LetusKVStroage) Put(key []byte, value []byte) error {
-	C.LetusPut(s.c, C.uint64_t(s.tid), C.uint64_t(s.current_seq_no), (*C.char)(unsafe.Pointer(&key[0])), (*C.char)(unsafe.Pointer(&value[0])))
-	fmt.Println("Letus Put!", s.tid, s.current_seq_no, string(key), string(value))
+	sha1key := sha1hash(key)
+	C.LetusPut(s.c, C.uint64_t(s.tid), C.uint64_t(s.current_seq_no), getCPtr(sha1key), getCPtr(value))
+	fmt.Println("Letus Put!", s.tid, s.current_seq_no, string(sha1key), string(value))
 	return nil
 }
 
 func (s *LetusKVStroage) Get(key []byte) ([]byte, error) {
-    value := C.LetusGet(s.c, C.uint64_t(s.tid), C.uint64_t(s.stable_seq_no), (*C.char)(unsafe.Pointer(&key[0])))
-    if value == nil {
+	var value *C.char
+	sha1key := sha1hash(key)
+
+	if s.stable_seq_no != 0 {
+		value = C.LetusGet(s.c, C.uint64_t(s.tid), C.uint64_t(s.stable_seq_no), getCPtr(sha1key))
+		fmt.Println("Letus Get!", s.tid, s.stable_seq_no, string(sha1key), C.GoString(value))
+	} else  {
+		value = C.LetusGet(s.c, C.uint64_t(s.tid), C.uint64_t(1), getCPtr(sha1key))
+		fmt.Println("Letus Get!", s.tid, 1, string(sha1key), C.GoString(value))
+	} 
+	
+	if value == nil {
 		return nil, fmt.Errorf("key not found")
-    }
-	fmt.Println("Letus Get!", s.tid, s.stable_seq_no, string(key), C.GoString(value))
+	}
 	return []byte(C.GoString(value)), nil
 }
 
@@ -52,40 +73,65 @@ func (s *LetusKVStroage) Delete(key []byte) error {
 	return nil 
 }
 
-func (s* LetusKVStroage) Commit(seq uint64) error { 
-	fmt.Println("Letus commit! version=", seq)
-	C.LetusCommit(s.c, C.uint64_t(seq))
+func (s* LetusKVStroage) Revert(seq_ uint64) error {
+	seq := seq_ + 1 
+	fmt.Println("Letus revert! version=", seq)
+	C.LetusRevert(s.c, C.uint64_t(s.tid), C.uint64_t(seq))
 	s.stable_seq_no = seq
 	s.current_seq_no = seq + 1
 	return nil 
 }
+
+func (s* LetusKVStroage) CalcRootHash(seq_ uint64) error { 
+	seq := seq_ + 1
+	fmt.Println("Letus calculate root hash! version=", seq)
+	C.LetusCalcRootHash(s.c, C.uint64_t(s.tid), C.uint64_t(seq))
+	return nil 
+}
+
+func (s* LetusKVStroage) Write(seq_ uint64) error { 
+	seq := seq_ + 1
+	fmt.Println("Letus flush! version=", seq)
+	C.LetusFlush(s.c, C.uint64_t(s.tid), C.uint64_t(seq))
+	s.stable_seq_no = seq
+	s.current_seq_no = seq + 1
+	return nil 
+}
+
+func (s* LetusKVStroage) Commit(seq_ uint64) error { 
+	seq := seq_ + 1
+	fmt.Println("Letus commit! version=", seq)
+	C.LetusFlush(s.c, C.uint64_t(s.tid), C.uint64_t(seq))
+
+	return nil 
+}
+
 func (s *LetusKVStroage) Close() error {
 	fmt.Println("close Letus!")
 	return nil 
 }
 
 func (s *LetusKVStroage) NewBatch() (Batch, error) {
-	return NewLetusBatch()
+	return NewLetusBatch(s)
 }
 
 func (s *LetusKVStroage) NewBatchWithEngine() (Batch, error) {
-	return NewLetusBatch()
+	return NewLetusBatch(s)
 }
 
-func (s *LetusKVStroage) SetSeqNo(seq uint64) error { 
-	s.current_seq_no = seq
-	return nil 
-}
 
 func (s *LetusKVStroage) GetStableSeqNo() (uint64, error) {
-	return s.stable_seq_no, nil
+	return s.stable_seq_no - 1, nil
 }
-func (s *LetusKVStroage) GetCurrentSeqNo() (uint64, error) {
-	return s.current_seq_no, nil
+func (s *LetusKVStroage) GetSeqNo() (uint64, error) {
+	return s.current_seq_no - 1, nil
 }
 
-func (s *LetusKVStroage) Proof(key []byte, seq uint64) (types.ProofPath, error){
-	proof_path_c := C.LetusProof(s.c, C.uint64_t(s.tid), C.uint64_t(seq), (*C.char)(unsafe.Pointer(&key[0])))
+
+func (s *LetusKVStroage) Proof(key []byte, seq_ uint64) (types.ProofPath, error){
+	seq := seq_ + 1
+	sha1key := sha1hash(key)
+	proof_path_c := C.LetusProof(s.c, C.uint64_t(s.tid), C.uint64_t(seq), getCPtr(sha1key))
 	proof_path_size := C.LetusGetProofPathSize(proof_path_c)
 	proof_path := make(types.ProofPath, proof_path_size)
 	for i:=0; i < int(proof_path_size); i++ {

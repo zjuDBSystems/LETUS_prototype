@@ -10,7 +10,9 @@ extern struct Letus* OpenLetus(const char* path_c);
 void LetusPut(Letus* p, uint64_t tid, uint64_t version, const char* key_c,
               const char* value_c);
 char* LetusGet(Letus* p, uint64_t tid, uint64_t version, const char* key_c);
-void LetusCommit(Letus* p, uint64_t version);
+bool LetusRevert(Letus* p, uint64_t tid, uint64_t version);
+bool LetusCalcRootHash(Letus* p, uint64_t tid, uint64_t version);
+bool LetusFlush(Letus* p, uint64_t tid, uint64_t version);
 LetusProofPath* LetusProof(Letus* p, uint64_t tid, uint64_t version,
                            const char* key_c);
 uint64_t LetusGetProofPathSize(LetusProofPath* path);
