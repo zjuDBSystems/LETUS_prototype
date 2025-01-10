@@ -4,6 +4,7 @@ extern "C" {
 
 #include <iostream>
 #include <string>
+
 #include "DMMTrie.hpp"
 #include "LSVPS.hpp"
 #include "VDLS.hpp"
@@ -42,8 +43,11 @@ void LetusPut(Letus* p, uint64_t tid, uint64_t version, const char* key_c,
               const char* value_c) {
   std::string key(key_c);
   std::string value(value_c);
-  // std::cout << key << ", " << value << std::endl;
   p->trie->Put(tid, version, key, value);
+#ifdef DEBUG
+  std::cout << "key: " << key_c << ", value: " << value_c << std::endl;
+  std::cout << "key: " << key << ", value: " << value << std::endl;
+#endif
 }
 
 char* LetusGet(Letus* p, uint64_t tid, uint64_t version, const char* key_c) {
@@ -53,15 +57,34 @@ char* LetusGet(Letus* p, uint64_t tid, uint64_t version, const char* key_c) {
   char* value_c = new char[value_size + 1];
   value.copy(value_c, value_size, 0);
   value_c[value_size] = '\0';
+#ifdef DEBUG
+  std::cout << "value: " << value << "," << value_c << std::endl;
+#endif
   return value_c;
 }
 
-void LetusCommit(Letus* p, uint64_t version) { p->trie->Commit(version); }
+bool LetusRevert(Letus* p, uint64_t tid, uint64_t version) {
+  p->trie->Revert(tid, version);
+  return true;
+}
+bool LetusCalcRootHash(Letus* p, uint64_t tid, uint64_t version) {
+  p->trie->Commit(version);
+  // [TODO] replace to CalcRootHash
+  return true;
+}
+
+bool LetusFlush(Letus* p, uint64_t tid, uint64_t version) {
+  p->trie->Flush(tid, version);
+  return true;
+}
 
 LetusProofPath* LetusProof(Letus* p, uint64_t tid, uint64_t version,
                            const char* key_c) {
   std::string key(key_c);
   std::string value = p->trie->Get(tid, version, key);
+#ifdef DEBUG
+  std::cout << "key: " << key << ", value: " << value << std::endl;
+#endif
 
   DMMTrieProof proof = p->trie->GetProof(tid, version, key);
   int proof_size = proof.proofs.size();
