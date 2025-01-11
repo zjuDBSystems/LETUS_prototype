@@ -14,6 +14,7 @@ string make_key(const std::string& key) {
   for (int i = 0; i < SHA_DIGEST_LENGTH; i++) {
     hashString << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
   }
+  // cout << hashString.str() << endl;
   return hashString.str();
 }
 
