@@ -5,9 +5,9 @@ type LetusBatch struct {
 	len uint64
 }
 
-func NewLetusBatch() (Batch, error) {
+func NewLetusBatch(db *LetusKVStroage) (Batch, error) {
 	b := &LetusBatch{
-		db: db_,
+		db: db,
 		len: 0,
 	}
 	return b, nil

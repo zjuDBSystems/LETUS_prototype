@@ -1,11 +1,15 @@
 package letus
 
-import "fmt"
-import "unsafe"
-import "letus/types"
+import (
+    "crypto/sha1"
+    "encoding/hex"
+    "fmt"
+	"unsafe"
+	"letus/types"
+)
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../lib
-#cgo LDFLAGS: -L${SRCDIR}/../../build_debug -fsanitize=address -lletus -lssl -lcrypto -lstdc++
+#cgo LDFLAGS: -L${SRCDIR}/../../build_release -lletus -lssl -lcrypto -lstdc++
 #include "Letus.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -119,6 +123,9 @@ func (s *LetusKVStroage) NewBatchWithEngine() (Batch, error) {
 	return NewLetusBatch(s)
 }
 
+func (s *LetusKVStroage) NewIterator(begin, end []byte) Iterator {
+	return NewLetusIterator(s, begin, end)
+}
 
 func (s *LetusKVStroage) GetStableSeqNo() (uint64, error) {
 	return s.stable_seq_no - 1, nil

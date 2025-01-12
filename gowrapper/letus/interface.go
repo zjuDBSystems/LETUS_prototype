@@ -24,7 +24,7 @@ type KVStorage interface {
 	
 	// NewIterator returns an iterator of the storage.
 	//TODO: NewIterator should return error
-	// [TODO] NewIterator(begin, end []byte) Iterator
+	NewIterator(begin, end []byte) Iterator
 
 	// get seqno of multicache, mainly for rollback, other db should return error
 	GetSeqNo() (uint64, error)
@@ -60,7 +60,7 @@ type Batch interface {
 
 
 type Iterator interface {
-	LedgerIterator() types.LedgerIterator
+	LedgerIterator() LedgerIterator
 	First() bool
 	Last() bool
 	Prev() bool
