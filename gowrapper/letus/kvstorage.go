@@ -33,22 +33,35 @@ func NewLetusKVStroage(config *LetusConfig) (KVStorage, error) {
 }
 
 func (s *LetusKVStroage) Put(key []byte, value []byte) error {
-	C.LetusPut(s.c, C.uint64_t(s.tid), C.uint64_t(s.current_seq_no), (*C.char)(unsafe.Pointer(&key[0])), (*C.char)(unsafe.Pointer(&value[0])))
-	fmt.Println("Letus Put!", s.tid, s.current_seq_no, string(key), string(value))
+	sha1key := sha1hash(key)
+	C.LetusPut(s.c, C.uint64_t(s.tid), C.uint64_t(s.current_seq_no), getCPtr(sha1key), getCPtr(value))
+	fmt.Printf("Letus Put! tid=%d, seq=%d, key=%s(%s), value=%s\n", s.tid, s.current_seq_no, string(key), string(sha1key), string(value))
 	return nil
 }
 
 func (s *LetusKVStroage) Get(key []byte) ([]byte, error) {
-    value := C.LetusGet(s.c, C.uint64_t(s.tid), C.uint64_t(s.stable_seq_no), (*C.char)(unsafe.Pointer(&key[0])))
-    if value == nil {
+	var value *C.char
+	sha1key := sha1hash(key)
+
+	if s.stable_seq_no != 0 {
+		value = C.LetusGet(s.c, C.uint64_t(s.tid), C.uint64_t(s.stable_seq_no), getCPtr(sha1key))
+		fmt.Printf("Letus Get! tid=%d, seq=%d, key=%s(%s), value=%s\n", s.tid, s.stable_seq_no, string(key), string(sha1key), C.GoString(value))
+	} else  {
+		value = C.LetusGet(s.c, C.uint64_t(s.tid), C.uint64_t(1), getCPtr(sha1key))
+		fmt.Printf("Letus Get! tid=%d, seq=%d, key=%s(%s), value=%s\n", s.tid, 1, string(key), string(sha1key), C.GoString(value))
+	} 
+		
+	if value == nil || C.GoString(value) == "" {
 		return nil, fmt.Errorf("key not found")
     }
 	fmt.Println("Letus Get!", s.tid, s.stable_seq_no, string(key), C.GoString(value))
 	return []byte(C.GoString(value)), nil
-}
-
-func (s *LetusKVStroage) Delete(key []byte) error { 
-	fmt.Println("Letus delete!", string(key))
+	}
+	
+func (s *LetusKVStroage) Delete(key []byte) error {
+	sha1key := sha1hash(key)
+	C.LetusDelete(s.c, C.uint64_t(s.tid), C.uint64_t(s.current_seq_no), getCPtr(sha1key))
+	fmt.Printf("Letus Delete! tid=%d, seq=%d, key=%s(%s)\n", s.tid, s.current_seq_no, string(key), string(sha1key))
 	return nil 
 }
 

@@ -9,6 +9,7 @@ typedef struct LetusProofPath LetusProofPath;
 extern struct Letus* OpenLetus(const char* path_c);
 void LetusPut(Letus* p, uint64_t tid, uint64_t version, const char* key_c,
               const char* value_c);
+void LetusDelete(Letus* p, uint64_t tid, uint64_t version, const char* key_c);
 char* LetusGet(Letus* p, uint64_t tid, uint64_t version, const char* key_c);
 bool LetusRevert(Letus* p, uint64_t tid, uint64_t version);
 bool LetusCalcRootHash(Letus* p, uint64_t tid, uint64_t version);

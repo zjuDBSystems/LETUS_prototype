@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 
 PROJECT(letus_prototype)
-find_package(OpenSSL 1.1 REQUIRED)
+find_package(OpenSSL 3.0 REQUIRED)
 # find_package(GTest REQUIRED)
 enable_testing()
 # 查找glibc
