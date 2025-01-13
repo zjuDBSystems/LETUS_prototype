@@ -65,7 +65,7 @@ Developers are required to install the following dependencies:
 * [CMake](https://cmake.org/) >= 3.12 or 
 * C++ compiler with C++17 support (e.g., g++ >= 11.1 or clang++ >= 8.0)
 * [Go](https://golang.org/) >= 1.18
-* [OpenSSL](https://www.openssl.org/) >= 1.1.0
+* [OpenSSL](https://www.openssl.org/) >= 3.0.14
 
 ## Build
 ### build for release
