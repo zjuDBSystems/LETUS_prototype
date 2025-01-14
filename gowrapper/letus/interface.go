@@ -22,9 +22,9 @@ type KVStorage interface {
 	// NewBatchWithEngine return a storage batch.
 	NewBatchWithEngine() (Batch, error)
 	
+	// NewIterator returns an iterator of the storage.
 	// TODO: NewIterator should return error
 	NewIterator(begin, end []byte) Iterator
-
 
 	// get seqno of multicache, mainly for rollback, other db should return error
 	GetSeqNo() (uint64, error)
