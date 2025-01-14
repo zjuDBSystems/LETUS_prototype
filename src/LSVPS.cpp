@@ -315,6 +315,7 @@ void LSVPS::StorePage(Page *page) {
   }
 }
 
+void LSVPS::Flush() { table_.Flush(); }
 void LSVPS::AddIndexFile(const IndexFile &index_file) {
   index_files_.push_back(index_file);
 }
@@ -457,7 +458,7 @@ Page *LSVPS::readPageFromIndexFile(
 
 void LSVPS::applyDelta(BasePage *basepage, const DeltaPage *deltapage,
                        PageKey pagekey) {
-  for (auto deltapage_item : deltapage->GetDeltaItems()) {
+  for (auto const &deltapage_item : deltapage->GetDeltaItems()) {
     if (deltapage_item.version > pagekey.version) break;
     basepage->UpdateDeltaItem(deltapage_item);
   }

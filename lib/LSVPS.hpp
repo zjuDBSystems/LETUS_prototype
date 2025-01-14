@@ -60,6 +60,7 @@ class LSVPS {
   int GetNumOfIndexFile();
   void RegisterTrie(DMMTrie *DMM_trie);
   const std::vector<Page *> &GetTable() const;
+  void Flush();
 
  private:
   // 块缓存类（占位）

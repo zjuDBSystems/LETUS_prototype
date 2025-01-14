@@ -23,13 +23,13 @@ type KVStorage interface {
 	NewBatchWithEngine() (Batch, error)
 	
 	// NewIterator returns an iterator of the storage.
-	//TODO: NewIterator should return error
-	// [TODO] NewIterator(begin, end []byte) Iterator
+	// TODO: NewIterator should return error
+	NewIterator(begin, end []byte) Iterator
 
 	// get seqno of multicache, mainly for rollback, other db should return error
-	// [TODO] GetSeqNo() (uint64, error)
+	GetSeqNo() (uint64, error)
 	// revert according to seqno
-	// [TODO] Revert(uint64) error
+	Revert(uint64) error
 
 	// Commit persists batches whose seq is equal or smaller than the seq.
 	// Commit only happens when at checkpoints, and all batches in an interval belong to a single
@@ -60,7 +60,7 @@ type Batch interface {
 
 
 type Iterator interface {
-	// LedgerIterator
+	LedgerIterator() LedgerIterator
 	First() bool
 	Last() bool
 	Prev() bool
@@ -68,3 +68,13 @@ type Iterator interface {
 }
 
 
+type LedgerIterator interface {
+	//Next return true iff we can use Key() or Value() to read valid data
+	Next() bool
+	Key() interface{}
+	Value() []byte
+	Release()
+	// Seek Targeting the iterator to the first key that not less than the param
+	// return false iff the param is out of the right bound
+	Seek(interface{}) bool
+}

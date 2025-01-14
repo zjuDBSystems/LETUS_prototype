@@ -47,6 +47,19 @@ auto CompareStrings = [](const std::string &a, const std::string &b) {
   return a < b;  // then compare alphabetical order
 };
 
+// convert hexadecimal digit to corresponding index 0~15
+int GetIndex(char ch) {
+  if (isdigit(ch)) {
+    return ch - '0';
+  } else if (ch >= 'a' && ch <= 'f') {
+    return ch - 'a' + 10;
+  } else if (ch >= 'A' && ch <= 'F') {
+    return ch - 'A' + 10;
+  } else {
+    return -1;
+  }
+}
+
 void Node::CalculateHash() {}
 void Node::AddChild(int index, Node *child, uint64_t version,
                     const string &hash) {}
@@ -134,7 +147,12 @@ void LeafNode::UpdateNode(uint64_t version,
                           DeltaPage *deltapage) {
   version_ = version;
   location_ = location;
-  hash_ = HashFunction(key_ + value);
+  if (value == "") {  // value是空字符串代表Delete节点，此时将哈希改为空串
+    hash_ = "";
+  } else {
+    hash_ = HashFunction(key_ + value);
+  }
+
   if (deltapage != nullptr) {
     deltapage->AddLeafNodeUpdate(location_in_page, version, hash_,
                                  get<0>(location), get<1>(location),
@@ -533,7 +551,7 @@ void DeltaPage::ClearDeltaPage() {
   update_count_ = 0;
 }
 
-vector<DeltaPage::DeltaItem> DeltaPage::GetDeltaItems() const {
+const vector<DeltaPage::DeltaItem> &DeltaPage::GetDeltaItems() const {
   return deltaitems_;
 }
 
@@ -611,15 +629,15 @@ BasePage::BasePage(DMMTrie *trie, string key, string pid, string nibbles)
     Node *child_node = new LeafNode(0, key, {}, "");
     root_ = new IndexNode(0, "", 0);
 
-    int index = nibbles[0] - '0';
+    int index = GetIndex(nibbles[0]);
     root_->AddChild(index, child_node, 0, "");
   } else {  // indexnode->indexnode
-    int index = nibbles[1] - '0';
+    int index = GetIndex(nibbles[1]);
     // second level of indexnode should route its child by bitmap
     Node *child_node = new IndexNode(0, "", 1 << index);
     root_ = new IndexNode(0, "", 0);
 
-    index = nibbles[0] - '0';
+    index = GetIndex(nibbles[0]);
     root_->AddChild(index, child_node, 0, "");
   }
 }
@@ -680,7 +698,7 @@ void BasePage::UpdatePage(uint64_t version,
     if (!root_) {
       root_ = new IndexNode(0, "", 0);
     }
-    int index = nibbles[0] - '0';
+    int index = GetIndex(nibbles[0]);
     if (!root_->HasChild(index)) {
       Node *child_node =
           new LeafNode(0, pagekey.pid + to_string(index), {}, "");
@@ -697,7 +715,7 @@ void BasePage::UpdatePage(uint64_t version,
     if (!root_) {
       root_ = new IndexNode(0, "", 0);
     }
-    int index = nibbles[0] - '0', child_index = nibbles[1] - '0';
+    int index = GetIndex(nibbles[0]), child_index = GetIndex(nibbles[1]);
     if (!root_->HasChild(index)) {
       Node *child_node = new IndexNode(0, "", 1 << child_index);
       root_->AddChild(index, child_node, 0, "");
@@ -747,7 +765,7 @@ void BasePage::UpdatePage(uint64_t version,
   trie_->UpdatePageVersion(pagekey, version, page_version.second);
 }
 
-void BasePage::UpdateDeltaItem(DeltaPage::DeltaItem deltaitem) {
+void BasePage::UpdateDeltaItem(const DeltaPage::DeltaItem &deltaitem) {
   // add one update from deltapage to basepage
   Node *node = nullptr;
   if (root_ == nullptr) {
@@ -787,9 +805,9 @@ void BasePage::UpdateDeltaItem(DeltaPage::DeltaItem deltaitem) {
     node->SetHash(deltaitem.hash);
     node->SetChild(deltaitem.index, deltaitem.version, deltaitem.child_hash);
   }
-  PageKey old_pagekey = GetPageKey();
-  SetPageKey(
-      {deltaitem.version, old_pagekey.tid, old_pagekey.type, old_pagekey.pid});
+  const auto &old_pagekey = GetPageKey();
+  SetPageKey(PageKey{deltaitem.version, old_pagekey.tid, old_pagekey.type,
+                     old_pagekey.pid});
 }
 
 Node *BasePage::GetRoot() const { return root_; }
@@ -839,14 +857,14 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
     }
 
     if (!page->GetRoot()->IsLeaf()) {  // first level in page is indexnode
-      if (!page->GetRoot()->GetChild(nibble_path[i] - '0')->IsLeaf()) {
+      if (!page->GetRoot()->GetChild(GetIndex(nibble_path[i]))->IsLeaf()) {
         // second level is indexnode
         page_version = page->GetRoot()
-                           ->GetChild(nibble_path[i] - '0')
-                           ->GetChildVersion(nibble_path[i + 1] - '0');
+                           ->GetChild(GetIndex(nibble_path[i]))
+                           ->GetChildVersion(GetIndex(nibble_path[i + 1]));
       } else {  // second level is leafnode
         leafnode = static_cast<LeafNode *>(
-            page->GetRoot()->GetChild(nibble_path[i] - '0'));
+            page->GetRoot()->GetChild(GetIndex(nibble_path[i])));
       }
     } else {  // first level is leafnode
       leafnode = static_cast<LeafNode *>(page->GetRoot());
@@ -866,6 +884,11 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
 }
 
 void DMMTrie::Delete(uint64_t tid, uint64_t version, const string &key) {
+  if (version < current_version_) {  // version invalid
+    cout << "Version " << version << " is outdated!" << endl;
+    return;
+  }
+  current_version_ = version;
   put_cache_[key] = "";
 }
 
@@ -983,7 +1006,7 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
   string nibble_path = key;
   uint64_t page_version = version;
   LeafNode *leafnode = nullptr;
-  for (int i = 0; i < key.size(); i += 2) {
+  for (int i = 0; i < key.size() + 1; i += 2) {
     string pid = nibble_path.substr(0, i);
     BasePage *page =
         GetPage({page_version, 0, false, pid});  // false means basepage
@@ -995,19 +1018,19 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
     if (!page->GetRoot()->IsLeaf()) {
       // first level in page is indexnode
       merkle_proof.proofs.push_back(
-          page->GetRoot()->GetNodeProof(i, nibble_path[i] - '0'));
-      if (!page->GetRoot()->GetChild(nibble_path[i] - '0')->IsLeaf()) {
+          page->GetRoot()->GetNodeProof(i, GetIndex(nibble_path[i])));
+      if (!page->GetRoot()->GetChild(GetIndex(nibble_path[i]))->IsLeaf()) {
         // second level is indexnode
         merkle_proof.proofs.push_back(
             page->GetRoot()
-                ->GetChild(nibble_path[i] - '0')
-                ->GetNodeProof(i + 1, nibble_path[i + 1] - '0'));
+                ->GetChild(GetIndex(nibble_path[i]))
+                ->GetNodeProof(i + 1, GetIndex(nibble_path[i + 1])));
         page_version = page->GetRoot()
-                           ->GetChild(nibble_path[i] - '0')
-                           ->GetChildVersion(nibble_path[i + 1] - '0');
+                           ->GetChild(GetIndex(nibble_path[i]))
+                           ->GetChildVersion(GetIndex(nibble_path[i + 1]));
       } else {  // second level is leafnode
         leafnode = static_cast<LeafNode *>(
-            page->GetRoot()->GetChild(nibble_path[i] - '0'));
+            page->GetRoot()->GetChild(GetIndex(nibble_path[i])));
       }
     } else {  // first level is leafnode
       leafnode = static_cast<LeafNode *>(page->GetRoot());
@@ -1079,6 +1102,10 @@ string DMMTrie::RecursiveVerify(PageKey pagekey) {
   }
   return HashFunction(concatenated_hash);
 }
+
+void DMMTrie::Flush(uint64_t tid, uint64_t version) {}
+
+void DMMTrie::Revert(uint64_t tid, uint64_t version) {}
 
 DeltaPage *DMMTrie::GetDeltaPage(const string &pid) {
   auto it = active_deltapages_.find(pid);

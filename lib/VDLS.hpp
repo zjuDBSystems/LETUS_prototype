@@ -46,10 +46,10 @@ class VDLS {
 
     // 检查是否需要创建新文件
     if (current_offset_ + record_size > MaxFileSize) {
-    // 同步更改到磁盘
-    if (msync(write_map_, MaxFileSize, MS_SYNC) == -1) {
-      throw runtime_error("Failed to sync changes to disk");
-    }
+      // 同步更改到磁盘
+      if (msync(write_map_, MaxFileSize, MS_SYNC) == -1) {
+        throw runtime_error("Failed to sync changes to disk");
+      }
       // 解除旧的映射
       if (write_map_ != MAP_FAILED) {
         munmap(write_map_, MaxFileSize);
