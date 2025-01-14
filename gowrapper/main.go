@@ -12,6 +12,9 @@ func main() {
       panic("Failed to create LetusKVStroage")
    }
    batch, _ := db.NewBatch()
+   var seq uint64
+   var res []byte
+
    // batch operation
    batch.Put([]byte("11111"), []byte("aaaaa"))
    batch.Put([]byte("22222"), []byte("bbbbb"))
