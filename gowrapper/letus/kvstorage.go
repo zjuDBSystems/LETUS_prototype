@@ -108,7 +108,6 @@ func (s* LetusKVStroage) Commit(seq_ uint64) error {
 	seq := seq_ + 1
 	fmt.Println("Letus commit! version=", seq)
 	C.LetusFlush(s.c, C.uint64_t(s.tid), C.uint64_t(seq))
-
 	return nil 
 }
 
