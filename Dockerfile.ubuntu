@@ -1,0 +1,2 @@
+FROM ubuntu
+RUN apt-get update && apt-get install -y golang>=3.21 openssl>=1.1 libssl-dev ca-certificates curl
