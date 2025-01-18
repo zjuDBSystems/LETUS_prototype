@@ -1,0 +1,21 @@
+FROM centos:centos7
+
+WORKDIR /home
+
+RUN yum install -y wget
+RUN wget https://go.dev/dl/go1.21.13.linux-amd64.tar.gz && 
+    tar -C /usr/local -xzf go1.21.13.linux-amd64.tar.gz && 
+    ln -s /usr/local/go/bin/go /usr/local/bin/go
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.12.4/cmake-3.12.4-Linux-x86_64.tar.gz && 
+    tar -C /usr/local -zxvf cmake-3.12.4-Linux-x86_64.tar.gz && 
+    ln -s /usr/local/cmake-3.12.4-Linux-x86_64/bin/cmake /usr/local/bin/cmake
+RUN wget https://github.com/openssl/openssl/releases/download/OpenSSL_1_1_1q/openssl-1.1.1q.tar.gz && tar -zxvf openssl-1.1.1q.tar.gz && \
+    wget https://www.cpan.org/src/5.0/perl-5.40.0.tar.gz &&tar -zxvf perl-5.40.0.tar.gz
+RUN yum install -y scl-utils && yum install -y centos-release-scl && yum clean all && yum makecache
+RUN yum install -y devtoolset-11-toolchain
+RUN SHELL [ "/usr/bin/scl", "enable", "devtoolset-11" ]
+RUN cd /home/perl-5.40.0 && ./Configure -des -Dprefix=/usr/local/localperl && make -j6 && make -j6 test && make -j6 install && \
+    ln -s /usr/local/localperl/bin/perl /usr/bin/perl && \
+    cd /home/openssl-1.1.1q && ./config shared && make && make install && ldd /usr/local/bin/openssl 
+ENV LD_LIBRARY_PATH /usr/local/lib64:$LD_LIBRARY_PATH
+
