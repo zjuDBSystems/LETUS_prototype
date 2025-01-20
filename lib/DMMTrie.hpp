@@ -151,12 +151,13 @@ class DeltaPage : public Page {
     // unique items for indexnode
     uint8_t index;
     string child_hash;
-
+    DeltaItem(){}
     DeltaItem(uint8_t loc, bool leaf, uint64_t ver, const string &h,
               uint64_t fID = 0, uint64_t off = 0, uint64_t sz = 0,
               uint8_t idx = 0, const string &ch_hash = "");
     DeltaItem(char *buffer, size_t &current_size);
-    void SerializeTo(char *buffer, size_t &current_size) const;
+    void SerializeTo(std::ofstream& out) const;
+    bool Deserialize(std::ifstream& in);
   };
 
   DeltaPage(PageKey last_pagekey = {0, 0, true, ""}, uint16_t update_count = 0,
@@ -176,7 +177,8 @@ class DeltaPage : public Page {
   uint16_t GetDeltaPageUpdateCount();
   uint16_t GetBasePageUpdateCount();
   void ClearBasePageUpdateCount();
-
+  void SerializeTo(std::ofstream& out) const;
+  bool Deserialize(std::ifstream& in);
  private:
   vector<DeltaItem> deltaitems_;
   PageKey last_pagekey_;
