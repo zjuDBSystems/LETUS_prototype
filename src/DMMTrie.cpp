@@ -460,7 +460,7 @@ DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count,
                      uint16_t b_update_count)
     : last_pagekey_(last_pagekey),
       update_count_(update_count),
-      b_update_count_(b_update_count){};
+      b_update_count_(b_update_count) {};
 
 DeltaPage::DeltaPage(const DeltaPage &other) : Page(other) {
   // Copy DeltaPage specific members
@@ -991,6 +991,26 @@ void DMMTrie::Commit(uint64_t version) {
   put_cache_.clear();
 #ifdef DEBUG
   cout << "Version " << version << " committed" << endl;
+  cout << "number of active deltapages: " << active_deltapages_.size() << endl;
+  cout << "size of a active deltapages: "
+       << sizeof(active_deltapages_.begin()->second) << endl;
+  cout << "number of pages in lru: " << lru_cache_.size() << endl;
+  cout << "number of a page in lru: "
+       << sizeof(lru_cache_.begin()->second->second) << endl;
+
+  std::ifstream file("/proc/self/status");
+  std::string line;
+  while (std::getline(file, line)) {
+    std::istringstream iss(line);
+    std::string key;
+    int value;
+    if (iss >> key >> value) {
+      if (key == "VmSize:")
+        std::cout << "Virtual memory used: " << value << " kB" << endl;
+      else if (key == "VmRSS:")
+        std::cout << "Physical memory used: " << value << " kB" << endl;
+    }
+  }
 #endif
 }
 
