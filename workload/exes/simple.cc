@@ -21,7 +21,8 @@ int main() {
   LSVPS* page_store = new LSVPS();
   std::string data_path;
   // data_path = "/Users/ldz/Code/miniLETUS/data/";//your own path
-  data_path = "/media/nvme/cxy_test/LETUS_prototype/data/";
+  // data_path = "/media/nvme/cxy_test/LETUS_prototype/data/";
+  data_path = "/mnt/c/Users/qyf/Desktop/LETUS_prototype/data/";
   VDLS* value_store = new VDLS(data_path);
   DMMTrie* trie = new DMMTrie(0, page_store, value_store);
   page_store->RegisterTrie(trie);

@@ -805,9 +805,9 @@ void BasePage::UpdateDeltaItem(const DeltaPage::DeltaItem &deltaitem) {
     node->SetHash(deltaitem.hash);
     node->SetChild(deltaitem.index, deltaitem.version, deltaitem.child_hash);
   }
-  const auto& old_pagekey = GetPageKey();
-  SetPageKey(
-      PageKey{deltaitem.version, old_pagekey.tid, old_pagekey.type, old_pagekey.pid});
+  const auto &old_pagekey = GetPageKey();
+  SetPageKey(PageKey{deltaitem.version, old_pagekey.tid, old_pagekey.type,
+                     old_pagekey.pid});
 }
 
 Node *BasePage::GetRoot() const { return root_; }
@@ -1007,7 +1007,7 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
   string nibble_path = key;
   uint64_t page_version = version;
   LeafNode *leafnode = nullptr;
-  for (int i = 0; i < key.size(); i += 2) {
+  for (int i = 0; i < key.size() + 1; i += 2) {
     string pid = nibble_path.substr(0, i);
     BasePage *page =
         GetPage({page_version, 0, false, pid});  // false means basepage
