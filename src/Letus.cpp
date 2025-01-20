@@ -50,6 +50,15 @@ void LetusPut(Letus* p, uint64_t tid, uint64_t version, const char* key_c,
 #endif
 }
 
+void LetusDelete(Letus* p, uint64_t tid, uint64_t version, const char* key_c) {
+  std::string key(key_c);
+  p->trie->Delete(tid, version, key);
+#ifdef DEBUG
+  std::cout << "[LetusDelete] key_c: " << key_c;
+  std::cout << ", key: " << key << std::endl;
+#endif
+}
+
 char* LetusGet(Letus* p, uint64_t tid, uint64_t version, const char* key_c) {
   std::string key(key_c);
   std::string value = p->trie->Get(tid, version, key);

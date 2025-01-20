@@ -1,11 +1,15 @@
 package letus
 
-import "fmt"
-import "unsafe"
-import "letus/types"
+import (
+    "crypto/sha1"
+    "encoding/hex"
+    "fmt"
+	"unsafe"
+	"letus/types"
+)
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../lib
-#cgo LDFLAGS: -L${SRCDIR}/../../build_debug -fsanitize=address -lletus -lssl -lcrypto -lstdc++
+#cgo LDFLAGS: -L${SRCDIR}/../../build_release -lletus -lssl -lcrypto -lstdc++
 #include "Letus.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,7 +50,7 @@ func NewLetusKVStroage(config *LetusConfig) (KVStorage, error) {
 func (s *LetusKVStroage) Put(key []byte, value []byte) error {
 	sha1key := sha1hash(key)
 	C.LetusPut(s.c, C.uint64_t(s.tid), C.uint64_t(s.current_seq_no), getCPtr(sha1key), getCPtr(value))
-	fmt.Println("Letus Put!", s.tid, s.current_seq_no, string(sha1key), string(value))
+	fmt.Printf("Letus Put! tid=%d, seq=%d, key=%s(%s), value=%s\n", s.tid, s.current_seq_no, string(key), string(sha1key), string(value))
 	return nil
 }
 
@@ -56,20 +60,22 @@ func (s *LetusKVStroage) Get(key []byte) ([]byte, error) {
 
 	if s.stable_seq_no != 0 {
 		value = C.LetusGet(s.c, C.uint64_t(s.tid), C.uint64_t(s.stable_seq_no), getCPtr(sha1key))
-		fmt.Println("Letus Get!", s.tid, s.stable_seq_no, string(sha1key), C.GoString(value))
+		fmt.Printf("Letus Get! tid=%d, seq=%d, key=%s(%s), value=%s\n", s.tid, s.stable_seq_no, string(key), string(sha1key), C.GoString(value))
 	} else  {
 		value = C.LetusGet(s.c, C.uint64_t(s.tid), C.uint64_t(1), getCPtr(sha1key))
-		fmt.Println("Letus Get!", s.tid, 1, string(sha1key), C.GoString(value))
+		fmt.Printf("Letus Get! tid=%d, seq=%d, key=%s(%s), value=%s\n", s.tid, 1, string(key), string(sha1key), C.GoString(value))
 	} 
-	
-	if value == nil {
+		
+	if value == nil || C.GoString(value) == "" {
 		return nil, fmt.Errorf("key not found")
 	}
 	return []byte(C.GoString(value)), nil
-}
-
-func (s *LetusKVStroage) Delete(key []byte) error { 
-	fmt.Println("Letus delete!", string(key))
+	}
+	
+func (s *LetusKVStroage) Delete(key []byte) error {
+	sha1key := sha1hash(key)
+	C.LetusDelete(s.c, C.uint64_t(s.tid), C.uint64_t(s.current_seq_no), getCPtr(sha1key))
+	fmt.Printf("Letus Delete! tid=%d, seq=%d, key=%s(%s)\n", s.tid, s.current_seq_no, string(key), string(sha1key))
 	return nil 
 }
 
@@ -102,7 +108,6 @@ func (s* LetusKVStroage) Commit(seq_ uint64) error {
 	seq := seq_ + 1
 	fmt.Println("Letus commit! version=", seq)
 	C.LetusFlush(s.c, C.uint64_t(s.tid), C.uint64_t(seq))
-
 	return nil 
 }
 
@@ -119,6 +124,9 @@ func (s *LetusKVStroage) NewBatchWithEngine() (Batch, error) {
 	return NewLetusBatch(s)
 }
 
+func (s *LetusKVStroage) NewIterator(begin, end []byte) Iterator {
+	return NewLetusIterator(s, begin, end)
+}
 
 func (s *LetusKVStroage) GetStableSeqNo() (uint64, error) {
 	return s.stable_seq_no - 1, nil
