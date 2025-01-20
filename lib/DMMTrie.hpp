@@ -156,7 +156,6 @@ class DeltaPage : public Page {
               uint64_t fID = 0, uint64_t off = 0, uint64_t sz = 0,
               uint8_t idx = 0, const string &ch_hash = "");
     DeltaItem(char *buffer, size_t &current_size);
-    void SerializeTo(char *buffer, size_t &current_size) const;
     void SerializeTo(std::ofstream& out) const;
     bool Deserialize(std::ifstream& in);
   };
