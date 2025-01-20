@@ -151,7 +151,6 @@ class DeltaPage : public Page {
     // unique items for indexnode
     uint8_t index;
     string child_hash;
-
     DeltaItem() {}
     DeltaItem(uint8_t loc, bool leaf, uint64_t ver, const string &h,
               uint64_t fID = 0, uint64_t off = 0, uint64_t sz = 0,
@@ -159,6 +158,7 @@ class DeltaPage : public Page {
     DeltaItem(char *buffer, size_t &current_size);
     void SerializeTo(std::ofstream &out) const;
     void SerializeTo(char *buffer, size_t &current_size) const;
+    void SerializeTo(std::ofstream &out) const;
     bool Deserialize(std::ifstream &in);
   };
 
