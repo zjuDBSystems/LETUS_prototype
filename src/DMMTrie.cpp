@@ -892,7 +892,10 @@ void DMMTrie::Delete(uint64_t tid, uint64_t version, const string &key) {
   put_cache_[key] = "";
 }
 
-void DMMTrie::Commit(uint64_t version) {
+// deprecated
+void DMMTrie::Commit(uint64_t version) { CalcRootHash(0, version); }
+
+void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
   if (version != current_version_) {
     cout << "Commit version incompatible" << endl;
   }
@@ -1013,8 +1016,6 @@ void DMMTrie::Commit(uint64_t version) {
   }
 #endif
 }
-
-void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) { return; }
 
 string DMMTrie::GetRootHash(uint64_t tid, uint64_t version) {
   return GetPage({version, tid, false, ""})->GetRoot()->GetHash();
