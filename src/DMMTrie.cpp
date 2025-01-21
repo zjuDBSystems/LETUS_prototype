@@ -608,11 +608,7 @@ DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count,
                      uint16_t b_update_count)
     : last_pagekey_(last_pagekey),
       update_count_(update_count),
-      b_update_count_(b_update_count) {
-#ifdef DEBUG
-  cout << "new DeltaPage" << endl;
-#endif
-};
+      b_update_count_(b_update_count) {};
 
 DeltaPage::DeltaPage(const DeltaPage &other) : Page(other) {
 #ifdef DEBUG
@@ -1090,7 +1086,7 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
     }
   }
 
-  unordered_map<string, DeltaPage *> active_deltapages;
+  unordered_map<string, DeltaPage> active_deltapages;
   set<string> pids;
 
   for (const auto &it : put_cache_) {
@@ -1103,7 +1099,7 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
 
   // get the needed active deltapages from LSVPS
   for (string pid : pids) {
-    active_deltapages[pid] = page_store_->GetActiveDeltaPage(pid);
+    page_store_.GetActiveDeltaPage(pid);
   }
 
   for (const auto &it : updates) {
@@ -1192,9 +1188,6 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
   // send the active deltapages back to LSVPS
   for (const auto &it : active_deltapages) {
     page_store_->StoreActiveDeltaPage(it.second);
-  }
-  for (auto &pair : page_cache_) {
-    delete pair.second;
   }
   page_cache_.clear();
   put_cache_.clear();
