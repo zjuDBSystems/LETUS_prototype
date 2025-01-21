@@ -22,6 +22,18 @@
 // uint64_t MAX_KEY = pow(2, 32) - 1;
 CounterGenerator key_generator(0);
 
+std::tuple<double, double> getMemoryUsage() {
+  std::ifstream statm("/proc/self/statm");
+  unsigned int pmem_pages = 0;
+  unsigned int vmem_pages = 0;
+  statm >> pmem_pages;
+  statm >> vmem_pages;
+  statm.close();
+  // 4KB per page
+  return {static_cast<double>(pmem_pages * 4),
+          static_cast<double>(vmem_pages * 4)};
+}
+
 struct Task {
   std::vector<int> ops;
   std::vector<u_int64_t> versions;
@@ -31,11 +43,18 @@ struct Task {
 
 inline char RandomPrintChar() { return rand() % 94 + 33; }
 
-std::string BuildKeyName(uint64_t key_num) {
+std::string BuildKeyName(uint64_t key_num, int key_len) {
   std::string key_num_str = std::to_string(key_num);
   unsigned char hash[SHA_DIGEST_LENGTH];
-  SHA1(reinterpret_cast<const unsigned char*>(key_num_str.c_str()),
-       key_num_str.size(), hash);
+  if (key_len == 20) {
+    SHA1(reinterpret_cast<const unsigned char*>(key_num_str.c_str()),
+         key_num_str.size(), hash);
+  } else if (key_len == 32) {
+    SHA256(reinterpret_cast<const unsigned char*>(key_num_str.c_str()),
+           key_num_str.size(), hash);
+  } else {
+    std::cerr << "key_len is not supported!" << std::endl;
+  }
 
   std::ostringstream hashString;
   for (int i = 0; i < SHA_DIGEST_LENGTH; i++) {
@@ -44,14 +63,14 @@ std::string BuildKeyName(uint64_t key_num) {
   return hashString.str();
 }
 
-int taskGenerator(int tlen, int value_len, int task_i, Task& put_task,
-                  Task& get_task) {
+int taskGenerator(int tlen, int key_len, int value_len, int task_i,
+                  Task& put_task, Task& get_task) {
   timeval t0;
   gettimeofday(&t0, NULL);
   srand(t0.tv_sec * 10000000000 + t0.tv_usec * 10000);
   uint64_t version = task_i + 1;
   for (int j = 0; j < tlen; j++) {
-    std::string key = BuildKeyName(key_generator.Next());
+    std::string key = BuildKeyName(key_generator.Next(), key_len);
     std::string val = "";
     val = val.append(value_len, RandomPrintChar());
 
@@ -156,7 +175,8 @@ int main(int argc, char** argv) {
   Task* put_tasks = new Task[n_test];
   Task* get_tasks = new Task[n_test];
   for (int i = 0; i < n_test; i++) {
-    if (taskGenerator(batch_size, value_len, i, put_tasks[i], get_tasks[i])) {
+    if (taskGenerator(batch_size, key_len, value_len, i, put_tasks[i],
+                      get_tasks[i])) {
       std::cerr << "fail to generate task!" << std::endl;
       return 1;
     }
@@ -169,7 +189,8 @@ int main(int argc, char** argv) {
   page_store->RegisterTrie(trie);
   ofstream rs_file;
   rs_file.open(result_path, ios::trunc);
-  rs_file << "version,get_latency,put_latency,get_throughput,put_throughput"
+  rs_file << "version,get_latency,put_latency,get_throughput,put_throughput,"
+             "put_pmem(kB),put_vmem(kB)"
           << std::endl;
   rs_file.close();
   rs_file.open(result_path, ios::app);
@@ -177,6 +198,8 @@ int main(int argc, char** argv) {
   // start test
   double put_latency_l[n_test];
   double get_latency_l[n_test];
+  double put_pmem_l[n_test];
+  double put_vmem_l[n_test];
   double wrong_cnt = 0;
   for (int j = 0; j < n_test; j++) {
     // put
@@ -200,6 +223,9 @@ int main(int argc, char** argv) {
     put_latency_l[j] = double(duration.count()) *
                        chrono::microseconds::period::num /
                        chrono::microseconds::period::den;
+    auto [pmem, vmem] = getMemoryUsage();
+    put_pmem_l[j] = pmem;
+    put_vmem_l[j] = vmem;
   }
   for (int j = 0; j < n_test; j++) {
     // get
@@ -236,7 +262,9 @@ int main(int argc, char** argv) {
     rs_file << get_latency_l[j] << ",";
     rs_file << put_latency_l[j] << ",";
     rs_file << batch_size / get_latency_l[j] << ",";
-    rs_file << batch_size / put_latency_l[j] << std::endl;
+    rs_file << batch_size / put_latency_l[j] << ",";
+    rs_file << put_pmem_l[j] << ",";
+    rs_file << put_vmem_l[j] << std::endl;
     get_latency_sum += get_latency_l[j];
     put_latency_sum += put_latency_l[j];
   }
