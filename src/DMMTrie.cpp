@@ -1086,7 +1086,7 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
     }
   }
 
-  unordered_map<string, DeltaPage> active_deltapages;
+  unordered_map<string, DeltaPage *> active_deltapages;
   set<string> pids;
 
   for (const auto &it : put_cache_) {
@@ -1099,7 +1099,7 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
 
   // get the needed active deltapages from LSVPS
   for (string pid : pids) {
-    page_store_.GetActiveDeltaPage(pid);
+    active_deltapages[pid] = page_store_->GetActiveDeltaPage(pid);
   }
 
   for (const auto &it : updates) {
@@ -1119,6 +1119,8 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
     }
 
     // DeltaPage *deltapage = GetDeltaPage(pid);
+
+    DeltaPage *deltapage = active_deltapages[pid];
 
     DeltaPage *deltapage = active_deltapages[pid];
 #ifdef DEBUG
