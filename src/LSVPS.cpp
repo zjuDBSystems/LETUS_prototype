@@ -673,5 +673,11 @@ void LSVPS::StoreActiveDeltaPage(DeltaPage *page) {
   active_delta_page_cache_.Store(page);
 }
 DeltaPage *LSVPS::GetActiveDeltaPage(const string &pid) {
-  return active_delta_page_cache_.Get(pid);
+  DeltaPage *page = active_delta_page_cache_.Get(pid);
+  if (page == nullptr) {
+    page = new DeltaPage();
+    page->SetLastPageKey(PageKey{0, 0, false, pid});
+    active_delta_page_cache_.Store(page);
+  }
+  return page;
 }
