@@ -15,7 +15,7 @@ cd ..
 key_size=40
 batch_sizes=(500)
 value_sizes=(1024)
-n_test=20
+n_test=8
 data_path="$PWD/../data/"
 index_path="$PWD/../"
 echo "data_path: $data_path"
