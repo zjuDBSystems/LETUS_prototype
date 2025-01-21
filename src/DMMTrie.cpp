@@ -392,6 +392,62 @@ NodeProof IndexNode::GetNodeProof(int level, int index) {
   return node_proof;
 }
 
+bool DeltaPage::Deserialize(std::ifstream& in) {
+  if (!in.good()) return false;
+    
+    try {
+        // Read last_pagekey_ info
+        in.read(reinterpret_cast<char*>(&last_pagekey_.version), sizeof(uint64_t));
+        in.read(reinterpret_cast<char*>(&last_pagekey_.tid), sizeof(uint64_t));
+        in.read(reinterpret_cast<char*>(&last_pagekey_.type), sizeof(bool));
+        
+        // Read pid size and pid
+        size_t pid_size;
+        in.read(reinterpret_cast<char*>(&pid_size), sizeof(pid_size));
+        std::vector<char> pid_buffer(pid_size);
+        in.read(pid_buffer.data(), pid_size);
+        last_pagekey_.pid = string(pid_buffer.data(), pid_size);
+        // Read update_count_
+        in.read(reinterpret_cast<char*>(&update_count_), sizeof(uint16_t));
+        // Read number of DeltaItems
+        size_t items_count;
+        in.read(reinterpret_cast<char*>(&items_count), sizeof(items_count));
+        // Clear existing deltaitems_
+        deltaitems_.clear();
+        // Read each DeltaItem
+        for (size_t i = 0; i < items_count; ++i) {
+            DeltaItem item;
+            if (!item.Deserialize(in)) {
+                return false;
+            }
+            deltaitems_.push_back(item);
+        }
+        
+        return in.good();
+    } catch (const std::exception& e) {
+        return false;
+    }
+}
+
+void DeltaPage::SerializeTo(std::ofstream& out) const {
+    // 写入 last_pagekey_ 信息
+    out.write(reinterpret_cast<const char*>(&last_pagekey_.version), sizeof(uint64_t));
+    out.write(reinterpret_cast<const char*>(&last_pagekey_.tid), sizeof(uint64_t));
+    out.write(reinterpret_cast<const char*>(&last_pagekey_.type), sizeof(bool));
+    size_t pid_size = last_pagekey_.pid.size();
+    out.write(reinterpret_cast<const char*>(&pid_size), sizeof(pid_size));
+    out.write(last_pagekey_.pid.c_str(), pid_size);
+    // 写入 update_count_
+    out.write(reinterpret_cast<const char*>(&update_count_), sizeof(uint16_t));
+    // 写入实际的 deltaitems_ 数量
+    size_t items_count = deltaitems_.size();
+    out.write(reinterpret_cast<const char*>(&items_count), sizeof(items_count));
+    // 序列化每个 DeltaItem
+    for (const auto &item : deltaitems_) {
+        item.SerializeTo(out);
+    }
+}
+
 DeltaPage::DeltaItem::DeltaItem(uint8_t loc, bool leaf, uint64_t ver,
                                 const string &h, uint64_t fID, uint64_t off,
                                 uint64_t sz, uint8_t idx, const string &ch_hash)
