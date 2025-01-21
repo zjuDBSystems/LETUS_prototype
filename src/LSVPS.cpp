@@ -191,7 +191,7 @@ bool LookupBlock::Deserialize(std::istream &in) {
     //  Save the starting position of this LookupBlock
     std::streampos startPos = in.tellg();
     if (!in.good()) return false;
-    //清空现有条目
+    // 清空现有条目
     entries.clear();
 
     // 读取条目数量
@@ -249,7 +249,8 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
   const DeltaPage *active_deltapage = trie_->GetDeltaPage(pagekey.pid);
   /*pid足够了 因为一个LSVPS绑定一个trie也就绑定一个tid*/
   delta_pages.push(active_deltapage);
-  /*由于目前不用遍历文件了 所以这里由大于号改成了大于等于号 并且由于batch size扩大的要求 导致必须包含等于号*/
+  /*由于目前不用遍历文件了 所以这里由大于号改成了大于等于号 并且由于batch
+   * size扩大的要求 导致必须包含等于号*/
   if (pagekey.version >= trie_->GetLatestBasePageKey(pagekey).version) {
     current_pagekey = active_deltapage->GetLastPageKey();
   } else {

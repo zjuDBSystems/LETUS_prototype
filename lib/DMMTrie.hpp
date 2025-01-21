@@ -170,7 +170,7 @@ class DeltaPage : public Page {
                          uint64_t fileID, uint64_t offset, uint64_t size);
   void SerializeTo();
   void ClearDeltaPage();
-  const vector<DeltaItem>& GetDeltaItems() const;
+  const vector<DeltaItem> &GetDeltaItems() const;
   PageKey GetLastPageKey() const;
   void SetLastPageKey(PageKey pagekey);
   uint16_t GetDeltaPageUpdateCount();

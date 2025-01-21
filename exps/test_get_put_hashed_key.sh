@@ -12,6 +12,7 @@ mkdir -p get_put_hashed_key
 cd ..
 
 # 定义测试参数数组
+key_size=20  # 20:SHA-1, 32:SHA-256
 batch_sizes=(500)
 value_sizes=(1024)
 n_test=20
@@ -36,7 +37,7 @@ for batch_size in "${batch_sizes[@]}"; do
         echo "result_path: $result_path"
         echo "cmd: ../build_debug/bin/get_put_hashed_key -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path"
         # 运行测试并提取结果
-        ../build_debug/bin/get_put_hashed_key -b $batch_size -v $value_size -n $n_test -d $data_path -i $index_path -r $result_path > debug_get_put_hashed_key.log
+        ../build_debug/bin/get_put_hashed_key -b $batch_size -v $value_size -k $key_size -n $n_test -d $data_path -i $index_path -r $result_path > debug_get_put_hashed_key.log
         
         # 保存结果
         echo "$batch_size,$value_size,$n_test,$put_latency,$get_latency,$put_throughput,$get_throughput" >> results/get_put_2_results.csv

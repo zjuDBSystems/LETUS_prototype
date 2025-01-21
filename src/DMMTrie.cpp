@@ -994,26 +994,6 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
   put_cache_.clear();
 #ifdef DEBUG
   cout << "Version " << version << " committed" << endl;
-  cout << "number of active deltapages: " << active_deltapages_.size() << endl;
-  cout << "size of a active deltapages: "
-       << sizeof(active_deltapages_.begin()->second) << endl;
-  cout << "number of pages in lru: " << lru_cache_.size() << endl;
-  cout << "number of a page in lru: "
-       << sizeof(lru_cache_.begin()->second->second) << endl;
-
-  std::ifstream file("/proc/self/status");
-  std::string line;
-  while (std::getline(file, line)) {
-    std::istringstream iss(line);
-    std::string key;
-    int value;
-    if (iss >> key >> value) {
-      if (key == "VmSize:")
-        std::cout << "Virtual memory used: " << value << " kB" << endl;
-      else if (key == "VmRSS:")
-        std::cout << "Physical memory used: " << value << " kB" << endl;
-    }
-  }
 #endif
 }
 
