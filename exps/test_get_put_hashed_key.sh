@@ -35,7 +35,7 @@ for batch_size in "${batch_sizes[@]}"; do
         echo "result_path: $result_path"
         echo "cmd: ../build_debug/bin/get_put_hashed_key -b $batch_size -v $value_size -k $key_size -n $n_test -d $data_path -i $index_path -r $result_path"
         # 运行测试并提取结果
-        ../build_debug/bin/get_put_hashed_key -b $batch_size -v $value_size -k $key_size -n $n_test -d $data_path -i $index_path -r $result_path > test_get_put_hashed_key_k$key_size.log
+        ../build_debug/bin/get_put_hashed_key -b $batch_size -v $value_size -k $key_size -n $n_test -d $data_path -i $index_path -r $result_path > results/test_get_put_hashed_key_k$key_size.log
         
         sleep 5
     done
