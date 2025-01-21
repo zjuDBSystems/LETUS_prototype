@@ -392,60 +392,62 @@ NodeProof IndexNode::GetNodeProof(int level, int index) {
   return node_proof;
 }
 
-bool DeltaPage::Deserialize(std::ifstream& in) {
+bool DeltaPage::Deserialize(std::ifstream &in) {
   if (!in.good()) return false;
-    
-    try {
-        // Read last_pagekey_ info
-        in.read(reinterpret_cast<char*>(&last_pagekey_.version), sizeof(uint64_t));
-        in.read(reinterpret_cast<char*>(&last_pagekey_.tid), sizeof(uint64_t));
-        in.read(reinterpret_cast<char*>(&last_pagekey_.type), sizeof(bool));
-        
-        // Read pid size and pid
-        size_t pid_size;
-        in.read(reinterpret_cast<char*>(&pid_size), sizeof(pid_size));
-        std::vector<char> pid_buffer(pid_size);
-        in.read(pid_buffer.data(), pid_size);
-        last_pagekey_.pid = string(pid_buffer.data(), pid_size);
-        // Read update_count_
-        in.read(reinterpret_cast<char*>(&update_count_), sizeof(uint16_t));
-        // Read number of DeltaItems
-        size_t items_count;
-        in.read(reinterpret_cast<char*>(&items_count), sizeof(items_count));
-        // Clear existing deltaitems_
-        deltaitems_.clear();
-        // Read each DeltaItem
-        for (size_t i = 0; i < items_count; ++i) {
-            DeltaItem item;
-            if (!item.Deserialize(in)) {
-                return false;
-            }
-            deltaitems_.push_back(item);
-        }
-        
-        return in.good();
-    } catch (const std::exception& e) {
+
+  try {
+    // Read last_pagekey_ info
+    in.read(reinterpret_cast<char *>(&last_pagekey_.version), sizeof(uint64_t));
+    in.read(reinterpret_cast<char *>(&last_pagekey_.tid), sizeof(uint64_t));
+    in.read(reinterpret_cast<char *>(&last_pagekey_.type), sizeof(bool));
+
+    // Read pid size and pid
+    size_t pid_size;
+    in.read(reinterpret_cast<char *>(&pid_size), sizeof(pid_size));
+    std::vector<char> pid_buffer(pid_size);
+    in.read(pid_buffer.data(), pid_size);
+    last_pagekey_.pid = string(pid_buffer.data(), pid_size);
+    // Read update_count_
+    in.read(reinterpret_cast<char *>(&update_count_), sizeof(uint16_t));
+    // Read number of DeltaItems
+    size_t items_count;
+    in.read(reinterpret_cast<char *>(&items_count), sizeof(items_count));
+    // Clear existing deltaitems_
+    deltaitems_.clear();
+    // Read each DeltaItem
+    for (size_t i = 0; i < items_count; ++i) {
+      DeltaItem item;
+      if (!item.Deserialize(in)) {
         return false;
+      }
+      deltaitems_.push_back(item);
     }
+
+    return in.good();
+  } catch (const std::exception &e) {
+    return false;
+  }
 }
 
-void DeltaPage::SerializeTo(std::ofstream& out) const {
-    // 写入 last_pagekey_ 信息
-    out.write(reinterpret_cast<const char*>(&last_pagekey_.version), sizeof(uint64_t));
-    out.write(reinterpret_cast<const char*>(&last_pagekey_.tid), sizeof(uint64_t));
-    out.write(reinterpret_cast<const char*>(&last_pagekey_.type), sizeof(bool));
-    size_t pid_size = last_pagekey_.pid.size();
-    out.write(reinterpret_cast<const char*>(&pid_size), sizeof(pid_size));
-    out.write(last_pagekey_.pid.c_str(), pid_size);
-    // 写入 update_count_
-    out.write(reinterpret_cast<const char*>(&update_count_), sizeof(uint16_t));
-    // 写入实际的 deltaitems_ 数量
-    size_t items_count = deltaitems_.size();
-    out.write(reinterpret_cast<const char*>(&items_count), sizeof(items_count));
-    // 序列化每个 DeltaItem
-    for (const auto &item : deltaitems_) {
-        item.SerializeTo(out);
-    }
+void DeltaPage::SerializeTo(std::ofstream &out) const {
+  // 写入 last_pagekey_ 信息
+  out.write(reinterpret_cast<const char *>(&last_pagekey_.version),
+            sizeof(uint64_t));
+  out.write(reinterpret_cast<const char *>(&last_pagekey_.tid),
+            sizeof(uint64_t));
+  out.write(reinterpret_cast<const char *>(&last_pagekey_.type), sizeof(bool));
+  size_t pid_size = last_pagekey_.pid.size();
+  out.write(reinterpret_cast<const char *>(&pid_size), sizeof(pid_size));
+  out.write(last_pagekey_.pid.c_str(), pid_size);
+  // 写入 update_count_
+  out.write(reinterpret_cast<const char *>(&update_count_), sizeof(uint16_t));
+  // 写入实际的 deltaitems_ 数量
+  size_t items_count = deltaitems_.size();
+  out.write(reinterpret_cast<const char *>(&items_count), sizeof(items_count));
+  // 序列化每个 DeltaItem
+  for (const auto &item : deltaitems_) {
+    item.SerializeTo(out);
+  }
 }
 
 DeltaPage::DeltaItem::DeltaItem(uint8_t loc, bool leaf, uint64_t ver,
@@ -488,109 +490,110 @@ DeltaPage::DeltaItem::DeltaItem(char *buffer, size_t &current_size) {
 
 // ... existing code ...
 
-void DeltaPage::DeltaItem::SerializeTo(char *buffer, size_t &current_size) const {
-    // Write location_in_page
-    memcpy(buffer + current_size, &location_in_page, sizeof(uint8_t));
+void DeltaPage::DeltaItem::SerializeTo(char *buffer,
+                                       size_t &current_size) const {
+  // Write location_in_page
+  memcpy(buffer + current_size, &location_in_page, sizeof(uint8_t));
+  current_size += sizeof(uint8_t);
+
+  // Write is_leaf_node
+  memcpy(buffer + current_size, &is_leaf_node, sizeof(bool));
+  current_size += sizeof(bool);
+
+  // Write version
+  memcpy(buffer + current_size, &version, sizeof(uint64_t));
+  current_size += sizeof(uint64_t);
+
+  // Write hash length and hash
+  uint32_t hash_length = hash.length();
+  memcpy(buffer + current_size, &hash_length, sizeof(uint32_t));
+  current_size += sizeof(uint32_t);
+  memcpy(buffer + current_size, hash.c_str(), hash_length);
+  current_size += hash_length;
+
+  if (is_leaf_node) {
+    // Write leaf node specific data
+    memcpy(buffer + current_size, &fileID, sizeof(uint64_t));
+    current_size += sizeof(uint64_t);
+    memcpy(buffer + current_size, &offset, sizeof(uint64_t));
+    current_size += sizeof(uint64_t);
+    memcpy(buffer + current_size, &size, sizeof(uint64_t));
+    current_size += sizeof(uint64_t);
+  } else {
+    // Write index node specific data
+    memcpy(buffer + current_size, &index, sizeof(uint8_t));
     current_size += sizeof(uint8_t);
 
-    // Write is_leaf_node
-    memcpy(buffer + current_size, &is_leaf_node, sizeof(bool));
-    current_size += sizeof(bool);
-
-    // Write version
-    memcpy(buffer + current_size, &version, sizeof(uint64_t));
-    current_size += sizeof(uint64_t);
-
-    // Write hash length and hash
-    uint32_t hash_length = hash.length();
-    memcpy(buffer + current_size, &hash_length, sizeof(uint32_t));
+    // Write child_hash length and child_hash
+    uint32_t child_hash_length = child_hash.length();
+    memcpy(buffer + current_size, &child_hash_length, sizeof(uint32_t));
     current_size += sizeof(uint32_t);
-    memcpy(buffer + current_size, hash.c_str(), hash_length);
-    current_size += hash_length;
-
-    if (is_leaf_node) {
-        // Write leaf node specific data
-        memcpy(buffer + current_size, &fileID, sizeof(uint64_t));
-        current_size += sizeof(uint64_t);
-        memcpy(buffer + current_size, &offset, sizeof(uint64_t));
-        current_size += sizeof(uint64_t);
-        memcpy(buffer + current_size, &size, sizeof(uint64_t));
-        current_size += sizeof(uint64_t);
-    } else {
-        // Write index node specific data
-        memcpy(buffer + current_size, &index, sizeof(uint8_t));
-        current_size += sizeof(uint8_t);
-        
-        // Write child_hash length and child_hash
-        uint32_t child_hash_length = child_hash.length();
-        memcpy(buffer + current_size, &child_hash_length, sizeof(uint32_t));
-        current_size += sizeof(uint32_t);
-        memcpy(buffer + current_size, child_hash.c_str(), child_hash_length);
-        current_size += child_hash_length;
-    }
+    memcpy(buffer + current_size, child_hash.c_str(), child_hash_length);
+    current_size += child_hash_length;
+  }
 }
 
+void DeltaPage::DeltaItem::SerializeTo(std::ofstream &out) const {
+  out.write(reinterpret_cast<const char *>(&location_in_page),
+            sizeof(location_in_page));
+  out.write(reinterpret_cast<const char *>(&is_leaf_node),
+            sizeof(is_leaf_node));
+  out.write(reinterpret_cast<const char *>(&version), sizeof(version));
+  out.write(hash.c_str(), HASH_SIZE);
 
-
-void DeltaPage::DeltaItem::SerializeTo(std::ofstream& out) const {
-    out.write(reinterpret_cast<const char*>(&location_in_page), sizeof(location_in_page));
-    out.write(reinterpret_cast<const char*>(&is_leaf_node), sizeof(is_leaf_node));
-    out.write(reinterpret_cast<const char*>(&version), sizeof(version));
-    out.write(hash.c_str(), HASH_SIZE);
-
-    if (is_leaf_node) {
-        out.write(reinterpret_cast<const char*>(&fileID), sizeof(fileID));
-        out.write(reinterpret_cast<const char*>(&offset), sizeof(offset));
-        out.write(reinterpret_cast<const char*>(&size), sizeof(size));
-    } else {
-        out.write(reinterpret_cast<const char*>(&index), sizeof(index));
-        out.write(child_hash.c_str(), HASH_SIZE);
-    }
+  if (is_leaf_node) {
+    out.write(reinterpret_cast<const char *>(&fileID), sizeof(fileID));
+    out.write(reinterpret_cast<const char *>(&offset), sizeof(offset));
+    out.write(reinterpret_cast<const char *>(&size), sizeof(size));
+  } else {
+    out.write(reinterpret_cast<const char *>(&index), sizeof(index));
+    out.write(child_hash.c_str(), HASH_SIZE);
+  }
 }
 
 // ... existing code ...
 
-bool DeltaPage::DeltaItem::Deserialize(std::ifstream& in) {
-    if (!in.good()) return false;
+bool DeltaPage::DeltaItem::Deserialize(std::ifstream &in) {
+  if (!in.good()) return false;
 
-    try {
-        // Read basic fields
-        in.read(reinterpret_cast<char*>(&location_in_page), sizeof(uint8_t));
-        in.read(reinterpret_cast<char*>(&is_leaf_node), sizeof(bool));
-        in.read(reinterpret_cast<char*>(&version), sizeof(uint64_t));
-        
-        // Read hash
-        char hash_buffer[HASH_SIZE];
-        in.read(hash_buffer, HASH_SIZE);
-        hash = string(hash_buffer, HASH_SIZE);
+  try {
+    // Read basic fields
+    in.read(reinterpret_cast<char *>(&location_in_page), sizeof(uint8_t));
+    in.read(reinterpret_cast<char *>(&is_leaf_node), sizeof(bool));
+    in.read(reinterpret_cast<char *>(&version), sizeof(uint64_t));
 
-        if (is_leaf_node) {
-            // Read leaf node specific fields
-            in.read(reinterpret_cast<char*>(&fileID), sizeof(uint64_t));
-            in.read(reinterpret_cast<char*>(&offset), sizeof(uint64_t));
-            in.read(reinterpret_cast<char*>(&size), sizeof(uint64_t));
-            
-            // Initialize unused index node fields
-            index = 0;
-            child_hash = "";
-        } else {
-            // Read index node specific fields
-            in.read(reinterpret_cast<char*>(&index), sizeof(uint8_t));
-            
-            char child_hash_buffer[HASH_SIZE];
-            in.read(child_hash_buffer, HASH_SIZE);
-            child_hash = string(child_hash_buffer, HASH_SIZE);
-            
-            // Initialize unused leaf node fields
-            fileID = 0;
-            offset = 0;
-            size = 0;
-        }
-        
-        return in.good();
-    } catch (const std::exception& e) {
-        return false;
+    // Read hash
+    char hash_buffer[HASH_SIZE];
+    in.read(hash_buffer, HASH_SIZE);
+    hash = string(hash_buffer, HASH_SIZE);
+
+    if (is_leaf_node) {
+      // Read leaf node specific fields
+      in.read(reinterpret_cast<char *>(&fileID), sizeof(uint64_t));
+      in.read(reinterpret_cast<char *>(&offset), sizeof(uint64_t));
+      in.read(reinterpret_cast<char *>(&size), sizeof(uint64_t));
+
+      // Initialize unused index node fields
+      index = 0;
+      child_hash = "";
+    } else {
+      // Read index node specific fields
+      in.read(reinterpret_cast<char *>(&index), sizeof(uint8_t));
+
+      char child_hash_buffer[HASH_SIZE];
+      in.read(child_hash_buffer, HASH_SIZE);
+      child_hash = string(child_hash_buffer, HASH_SIZE);
+
+      // Initialize unused leaf node fields
+      fileID = 0;
+      offset = 0;
+      size = 0;
     }
+
+    return in.good();
+  } catch (const std::exception &e) {
+    return false;
+  }
 }
 // ... existing code ...
 
@@ -598,7 +601,7 @@ DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count,
                      uint16_t b_update_count)
     : last_pagekey_(last_pagekey),
       update_count_(update_count),
-      b_update_count_(b_update_count) {};
+      b_update_count_(b_update_count){};
 
 DeltaPage::DeltaPage(const DeltaPage &other) : Page(other) {
   // Copy DeltaPage specific members
@@ -1049,6 +1052,22 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
     }
   }
 
+  unordered_map<string, DeltaPage> active_deltapages;
+  set<string> pids;
+
+  for (const auto &it : put_cache_) {
+    for (int i = it.first.size() % 2 == 0 ? it.first.size()
+                                          : it.first.size() - 1;
+         i >= 0; i -= 2) {
+      pids.insert(it.first.substr(0, i));
+    }
+  }
+
+  // get the needed active deltapages from LSVPS
+  for (string pid : pids) {
+    page_store_.GetActiveDeltaPage(pid);
+  }
+
   for (const auto &it : updates) {
     string pid = it.first;
     bool if_exceed = false;
@@ -1126,6 +1145,11 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
     std::cout << "Commit" << version
               << " Store Page: " << it.second->GetPageKey() << std::endl;
 #endif
+  }
+
+  // send the active deltapages back to LSVPS
+  for (const auto &it : active_deltapages) {
+    page_store_->StoreActiveDeltaPage(it.second);
   }
 
   page_cache_.clear();
@@ -1259,7 +1283,7 @@ string DMMTrie::RecursiveVerify(PageKey pagekey) {
   return HashFunction(concatenated_hash);
 }
 
-void DMMTrie::Flush(uint64_t tid, uint64_t version) {}
+void DMMTrie::Flush(uint64_t tid, uint64_t version) { page_store_->Flush(); }
 
 void DMMTrie::Revert(uint64_t tid, uint64_t version) {}
 
