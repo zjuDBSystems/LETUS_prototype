@@ -44,18 +44,6 @@ struct Task {
 inline char RandomPrintChar() { return rand() % 94 + 33; }
 
 std::string BuildKeyName(uint64_t key_num, int key_len) {
-  std::string key_num_str = std::to_string(key_num);
-  unsigned char hash[SHA_DIGEST_LENGTH];
-  if (key_len == 20) {
-    SHA1(reinterpret_cast<const unsigned char*>(key_num_str.c_str()),
-         key_num_str.size(), hash);
-  } else if (key_len == 32) {
-    SHA256(reinterpret_cast<const unsigned char*>(key_num_str.c_str()),
-           key_num_str.size(), hash);
-  } else {
-    std::cerr << "key_len is not supported!" << std::endl;
-  }
-
   std::ostringstream hashString;
   std::string key_num_str = std::to_string(key_num);
   if (key_len == 20) {
