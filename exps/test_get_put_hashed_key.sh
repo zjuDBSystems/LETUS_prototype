@@ -7,7 +7,7 @@ batch_sizes=(500)
 value_sizes=(1024)
 n_test=20
 data_path="$PWD/../data/"
-index_path="$PWD/../"
+index_path="$PWD/../index"
 echo "data_path: $data_path"
 echo "index_path: $index_path"
 
@@ -28,8 +28,8 @@ for batch_size in "${batch_sizes[@]}"; do
         # 清理数据文件夹
         rm -rf $data_path
         mkdir -p $data_path
-        rm -rf "${index_path}/IndexFile/"
-        mkdir -p "${index_path}/IndexFile/"
+        rm -rf $index_path
+        mkdir -p $index_path
         
         result_path="$PWD/results/get_put_hashed_key_k${key_size}/b${batch_size}v${value_size}.csv"
         echo "result_path: $result_path"

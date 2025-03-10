@@ -66,8 +66,8 @@ rm -rf ${BUILD_DIR}/
 
 # 清理旧的数据
 print_status "Cleaning old data directories..."
-rm -rf data
-rm -rf index
+rm -rf data/*
+rm -rf index/*
 
 # 创建必要的目录
 print_status "Creating directories..."

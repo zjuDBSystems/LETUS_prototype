@@ -608,7 +608,11 @@ DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count,
                      uint16_t b_update_count)
     : last_pagekey_(last_pagekey),
       update_count_(update_count),
-      b_update_count_(b_update_count) {};
+      b_update_count_(b_update_count) {
+#ifdef DEBUG
+  cout << "new DeltaPage" << endl;
+#endif
+};
 
 DeltaPage::DeltaPage(const DeltaPage &other) : Page(other) {
 #ifdef DEBUG
@@ -1199,6 +1203,9 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
   cout << "Active delta page size: " << sizeof(active_deltapages_.end()->second)
        << endl;
   cout << "LRU pages:" << lru_cache_.size() << endl;
+  cout << "page_cache_:" << page_cache_.size() << endl;
+  cout << "pagekeys_:" << pagekeys_.size() << endl;
+
   std::ifstream file("/proc/self/status");
   std::string line;
   while (std::getline(file, line)) {
