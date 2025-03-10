@@ -601,9 +601,17 @@ DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count,
                      uint16_t b_update_count)
     : last_pagekey_(last_pagekey),
       update_count_(update_count),
-      b_update_count_(b_update_count){};
+      b_update_count_(b_update_count) {
+#ifdef DEBUG
+  cout << "new DeltaPage" << endl;
+#endif
+};
 
 DeltaPage::DeltaPage(const DeltaPage &other) : Page(other) {
+#ifdef DEBUG
+  cout << "new DeltaPage" << endl;
+#endif
+
   // Copy DeltaPage specific members
   last_pagekey_ = other.last_pagekey_;
   update_count_ = other.update_count_;
@@ -612,6 +620,10 @@ DeltaPage::DeltaPage(const DeltaPage &other) : Page(other) {
 }
 
 DeltaPage::DeltaPage(char *buffer) : b_update_count_(0) {
+#ifdef DEBUG
+  cout << "new DeltaPage" << endl;
+#endif
+
   Page({0, 0, true, ""});  // 临时初始化，后面会更新
 
   size_t current_size = 0;
@@ -640,6 +652,12 @@ DeltaPage::DeltaPage(char *buffer) : b_update_count_(0) {
   PageKey pagekey = {last_pagekey_.version, last_pagekey_.tid, true,
                      last_pagekey_.pid};
   this->SetPageKey(pagekey);
+}
+
+DeltaPage::~DeltaPage() {
+#ifdef DEBUG
+  cout << "delete DeltaPage" << endl;
+#endif
 }
 
 void DeltaPage::AddIndexNodeUpdate(uint8_t location, uint64_t version,
@@ -1162,6 +1180,9 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
   cout << "Active delta page size: " << sizeof(active_deltapages_.end()->second)
        << endl;
   cout << "LRU pages:" << lru_cache_.size() << endl;
+  cout << "page_cache_:" << page_cache_.size() << endl;
+  cout << "pagekeys_:" << pagekeys_.size() << endl;
+
   std::ifstream file("/proc/self/status");
   std::string line;
   while (std::getline(file, line)) {

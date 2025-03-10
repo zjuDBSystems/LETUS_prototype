@@ -166,6 +166,7 @@ class DeltaPage : public Page {
             uint16_t b_update_count = 0);
   DeltaPage(char *buffer);
   DeltaPage(const DeltaPage &other);
+  ~DeltaPage();
   void AddIndexNodeUpdate(uint8_t location, uint64_t version,
                           const string &hash, uint8_t index,
                           const string &child_hash);
