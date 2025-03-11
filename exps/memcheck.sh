@@ -32,4 +32,4 @@ rm -rf $data_path
 mkdir -p $data_path
 rm -rf $index_path
 mkdir -p $index_path
-../build_debug/bin/get_put_hashed_key -b $batch_size -v $value_size -k $key_size -n $n_test -d $data_path -i $index_path -r $result_path 2&1> results/memcheck_k$key_size.log
+../build_debug/bin/get_put_hashed_key -b $batch_size -v $value_size -k $key_size -n $n_test -d $data_path -i $index_path -r $result_path &> results/memcheck_k$key_size.log

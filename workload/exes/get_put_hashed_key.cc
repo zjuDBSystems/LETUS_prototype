@@ -223,7 +223,7 @@ int main(int argc, char** argv) {
       std::string key = keys[i];
       std::string value = values[i];
       uint64_t version = versions[i];
-#ifdef DEBUG
+#ifdef DEBUG1
       std::cout << i << " PUT:" << key << "," << value << ", v" << version
                 << std::endl;
 #endif
@@ -266,12 +266,12 @@ int main(int argc, char** argv) {
       std::string key = keys[i];
       std::string value = values[i];
       uint64_t version = versions[i];
-#ifdef DEBUG
+#ifdef DEBUG1
       std::cout << i << " GET:" << key << "," << value << ", v" << version
                 << std::endl;
 #endif
       std::string value_2 = trie->Get(0, version, key);
-#ifdef DEBUG
+#ifdef DEBUG1
       std::cout << "value = " << value_2 << std::endl;
 #endif
       if (value != value_2) {

@@ -725,9 +725,16 @@ uint16_t DeltaPage::GetBasePageUpdateCount() { return b_update_count_; }
 void DeltaPage::ClearBasePageUpdateCount() { b_update_count_ = 0; }
 
 BasePage::BasePage(DMMTrie *trie, Node *root, const string &pid)
-    : trie_(trie), root_(root), Page({0, 0, false, pid}) {}
+    : trie_(trie), root_(root), Page({0, 0, false, pid}) {
+#ifdef DEBUG
+  cout << "new BasePage" << endl;
+#endif
+}
 
 BasePage::BasePage(const BasePage &other) : Page(other), trie_(other.trie_) {
+#ifdef DEBUG
+  cout << "new BasePage" << endl;
+#endif
   // Deep copy the root node
   if (other.root_) {
     if (other.root_->IsLeaf()) {
@@ -742,7 +749,9 @@ BasePage::BasePage(const BasePage &other) : Page(other), trie_(other.trie_) {
 
 BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
   Page({0, 0, false, ""});  // 临时初始化，后面会更新
-
+#ifdef DEBUG
+  cout << "new BasePage" << endl;
+#endif
   size_t current_size = 0;
 
   uint64_t version = *(reinterpret_cast<uint64_t *>(
@@ -782,6 +791,9 @@ BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
 
 BasePage::BasePage(DMMTrie *trie, string key, string pid, string nibbles)
     : trie_(trie), Page({0, 0, false, pid}) {
+#ifdef DEBUG
+  cout << "new BasePage" << endl;
+#endif
   if (nibbles.size() == 0) {  // leafnode
     root_ = new LeafNode(0, key, {}, "");
   } else if (nibbles.size() == 1) {  // indexnode->leafnode
@@ -802,6 +814,9 @@ BasePage::BasePage(DMMTrie *trie, string key, string pid, string nibbles)
 }
 
 BasePage::~BasePage() {
+#ifdef DEBUG
+  cout << "delete BasePage" << endl;
+#endif
   for (int i = 0; i < DMM_NODE_FANOUT; i++) {
     if (root_->HasChild(i)) {
       delete root_->GetChild(i);
