@@ -584,6 +584,17 @@ LSVPS::ActiveDeltaPageCache::ActiveDeltaPageCache(size_t max_size,
   // 确保缓存目录存在
   std::filesystem::create_directories(cache_dir_);
 }
+LSVPS::ActiveDeltaPageCache::~ActiveDeltaPageCache() {
+#ifdef DEBUG
+  std::cout << cache_.size() << std::endl;
+#endif
+  for (auto &pair : cache_) {
+    // 写入磁盘
+    writeToDisk(pair.first, pair.second);
+    // 释放内存
+    delete pair.second;
+  }
+}
 void LSVPS::ActiveDeltaPageCache::Store(DeltaPage *page) {
   const string &pid = page->GetPageKey().pid;
 

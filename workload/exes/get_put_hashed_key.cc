@@ -240,6 +240,7 @@ int main(int argc, char** argv) {
 
 #endif
     trie->Commit(j + 1);
+    trie->Flush(0, j + 1);
 #ifdef DEBUG
     auto [pmem_af, vmem_af] = getMemoryUsage();
     std::cout << "memory after commit: pmem:" << pmem_af << ", vmem:" << vmem_af

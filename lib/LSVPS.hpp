@@ -51,8 +51,12 @@ struct LookupBlock {
 // LSVPS类定义
 class LSVPS {
  public:
-  LSVPS(std::string index_file_path = ".", std::string delta_cache_dir = "./delta_cache")
-      : cache_(), table_(*this), index_file_path_(index_file_path), active_delta_page_cache_(20000, index_file_path) {}
+  LSVPS(std::string index_file_path = ".",
+        std::string delta_cache_dir = "./delta_cache")
+      : cache_(),
+        table_(*this),
+        index_file_path_(index_file_path),
+        active_delta_page_cache_(20000, index_file_path) {}
   Page *PageQuery(uint64_t version);
   BasePage *LoadPage(const PageKey &pagekey);
   void StorePage(Page *page);
@@ -88,19 +92,21 @@ class LSVPS {
   };
 
   class ActiveDeltaPageCache {
-    public:
-      ActiveDeltaPageCache(size_t max_size, std::string cache_dir);
-      void Store(DeltaPage *page);
-      DeltaPage *Get(const string &pid);
-      void FlushToDisk();
-    private:
-      void evictIfNeeded();
-      void writeToDisk(const string &pid, DeltaPage *page);
-      DeltaPage *readFromDisk(const string &pid);
-      unordered_map<string, DeltaPage *> cache_;
-      const size_t max_size_;        // 缓存最大容量
-      std::string cache_dir_;        // 磁盘缓存目录
-      std::list<string> lru_queue_; // 用于LRU淘汰策略
+   public:
+    ActiveDeltaPageCache(size_t max_size, std::string cache_dir);
+    ~ActiveDeltaPageCache();
+    void Store(DeltaPage *page);
+    DeltaPage *Get(const string &pid);
+    void FlushToDisk();
+
+   private:
+    void evictIfNeeded();
+    void writeToDisk(const string &pid, DeltaPage *page);
+    DeltaPage *readFromDisk(const string &pid);
+    unordered_map<string, DeltaPage *> cache_;
+    const size_t max_size_;        // 缓存最大容量
+    std::string cache_dir_;        // 磁盘缓存目录
+    std::list<string> lru_queue_;  // 用于LRU淘汰策略
   };
 
   Page *pageLookup(const PageKey &pagekey);
