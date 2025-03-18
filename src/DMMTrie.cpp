@@ -1195,6 +1195,9 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
   for (const auto &it : active_deltapages) {
     page_store_->StoreActiveDeltaPage(it.second);
   }
+  for (auto &pair : page_cache_) {
+    delete pair.second;
+  }
   page_cache_.clear();
   put_cache_.clear();
 #ifdef DEBUG

@@ -599,11 +599,16 @@ void LSVPS::ActiveDeltaPageCache::Store(DeltaPage *page) {
   const string &pid = page->GetPageKey().pid;
 
   // 如果已存在，先更新LRU队列
-  if (cache_.find(pid) != cache_.end()) {
+  auto cache_it = cache_.find(pid);
+  if (cache_it != cache_.end()) {
     // 从LRU队列中移除旧的位置
     auto it = std::find(lru_queue_.begin(), lru_queue_.end(), pid);
     if (it != lru_queue_.end()) {
       lru_queue_.erase(it);
+    }
+
+    if (cache_it->second != page) {
+      delete cache_it->second;
     }
   }
   // 检查是否需要淘汰
@@ -688,6 +693,7 @@ DeltaPage *LSVPS::GetActiveDeltaPage(const string &pid) {
   if (page == nullptr) {
     page = new DeltaPage();
     page->SetLastPageKey(PageKey{0, 0, false, pid});
+    page->SetPageKey(PageKey{0, 0, false, pid});
     active_delta_page_cache_.Store(page);
   }
   return page;
