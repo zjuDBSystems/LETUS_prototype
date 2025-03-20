@@ -645,40 +645,66 @@ void LSVPS::ActiveDeltaPageCache::evictIfNeeded() {
     }
   }
 }
-void LSVPS::ActiveDeltaPageCache::writeToDisk(const string &pid,
-                                              DeltaPage *page) {
-  std::filesystem::path filepath =
-      std::filesystem::path(cache_dir_) / (pid + ".delta");
+void LSVPS::ActiveDeltaPageCache::writeToDisk(const string &pid, DeltaPage *page) {
+  std::filesystem::path filepath = std::filesystem::path(cache_dir_) / (pid + ".delta");
   std::ofstream out(filepath, std::ios::binary);
   if (!out) {
-    throw std::runtime_error("Failed to open file for writing: " +
-                             filepath.string());
+    throw std::runtime_error("Failed to open file for writing: " + filepath.string());
   }
-  // 序列化DeltaPage
-  page->SerializeTo(out);
+
+  try {
+    // 直接写入页面数据
+    page->SerializeTo();
+    if (!page || !page->GetData()) {
+      throw std::runtime_error("Invalid page data encountered");
+    }
+    out.write(reinterpret_cast<const char *>(page->GetData()), PAGE_SIZE);
+    if (!out.good()) {
+      throw std::runtime_error("Failed to write page data");
+    }
+
+    out.flush();
+    if (!out.good()) {
+      throw std::runtime_error("Failed to flush data to disk");
+    }
+  } catch (const std::exception &e) {
+    out.close();
+    throw;
+  }
   out.close();
 }
 DeltaPage *LSVPS::ActiveDeltaPageCache::readFromDisk(const string &pid) {
-  std::filesystem::path filepath =
-      std::filesystem::path(cache_dir_) / (pid + ".delta");
+  std::filesystem::path filepath = std::filesystem::path(cache_dir_) / (pid + ".delta");
   std::ifstream in(filepath, std::ios::binary);
   if (!in) {
     return nullptr;  // 文件不存在
   }
-  // 创建新的DeltaPage并反序列化
-  DeltaPage *page = new DeltaPage();
-  if (!page->Deserialize(in)) {
-    delete page;
+
+  try {
+    // 先读取原始数据
+    char data[PAGE_SIZE];
+    in.read(data, PAGE_SIZE);
+    if (!in.good()) {
+      throw std::runtime_error("Failed to read page data");
+    }
+    // 创建新的DeltaPage并设置数据
+    DeltaPage *page = new DeltaPage(data);
+    // 将页面加入缓存
+    evictIfNeeded();
+    if (cache_[pid] != nullptr) {
+      delete cache_[pid];
+    }
+    cache_[pid] = page;
+    lru_queue_.push_back(pid);
+    return page;
+  } catch (const std::exception &e) {
+    if (in.is_open()) {
+      in.close();
+    }
     return nullptr;
   }
-
-  // 将页面加入缓存
-  evictIfNeeded();
-  cache_[pid] = page;
-  lru_queue_.push_back(pid);
-
-  return page;
 }
+
 void LSVPS::ActiveDeltaPageCache::FlushToDisk() {
   // 将所有缓存中的页面写入磁盘
   for (const auto &[pid, page] : cache_) {
@@ -693,7 +719,7 @@ DeltaPage *LSVPS::GetActiveDeltaPage(const string &pid) {
   if (page == nullptr) {
     page = new DeltaPage();
     page->SetLastPageKey(PageKey{0, 0, false, pid});
-    page->SetPageKey(PageKey{0, 0, false, pid});
+    page->SetPageKey(PageKey{0, 0, true, pid});
     active_delta_page_cache_.Store(page);
   }
   return page;
