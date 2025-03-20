@@ -461,7 +461,11 @@ DeltaPage::DeltaItem::DeltaItem(uint8_t loc, bool leaf, uint64_t ver,
       offset(off),
       size(sz),
       index(idx),
-      child_hash(ch_hash) {}
+      child_hash(ch_hash) {
+      if (index >= DMM_NODE_FANOUT) {
+        throw runtime_error("index out of range");
+      }
+    }
 
 DeltaPage::DeltaItem::DeltaItem(char *buffer, size_t &current_size) {
   location_in_page = *(reinterpret_cast<uint8_t *>(buffer + current_size));
@@ -482,6 +486,9 @@ DeltaPage::DeltaItem::DeltaItem(char *buffer, size_t &current_size) {
     current_size += sizeof(uint64_t);
   } else {
     index = *(reinterpret_cast<uint8_t *>(buffer + current_size));
+    if (index >= DMM_NODE_FANOUT) {
+      throw runtime_error("index out of range");
+    }
     current_size += sizeof(uint8_t);
     child_hash = string(buffer + current_size, HASH_SIZE);
     current_size += HASH_SIZE;
@@ -505,11 +512,11 @@ void DeltaPage::DeltaItem::SerializeTo(char *buffer,
   current_size += sizeof(uint64_t);
 
   // Write hash length and hash
-  uint32_t hash_length = hash.length();
-  memcpy(buffer + current_size, &hash_length, sizeof(uint32_t));
-  current_size += sizeof(uint32_t);
-  memcpy(buffer + current_size, hash.c_str(), hash_length);
-  current_size += hash_length;
+  // uint32_t hash_length = hash.length();
+  // memcpy(buffer + current_size, &hash_length, sizeof(uint32_t));
+  // current_size += sizeof(uint32_t);
+  memcpy(buffer + current_size, hash.c_str(), HASH_SIZE);
+  current_size += HASH_SIZE;
 
   if (is_leaf_node) {
     // Write leaf node specific data
@@ -522,14 +529,13 @@ void DeltaPage::DeltaItem::SerializeTo(char *buffer,
   } else {
     // Write index node specific data
     memcpy(buffer + current_size, &index, sizeof(uint8_t));
+    if (index >= DMM_NODE_FANOUT) {
+      throw runtime_error("index out of range");
+    }
     current_size += sizeof(uint8_t);
-
     // Write child_hash length and child_hash
-    uint32_t child_hash_length = child_hash.length();
-    memcpy(buffer + current_size, &child_hash_length, sizeof(uint32_t));
-    current_size += sizeof(uint32_t);
-    memcpy(buffer + current_size, child_hash.c_str(), child_hash_length);
-    current_size += child_hash_length;
+    memcpy(buffer + current_size, child_hash.c_str(), HASH_SIZE);
+    current_size += HASH_SIZE;
   }
 }
 
@@ -546,7 +552,11 @@ void DeltaPage::DeltaItem::SerializeTo(std::ofstream &out) const {
     out.write(reinterpret_cast<const char *>(&offset), sizeof(offset));
     out.write(reinterpret_cast<const char *>(&size), sizeof(size));
   } else {
+    
     out.write(reinterpret_cast<const char *>(&index), sizeof(index));
+    if (index >= DMM_NODE_FANOUT) {
+      throw runtime_error("index out of range");
+    }
     out.write(child_hash.c_str(), HASH_SIZE);
   }
 }
@@ -578,8 +588,11 @@ bool DeltaPage::DeltaItem::Deserialize(std::ifstream &in) {
       child_hash = "";
     } else {
       // Read index node specific fields
+      
       in.read(reinterpret_cast<char *>(&index), sizeof(uint8_t));
-
+      if (index >= DMM_NODE_FANOUT) {
+      throw runtime_error("index out of range");
+      }
       char child_hash_buffer[HASH_SIZE];
       in.read(child_hash_buffer, HASH_SIZE);
       child_hash = string(child_hash_buffer, HASH_SIZE);
@@ -640,10 +653,8 @@ DeltaPage::DeltaPage(char *buffer) : b_update_count_(0) {
   last_pagekey_.pid = string(buffer + current_size,
                              pid_size);  // deserialize pid (pid_size bytes)
   current_size += pid_size;
-
   update_count_ = *(reinterpret_cast<uint16_t *>(buffer + current_size));
   current_size += sizeof(uint16_t);
-
   for (int i = 0; i < update_count_; i++) {
     deltaitems_.push_back(DeltaItem(buffer, current_size));
   }
