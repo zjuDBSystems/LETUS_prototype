@@ -462,10 +462,10 @@ DeltaPage::DeltaItem::DeltaItem(uint8_t loc, bool leaf, uint64_t ver,
       size(sz),
       index(idx),
       child_hash(ch_hash) {
-      if (index >= DMM_NODE_FANOUT) {
-        throw runtime_error("index out of range");
-      }
-    }
+  if (index >= DMM_NODE_FANOUT) {
+    throw runtime_error("index out of range");
+  }
+}
 
 DeltaPage::DeltaItem::DeltaItem(char *buffer, size_t &current_size) {
   location_in_page = *(reinterpret_cast<uint8_t *>(buffer + current_size));
@@ -552,7 +552,6 @@ void DeltaPage::DeltaItem::SerializeTo(std::ofstream &out) const {
     out.write(reinterpret_cast<const char *>(&offset), sizeof(offset));
     out.write(reinterpret_cast<const char *>(&size), sizeof(size));
   } else {
-    
     out.write(reinterpret_cast<const char *>(&index), sizeof(index));
     if (index >= DMM_NODE_FANOUT) {
       throw runtime_error("index out of range");
@@ -588,10 +587,10 @@ bool DeltaPage::DeltaItem::Deserialize(std::ifstream &in) {
       child_hash = "";
     } else {
       // Read index node specific fields
-      
+
       in.read(reinterpret_cast<char *>(&index), sizeof(uint8_t));
       if (index >= DMM_NODE_FANOUT) {
-      throw runtime_error("index out of range");
+        throw runtime_error("index out of range");
       }
       char child_hash_buffer[HASH_SIZE];
       in.read(child_hash_buffer, HASH_SIZE);
@@ -1131,7 +1130,9 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
     // DeltaPage *deltapage = GetDeltaPage(pid);
 
     DeltaPage *deltapage = active_deltapages[pid];
-
+#ifdef DEBUG
+    std::cout << deltapage << std::endl;
+#endif
     if (2 * it.second.size() + deltapage->GetDeltaPageUpdateCount() >=
         2 * Td_) {
       // the updates in page is more than the capacity of two deltapages
