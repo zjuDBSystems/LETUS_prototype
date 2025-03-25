@@ -36,6 +36,7 @@
 
 # data
 *.dat
+*.delta
 
 # MacOS
 .DS_Store

@@ -20,6 +20,17 @@
 // common values
 uint64_t MAX_KEY = pow(2, 32) - 1;
 ZipfianGenerator key_generator(1, MAX_KEY);
+std::tuple<double, double> getMemoryUsage() {
+  std::ifstream statm("/proc/self/statm");
+  unsigned int pmem_pages = 0;
+  unsigned int vmem_pages = 0;
+  statm >> pmem_pages;
+  statm >> vmem_pages;
+  statm.close();
+  // 4KB per page
+  return {static_cast<double>(pmem_pages * 4),
+          static_cast<double>(vmem_pages * 4)};
+}
 
 struct Task {
   std::vector<int> ops;
@@ -69,8 +80,8 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
 int main(int argc, char** argv) {
   int batch_size = 60;  //
   int n_test = 200;
-  int key_len = 32;   // 32
-  int value_len = 5;  // 256, 512, 1024, 2048
+  int key_len = 32;      // 32
+  int value_len = 1024;  // 256, 512, 1024, 2048
   // std::string data_path = "/Users/ldz/Code/miniLETUS/data/";
   // std::string index_path = "/Users/ldz/Code/miniLETUS/";
   // std::string result_path = "/Users/ldz/Code/miniLETUS/exps/results/";
@@ -164,7 +175,8 @@ int main(int argc, char** argv) {
   page_store->RegisterTrie(trie);
   ofstream rs_file;
   rs_file.open(result_path, ios::trunc);
-  rs_file << "version,get_latency,put_latency,get_throughput,put_throughput"
+  rs_file << "version,get_latency,put_latency,get_throughput,put_throughput,"
+             "put_pmem(kB),put_vmem(kB)"
           << std::endl;
   rs_file.close();
   rs_file.open(result_path, ios::app);
@@ -172,6 +184,8 @@ int main(int argc, char** argv) {
   // start test
   double put_latency_l[n_test];
   double get_latency_l[n_test];
+  double put_pmem_l[n_test];
+  double put_vmem_l[n_test];
   double wrong_cnt = 0;
   for (int j = 0; j < n_test; j++) {
     // put
@@ -195,6 +209,9 @@ int main(int argc, char** argv) {
     put_latency_l[j] = double(duration.count()) *
                        chrono::microseconds::period::num /
                        chrono::microseconds::period::den;
+    auto [pmem, vmem] = getMemoryUsage();
+    put_pmem_l[j] = pmem;
+    put_vmem_l[j] = vmem;
   }
   for (int j = 0; j < n_test; j++) {
     // get
@@ -231,7 +248,9 @@ int main(int argc, char** argv) {
     rs_file << get_latency_l[j] << ",";
     rs_file << put_latency_l[j] << ",";
     rs_file << batch_size / get_latency_l[j] << ",";
-    rs_file << batch_size / put_latency_l[j] << std::endl;
+    rs_file << batch_size / put_latency_l[j] << ",";
+    rs_file << put_pmem_l[j] << ",";
+    rs_file << put_vmem_l[j] << std::endl;
     get_latency_sum += get_latency_l[j];
     put_latency_sum += put_latency_l[j];
   }
