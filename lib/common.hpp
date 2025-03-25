@@ -60,7 +60,7 @@ struct PageKey {
       size_t pid_size = pid.size();
       out.write(reinterpret_cast<const char*>(&pid_size), sizeof(pid_size));
       out.write(pid.data(), pid_size);
-      
+
       return out.good();
     } catch (const std::exception&) {
       return false;
@@ -76,14 +76,14 @@ struct PageKey {
 
       size_t pid_size;
       in.read(reinterpret_cast<char*>(&pid_size), sizeof(pid_size));
-      
-      if (pid_size > 256) { //pid maybe ""
+
+      if (pid_size > 256) {  // pid maybe ""
         return false;
       }
-      
+
       pid.resize(pid_size);
       in.read(&pid[0], pid_size);
-      
+
       return in.good();
     } catch (const std::exception&) {
       return false;
@@ -92,8 +92,8 @@ struct PageKey {
 };
 
 // 页面类
-class Page {  //设置成抽象类 序列化 反序列化 getPageKey setPageKey 子类
-              // DMMTriePage DeltaPage
+class Page {  // 设置成抽象类 序列化 反序列化 getPageKey setPageKey 子类
+              //  DMMTriePage DeltaPage
 
  private:
   alignas(4096) char data_[PAGE_SIZE]{};
@@ -104,10 +104,12 @@ class Page {  //设置成抽象类 序列化 反序列化 getPageKey setPageKey 
 
   Page(PageKey pagekey) : pagekey_(pagekey) {}
 
-  Page(const Page& other){
+  Page(const Page& other) {
     memcpy(data_, other.data_, PAGE_SIZE);
     pagekey_ = other.pagekey_;
   }
+
+  virtual ~Page() = default;  // [hack]
 
   const PageKey& GetPageKey() const {
     // std::cout << "[GetPageKey]" << pagekey_.pid << std::endl;
@@ -118,7 +120,7 @@ class Page {  //设置成抽象类 序列化 反序列化 getPageKey setPageKey 
 
   virtual bool SerializeTo(std::ostream& out) const { return true; }
 
-  virtual bool Deserialize(std::istream& in) { 
+  virtual bool Deserialize(std::istream& in) {
     try {
       in.read(data_, PAGE_SIZE);
       return in.good();
@@ -133,9 +135,9 @@ class Page {  //设置成抽象类 序列化 反序列化 getPageKey setPageKey 
 
   char* GetData() { return data_; }
 };
-inline std::ostream &operator<<(std::ostream &os, const PageKey &key) {
-  os << "PageKey(version=" << key.version << ", tid=" << key.tid << ", type=" << key.type
-    << ", pid=" << key.pid << ")";
+inline std::ostream& operator<<(std::ostream& os, const PageKey& key) {
+  os << "PageKey(version=" << key.version << ", tid=" << key.tid
+     << ", type=" << key.type << ", pid=" << key.pid << ")";
   return os;
 }
 #endif

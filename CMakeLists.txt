@@ -36,8 +36,10 @@ endif()
 # 添加 AddressSanitizer 标志
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -g -DDEBUG -fPIC -fno-omit-frame-pointer")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -g -DDEBUG -fPIC -fsanitize=address -fno-omit-frame-pointer")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O2 -fPIC -mcmodel=medium" )
+# set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
@@ -67,6 +69,8 @@ add_executable(put_get_hist_random "workload/exes/put_get_hist_random.cc" ${letu
 target_link_libraries(put_get_hist_random OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
 add_executable(ycsb_simple "workload/exes/ycsb_simple.cc" ${letus_src})
 target_link_libraries(ycsb_simple OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
+add_executable(get_put_hashed_key "workload/exes/get_put_hashed_key.cc" ${letus_src})
+target_link_libraries(get_put_hashed_key OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
 # add_executable(LSVPStest ${letus_tests})
 # target_link_libraries(LSVPStest letus GTest::GTest GTest::Main)
 
