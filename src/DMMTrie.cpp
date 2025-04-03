@@ -1130,9 +1130,7 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
     // DeltaPage *deltapage = GetDeltaPage(pid);
 
     DeltaPage *deltapage = active_deltapages[pid];
-#ifdef DEBUG
-    std::cout << deltapage << std::endl;
-#endif
+
     if (2 * it.second.size() + deltapage->GetDeltaPageUpdateCount() >=
         2 * Td_) {
       // the updates in page is more than the capacity of two deltapages
