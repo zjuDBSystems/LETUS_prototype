@@ -103,9 +103,14 @@ class LSVPS {
     void evictIfNeeded();
     void writeToDisk(const string &pid, DeltaPage *page);
     DeltaPage *readFromDisk(const string &pid);
+    void writeIndexBlock();
+    void readIndexBlock();
+    
     unordered_map<string, DeltaPage *> cache_;
+    unordered_map<string, size_t> pid_to_offset_;  // Maps pid to file offset
     const size_t max_size_;        // 缓存最大容量
     std::string cache_dir_;        // 磁盘缓存目录
+    std::string cache_file_;       // 统一存储文件路径
     std::list<string> lru_queue_;  // 用于LRU淘汰策略
   };
 
