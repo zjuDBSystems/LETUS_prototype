@@ -600,36 +600,15 @@ LSVPS::ActiveDeltaPageCache::~ActiveDeltaPageCache() {
 
 void LSVPS::ActiveDeltaPageCache::Store(DeltaPage *page) {
   const string &pid = page->GetPageKey().pid;
-
-  // 如果已存在，先更新LRU队列
-  auto cache_it = cache_.find(pid);
-  if (cache_it != cache_.end()) {
-    // 从LRU队列中移除旧的位置
-    auto it = std::find(lru_queue_.begin(), lru_queue_.end(), pid);
-    if (it != lru_queue_.end()) {
-      lru_queue_.erase(it);
-    }
-
-    if (cache_it->second != page) {
-      delete cache_it->second;
-    }
-  }
   // 检查是否需要淘汰
   evictIfNeeded();
-  // 存储新页面并更新LRU队列
+  // 存储新页面
   cache_[pid] = page;
-  lru_queue_.push_back(pid);
 }
 
 DeltaPage *LSVPS::ActiveDeltaPageCache::Get(const string &pid) {
   auto it = cache_.find(pid);
   if (it != cache_.end()) {
-    // 更新LRU队列
-    auto queue_it = std::find(lru_queue_.begin(), lru_queue_.end(), pid);
-    if (queue_it != lru_queue_.end()) {
-      lru_queue_.erase(queue_it);
-    }
-    lru_queue_.push_back(pid);
     return it->second;
   }
   // 如果不在内存中，尝试从磁盘读取
@@ -680,17 +659,15 @@ void LSVPS::ActiveDeltaPageCache::writePageToDisk(const string &pid, DeltaPage *
 }
 
 void LSVPS::ActiveDeltaPageCache::evictIfNeeded() {
-  while (cache_.size() >= max_size_ && !lru_queue_.empty()) {
-    string pid_to_evict = lru_queue_.front();
-    lru_queue_.pop_front();
-    auto it = cache_.find(pid_to_evict);
-    if (it != cache_.end()) {
-      // 写入磁盘
-      writePageToDisk(pid_to_evict, it->second);
-      // 释放内存
-      delete it->second;
-      cache_.erase(it);
-    }
+  while (cache_.size() >= max_size_) {
+    // 直接使用begin()获取第一个元素，不需要额外的find操作
+    auto it = cache_.begin();
+    string pid_to_evict = it->first;
+    // 写入磁盘
+    writePageToDisk(pid_to_evict, it->second);
+    // 释放内存
+    delete it->second;
+    cache_.erase(it);
   }
 }
 
@@ -872,9 +849,6 @@ DeltaPage *LSVPS::ActiveDeltaPageCache::readFromDisk(const string &pid) {
 
     // 创建DeltaPage对象
     DeltaPage *page = new DeltaPage(data);
-    
-    // 更新LRU队列
-    lru_queue_.push_back(pid);
     
     // 将页面加入缓存
     cache_[pid] = page;
