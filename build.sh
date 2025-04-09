@@ -15,8 +15,10 @@ print_error() {
 }
 
 BUILD_TYPE=Release
-CC=clang
-CXX=clang++
+CC=gcc
+CXX=g++
+ADDITIONAL_FLAGS=""
+
 # 解析命令行参数
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -32,6 +34,11 @@ while [[ $# -gt 0 ]]; do
         ;;
         --cxx)
         CXX="$2"
+        shift # 移动到下一个参数
+        shift # 移动到下一个参数
+        ;;
+        --add-flags)
+        ADDITIONAL_FLAGS="$2"
         shift # 移动到下一个参数
         shift # 移动到下一个参数
         ;;
@@ -54,8 +61,6 @@ case "$BUILD_TYPE" in
         exit 1
         ;;
 esac
-
-
 
 # 根据构建类型设置目录
 BUILD_DIR="build_${BUILD_TYPE}"
@@ -85,7 +90,12 @@ cd "${BUILD_DIR}" || {
 # 运行 CMAKE
 print_status "Running CMAKE..."
 BUILD_TYPE_UPPER=$(echo "$BUILD_TYPE" | tr '[:lower:]' '[:upper:]')
-if ! cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE_UPPER} -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_VERBOSE_MAKEFILE=ON "${PROJECT_ROOT}"; then
+if ! cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE_UPPER} \
+          -DCMAKE_C_COMPILER=${CC} \
+          -DCMAKE_CXX_COMPILER=${CXX} \
+          -DCMAKE_CXX_FLAGS="${ADDITIONAL_FLAGS}" \
+          -DCMAKE_VERBOSE_MAKEFILE=ON \
+          "${PROJECT_ROOT}"; then
     print_error "CMAKE configuration failed"
     exit 1
 fi
