@@ -56,7 +56,7 @@ class LSVPS {
       : cache_(),
         table_(*this),
         index_file_path_(index_file_path),
-        active_delta_page_cache_(300000, index_file_path) {}
+        active_delta_page_cache_(3000000, index_file_path) {}
   Page *PageQuery(uint64_t version);
   BasePage *LoadPage(const PageKey &pagekey);
   void StorePage(Page *page);
@@ -87,7 +87,7 @@ class LSVPS {
                         const std::filesystem::path &filepath);
     std::vector<Page *> buffer_;
     // gurantee that max_size >= one version pages
-    const size_t max_size_ = 20000;
+    const size_t max_size_ = 2000000;
     LSVPS &parent_LSVPS_;
   };
 
@@ -101,11 +101,20 @@ class LSVPS {
 
    private:
     void evictIfNeeded();
-    void writeToDisk(const string &pid, DeltaPage *page);
+    // 为批量写入准备，计算并记录页面偏移量
+    void prepareForBatchWrite(const string &pid, DeltaPage *page);
+    // 实际写入单个页面到磁盘
+    void writePageToDisk(const string &pid, DeltaPage *page);
+    // 从磁盘读取页面
     DeltaPage *readFromDisk(const string &pid);
+    void writeIndexBlock();
+    void readIndexBlock();
+    
     unordered_map<string, DeltaPage *> cache_;
+    unordered_map<string, size_t> pid_to_offset_;  // Maps pid to file offset
     const size_t max_size_;        // 缓存最大容量
     std::string cache_dir_;        // 磁盘缓存目录
+    std::string cache_file_;       // 统一存储文件路径
     std::list<string> lru_queue_;  // 用于LRU淘汰策略
   };
 
