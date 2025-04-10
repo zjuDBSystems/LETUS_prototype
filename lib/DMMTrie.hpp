@@ -216,6 +216,7 @@ class DMMTrie {
  public:
   DMMTrie(uint64_t tid, LSVPS *page_store, VDLS *value_store,
           uint64_t current_version = 0);
+  ~DMMTrie();
   bool Put(uint64_t tid, uint64_t version, const string &key,
            const string &value);
   string Get(uint64_t tid, uint64_t version, const string &key);

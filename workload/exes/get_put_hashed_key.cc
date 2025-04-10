@@ -310,5 +310,6 @@ int main(int argc, char** argv) {
   rs_file.close();
 
   delete page_store;
+  delete trie;
   return 0;
 }
