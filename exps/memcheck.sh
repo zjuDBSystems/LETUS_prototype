@@ -11,7 +11,7 @@ cd ..
 
 # 定义测试参数数组
 key_size=32  # 20:SHA-1, 32:SHA-256
-batch_size=5000
+batch_size=500
 value_size=1024
 n_test=2
 data_path="$PWD/../data/"
