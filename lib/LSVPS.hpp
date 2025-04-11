@@ -56,7 +56,7 @@ class LSVPS {
       : cache_(),
         table_(*this),
         index_file_path_(index_file_path),
-        active_delta_page_cache_(3000, index_file_path) {}
+        active_delta_page_cache_(300000, index_file_path) {}
   Page *PageQuery(uint64_t version);
   BasePage *LoadPage(const PageKey &pagekey);
   void StorePage(Page *page);
@@ -87,7 +87,7 @@ class LSVPS {
                         const std::filesystem::path &filepath);
     std::vector<Page *> buffer_;
     // gurantee that max_size >= one version pages
-    const size_t max_size_ = 2000;
+    const size_t max_size_ = 200000;
     LSVPS &parent_LSVPS_;
   };
 
