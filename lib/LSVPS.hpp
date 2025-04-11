@@ -97,6 +97,7 @@ class LSVPS {
     ~ActiveDeltaPageCache();
     void Store(DeltaPage *page);
     DeltaPage *Get(const string &pid);
+    // TODO: DeltaPage* GetNewPage();
     void FlushToDisk();
 
    private:

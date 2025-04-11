@@ -194,9 +194,7 @@ int main(int argc, char** argv) {
   page_store->RegisterTrie(trie);
   ofstream rs_file;
   rs_file.open(result_path, ios::trunc);
-  rs_file << "version,get_latency,put_latency,get_throughput,put_throughput,"
-             "put_pmem(kB),put_vmem(kB)"
-          << std::endl;
+  rs_file << "version,op,latency,throughput,pmem(kB),vmem(kB)" << std::endl;
   rs_file.close();
   rs_file.open(result_path, ios::app);
 
@@ -256,6 +254,9 @@ int main(int argc, char** argv) {
     auto [pmem, vmem] = getMemoryUsage();
     put_pmem_l[j] = pmem;
     put_vmem_l[j] = vmem;
+    rs_file << j + 1 << "," << "put," << put_latency_l[j] << ","
+            << batch_size / put_latency_l[j] << "," << pmem << "," << vmem
+            << endl;
   }
   for (int j = 0; j < n_test; j++) {
     // get
@@ -284,9 +285,15 @@ int main(int argc, char** argv) {
     get_latency_l[j] = double(duration.count()) *
                        chrono::microseconds::period::num /
                        chrono::microseconds::period::den;
+    rs_file << j + 1 << "," << "get," << get_latency_l[j] << ","
+            << batch_size / get_latency_l[j] << "," << 0 << "," << 0 << endl;
   }
   double put_latency_sum = 0;
   double get_latency_sum = 0;
+  rs_file << "---summary---" << endl;
+  rs_file << "version,latency,put_latency,get_throughput,put_throughput,"
+             "put_pmem(kB),put_vmem(kB)"
+          << std::endl;
   for (int j = 0; j < n_test; j++) {
     rs_file << j + 1 << ",";
     rs_file << get_latency_l[j] << ",";
@@ -309,7 +316,7 @@ int main(int argc, char** argv) {
   std::cout << "wrong count = " << wrong_cnt << std::endl;
   rs_file.close();
 
-  delete page_store;
-  delete trie;
+  // delete page_store;
+  // delete trie;
   return 0;
 }
