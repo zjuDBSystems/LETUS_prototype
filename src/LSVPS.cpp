@@ -241,9 +241,6 @@ Page *LSVPS::PageQuery(uint64_t version) {
 如果该版本大于latestbasepage，basepage可以直接取latestbasepage否则就进行pagelookup
 可以保证找到pagekey大于他的（起码有latestbasepage）*/
 BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
-  if (pagekey.pid == "d865" && pagekey.version == 3) {
-    cout << "stop" << endl;
-  }
   std::stack<const DeltaPage *> delta_pages;
   BasePage *basepage;
   PageKey current_pagekey;
@@ -674,21 +671,6 @@ void LSVPS::ActiveDeltaPageCache::writePageToDisk(const string &pid,
     out.write(reinterpret_cast<const char *>(page->GetData()), PAGE_SIZE);
     if (!out.good()) {
       throw std::runtime_error("Failed to write page data");
-    }
-
-    if (offset >= 4566441984 && offset <= (4566441984 + PAGE_SIZE)) {
-      cout << "stop" << endl;
-      char *data_tmp = new char[PAGE_SIZE];
-      out.seekg(offset, ios::beg);
-      out.read(data_tmp, PAGE_SIZE);
-      if (!out.good()) {
-        delete[] data_tmp;
-        out.close();
-        throw std::runtime_error("Failed to read page data");
-      }
-      DeltaPage *page_tmp = new DeltaPage(data_tmp);
-      delete[] data_tmp;
-      delete page_tmp;
     }
 
     out.flush();

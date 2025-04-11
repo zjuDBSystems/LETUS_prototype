@@ -1031,11 +1031,6 @@ bool DMMTrie::Put(uint64_t tid, uint64_t version, const string &key,
     cout << "Version " << version << " is outdated!" << endl;
     return false;
   }
-  if (version == 3 &&
-      key ==
-          "d865ced9f5605e91f538012560352696f82d722e3ae44ad6e7881e30471a78a6") {
-    cout << "stop" << endl;
-  }
   if (value == "") {
     cout << "Value cannot be empty string" << endl;
     return false;
@@ -1133,9 +1128,6 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
   for (const auto &it : updates) {
     string pid = it.first;
     bool if_exceed = false;
-    if (version == 3 && pid == "d865") {
-      cout << "stop" << endl;
-    }
     // get the latest version number of a page
     uint64_t page_version = GetPageVersion({0, 0, false, pid}).first;
     PageKey pagekey = {version, 0, false, pid},
@@ -1203,7 +1195,7 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
       deltapage->SetLastPageKey(pagekey);
     }
     UpdatePageKey(old_pagekey, pagekey);
-    deltapage->SerializeTo();
+    // deltapage->SerializeTo();
     page_store_->StoreActiveDeltaPage(deltapage);
   }
 
