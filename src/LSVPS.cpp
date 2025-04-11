@@ -241,6 +241,9 @@ Page *LSVPS::PageQuery(uint64_t version) {
 如果该版本大于latestbasepage，basepage可以直接取latestbasepage否则就进行pagelookup
 可以保证找到pagekey大于他的（起码有latestbasepage）*/
 BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
+  if (pagekey.pid == "d865" && pagekey.version == 3) {
+    cout << "stop" << endl;
+  }
   std::stack<const DeltaPage *> delta_pages;
   BasePage *basepage;
   PageKey current_pagekey;
@@ -280,6 +283,7 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
     basepage = new BasePage(trie_, nullptr, pagekey.pid);
   else {
     basepage = dynamic_cast<BasePage *>(pageLookup(current_pagekey));
+    // TODO: leak here, basepage is not deleted but overwritten by new
     if (basepage == nullptr) {
       std::cerr << "Error: BasePage not found for PageKey: " << current_pagekey
                 << std::endl;
@@ -287,12 +291,13 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
     }
     basepage = new BasePage(*basepage);  // deep copy
   }
-
   while (!delta_pages.empty()) {
     applyDelta(basepage, delta_pages.top(), pagekey);
     delta_pages.pop();
+    // TODO: leak here, the poped deltapage is not freed
   }
   if (basepage->GetPageKey().version < pagekey.version) {
+    // TODO: 拿到的版本比要的版本小 不是有可能最新版本就是比这个版本小吗？
     std::cerr << "Error: Requested version " << pagekey.version
               << " not found. Latest available version is "
               << basepage->GetPageKey().version << std::endl;
@@ -621,7 +626,11 @@ DeltaPage *LSVPS::ActiveDeltaPageCache::Get(const string &pid) {
     return it->second;
   }
   // 如果不在内存中，尝试从磁盘读取
-  return readFromDisk(pid);
+  // TODO: cache operation here, avoid file confliction
+  DeltaPage *page = readFromDisk(pid);
+  evictIfNeeded();
+  cache_[pid] = page;
+  return page;
 }
 
 void LSVPS::ActiveDeltaPageCache::prepareForBatchWrite(const string &pid,
@@ -661,9 +670,25 @@ void LSVPS::ActiveDeltaPageCache::writePageToDisk(const string &pid,
     if (!page || !page->GetData()) {
       throw std::runtime_error("Invalid page data encountered");
     }
+    page->SerializeTo();  // TODO: no serialize before write
     out.write(reinterpret_cast<const char *>(page->GetData()), PAGE_SIZE);
     if (!out.good()) {
       throw std::runtime_error("Failed to write page data");
+    }
+
+    if (offset >= 4566441984 && offset <= (4566441984 + PAGE_SIZE)) {
+      cout << "stop" << endl;
+      char *data_tmp = new char[PAGE_SIZE];
+      out.seekg(offset, ios::beg);
+      out.read(data_tmp, PAGE_SIZE);
+      if (!out.good()) {
+        delete[] data_tmp;
+        out.close();
+        throw std::runtime_error("Failed to read page data");
+      }
+      DeltaPage *page_tmp = new DeltaPage(data_tmp);
+      delete[] data_tmp;
+      delete page_tmp;
     }
 
     out.flush();
@@ -824,6 +849,7 @@ void LSVPS::ActiveDeltaPageCache::FlushToDisk() {
         out.seekp(0, ios::end);
         offset = out.tellp();
       }
+
       if (!page || !page->GetData()) {
         throw std::runtime_error("Invalid page data encountered");
       }
@@ -831,6 +857,7 @@ void LSVPS::ActiveDeltaPageCache::FlushToDisk() {
       if (!out.good()) {
         throw std::runtime_error("Failed to write page data");
       }
+
       pid_to_offset_[pid] = offset;
     }
 
@@ -884,15 +911,22 @@ DeltaPage *LSVPS::ActiveDeltaPageCache::readFromDisk(const string &pid) {
     in.read(data, PAGE_SIZE);
     if (!in.good()) {
       delete[] data;
+      in.close();
       throw std::runtime_error("Failed to read page data");
     }
+    // TODO: close file, otherwise it will conflict with file writing in
+    // evictIfNeeded
+    in.close();
 
     // 创建DeltaPage对象
     DeltaPage *page = new DeltaPage(data);
 
+    // TODO: data is not deleted here
+
     // 将页面加入缓存
-    evictIfNeeded();
-    cache_[pid] = page;
+    // TODO: move to LSVPS::ActiveDeltaPageCache::Get
+    // evictIfNeeded();
+    // cache_[pid] = page;
 
     return page;
   } catch (const std::exception &e) {

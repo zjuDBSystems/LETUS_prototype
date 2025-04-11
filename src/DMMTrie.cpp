@@ -802,9 +802,9 @@ BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
 
 BasePage::BasePage(DMMTrie *trie, string key, string pid, string nibbles)
     : trie_(trie), Page({0, 0, false, pid}) {
-// #ifdef DEBUG
-//   cout << "new BasePage" << endl;
-// #endif
+  // #ifdef DEBUG
+  //   cout << "new BasePage" << endl;
+  // #endif
   if (nibbles.size() == 0) {  // leafnode
     root_ = new LeafNode(0, key, {}, "");
   } else if (nibbles.size() == 1) {  // indexnode->leafnode
@@ -1031,6 +1031,11 @@ bool DMMTrie::Put(uint64_t tid, uint64_t version, const string &key,
     cout << "Version " << version << " is outdated!" << endl;
     return false;
   }
+  if (version == 3 &&
+      key ==
+          "d865ced9f5605e91f538012560352696f82d722e3ae44ad6e7881e30471a78a6") {
+    cout << "stop" << endl;
+  }
   if (value == "") {
     cout << "Value cannot be empty string" << endl;
     return false;
@@ -1056,6 +1061,7 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
     if (!page->GetRoot()->IsLeaf()) {  // first level in page is indexnode
       if (!page->GetRoot()->GetChild(GetIndex(nibble_path[i]))->IsLeaf()) {
         // second level is indexnode
+        // TODO: child的版本比Root高是正常的吗？
         page_version = page->GetRoot()
                            ->GetChild(GetIndex(nibble_path[i]))
                            ->GetChildVersion(GetIndex(nibble_path[i + 1]));
@@ -1127,7 +1133,9 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
   for (const auto &it : updates) {
     string pid = it.first;
     bool if_exceed = false;
-
+    if (version == 3 && pid == "d865") {
+      cout << "stop" << endl;
+    }
     // get the latest version number of a page
     uint64_t page_version = GetPageVersion({0, 0, false, pid}).first;
     PageKey pagekey = {version, 0, false, pid},
