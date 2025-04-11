@@ -36,6 +36,8 @@ for batch_size in "${batch_sizes[@]}"; do
         mkdir -p $index_path
         
         result_path="$PWD/results/get_put_hashed_key_k${key_size}_${mode}/b${batch_size}v${value_size}.csv"
+        echo $(date "+%Y-%m-%d %H:%M:%S") >> results/test_get_put_hashed_key_k${key_size}_${mode}.log
+        echo "batch_size: ${batch_size}, value_size: ${value_size}, key_size: ${key_size}" >> results/test_get_put_hashed_key_k${key_size}_${mode}.log
         # 运行测试并提取结果
         ../build_${mode}/bin/get_put_hashed_key -b $batch_size -v $value_size -k $key_size -n $n_test -d $data_path -i $index_path -r $result_path >> results/test_get_put_hashed_key_k${key_size}_${mode}.log
         set +x

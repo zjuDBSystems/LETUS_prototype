@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/bin/bash
 mode=release
 
@@ -12,6 +13,8 @@ echo "data_path: $data_path"
 echo "index_path: $index_path"
 
 
+=======
+>>>>>>> profile_3
 # 检查必要的性能分析工具
 check_tools() {
     if ! command -v perf &> /dev/null; then
@@ -37,7 +40,7 @@ cd ..
 
 # 定义测试参数数组
 key_size=32  # 20:SHA-1, 32:SHA-256
-batch_sizes=(500)
+batch_sizes=(5000)
 value_sizes=(1024)
 n_test=3
 data_path="$PWD/../data/"
