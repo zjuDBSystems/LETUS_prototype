@@ -21,8 +21,8 @@ cd ../
 cd exps/
 mkdir -p results
 cd results
-rm -rf get_put_hashed_key_k${key_size}_${mode}
-mkdir -p get_put_hashed_key_k${key_size}_${mode}
+rm -rf put_get_inter_hashed_key_k${key_size}_${mode}
+mkdir -p put_get_inter_hashed_key_k${key_size}_${mode}
 cd ..
 
 # 运行测试
@@ -35,14 +35,14 @@ for batch_size in "${batch_sizes[@]}"; do
         rm -rf $index_path
         mkdir -p $index_path
         
-        result_path="$PWD/results/get_put_hashed_key_k${key_size}_${mode}/b${batch_size}v${value_size}.csv"
-        echo $(date "+%Y-%m-%d %H:%M:%S") >> results/test_get_put_hashed_key_k${key_size}_${mode}.log
-        echo "batch_size: ${batch_size}, value_size: ${value_size}, key_size: ${key_size}" >> results/test_get_put_hashed_key_k${key_size}_${mode}.log
+        result_path="$PWD/results/put_get_inter_hashed_key_k${key_size}_${mode}/b${batch_size}v${value_size}.csv"
+        echo $(date "+%Y-%m-%d %H:%M:%S") >> results/test_put_get_inter_hashed_key_k${key_size}_${mode}.log
+        echo "batch_size: ${batch_size}, value_size: ${value_size}, key_size: ${key_size}" >> results/test_put_get_inter_hashed_key_k${key_size}_${mode}.log
         # 运行测试并提取结果
-        ../build_${mode}/bin/get_put_hashed_key -b $batch_size -v $value_size -k $key_size -n $n_test -d $data_path -i $index_path -r $result_path >> results/test_get_put_hashed_key_k${key_size}_${mode}.log
+        ../build_${mode}/bin/put_get_inter_hashed_key -b $batch_size -v $value_size -k $key_size -n $n_test -d $data_path -i $index_path -r $result_path >> results/test_put_get_inter_hashed_key_k${key_size}_${mode}.log
         set +x
         sleep 5
     done
 done
 
-python3 plot.py get_put_hashed_key_k${key_size}_${mode}
+python3 plot.py put_get_inter_hashed_key_k${key_size}_${mode}
