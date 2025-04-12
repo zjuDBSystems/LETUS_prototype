@@ -96,16 +96,22 @@ class Page {  // 设置成抽象类 序列化 反序列化 getPageKey setPageKey
               //  DMMTriePage DeltaPage
 
  private:
-  alignas(4096) char data_[PAGE_SIZE]{};
+  // alignas(4096) char data_[PAGE_SIZE]{};
+  char* data_;
   PageKey pagekey_;
 
  public:
-  Page() {}
+  Page() { data_ = nullptr; }
 
-  Page(PageKey pagekey) : pagekey_(pagekey) {}
+  Page(PageKey pagekey) : pagekey_(pagekey) { data_ = nullptr; }
 
   Page(const Page& other) {
-    memcpy(data_, other.data_, PAGE_SIZE);
+    if (other.data_ != nullptr) {
+      data_ = new char[PAGE_SIZE];
+      memcpy(data_, other.data_, PAGE_SIZE);
+    } else {
+      data_ = nullptr;
+    }
     pagekey_ = other.pagekey_;
   }
 
@@ -122,6 +128,10 @@ class Page {  // 设置成抽象类 序列化 反序列化 getPageKey setPageKey
 
   virtual bool Deserialize(std::istream& in) {
     try {
+      if (data_ == nullptr) {
+        data_ = new char[PAGE_SIZE];
+        memset(data_, 0, PAGE_SIZE);
+      }
       in.read(data_, PAGE_SIZE);
       return in.good();
     } catch (const std::exception&) {
@@ -133,7 +143,13 @@ class Page {  // 设置成抽象类 序列化 反序列化 getPageKey setPageKey
 
   const char* GetData() const { return data_; }
 
-  char* GetData() { return data_; }
+  char* GetData() {
+    if (data_ == nullptr) {
+      data_ = new char[PAGE_SIZE];
+      memset(data_, 0, PAGE_SIZE);
+    }
+    return data_;
+  }
 };
 inline std::ostream& operator<<(std::ostream& os, const PageKey& key) {
   os << "PageKey(version=" << key.version << ", tid=" << key.tid
