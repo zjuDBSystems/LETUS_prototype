@@ -309,7 +309,7 @@ int main(int argc, char** argv) {
   std::cout << "wrong count = " << wrong_cnt << std::endl;
   rs_file.close();
 
-  delete page_store;
-  delete trie;
+  // delete page_store;
+  // delete trie;
   return 0;
 }

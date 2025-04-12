@@ -1,52 +1,28 @@
-<<<<<<< HEAD
 #!/bin/bash
-mode=release
-
 # 定义测试参数数组
 key_size=32  # 20:SHA-1, 32:SHA-256
-batch_sizes=(100 200 300 400 500)
+# batch_sizes=(500 1000 2000 3000 4000 5000)
+# batch_sizes=(100 200 300 400 500)
+batch_sizes=(4000)
 value_sizes=(1024)
-n_test=5
+n_test=20
 data_path="$PWD/../data/"
 index_path="$PWD/../index"
 echo "data_path: $data_path"
 echo "index_path: $index_path"
 
 
-=======
->>>>>>> profile_3
-# 检查必要的性能分析工具
-check_tools() {
-    if ! command -v perf &> /dev/null; then
-        echo "Error: perf is not installed. Please install it first."
-        exit 1
-    fi
-    if [ ! -d "./FlameGraph" ]; then
-        echo "Error: FlameGraph directory not found. Please clone it first."
-        exit 1
-    fi
-}
-
 # 编译项目
 cd ../
-./build.sh --build-type ${mode} --cxx g++
+./build.sh --build-type debug --cxx g++
 # 创建结果目录
 cd exps/
 mkdir -p results
 cd results
-mkdir -p get_put_hashed_key
-mkdir -p profiling
+rm -rf get_put_hashed_key_k${key_size}_${mode}
+mkdir -p get_put_hashed_key_k${key_size}_${mode}
 cd ..
 
-# 定义测试参数数组
-key_size=32  # 20:SHA-1, 32:SHA-256
-batch_sizes=(5000)
-value_sizes=(1024)
-n_test=3
-data_path="$PWD/../data/"
-index_path="$PWD/../index"
-echo "data_path: $data_path"
-echo "index_path: $index_path"
 
 # 创建结果文件
 echo "batch_size,value_size,n_test,get_latency,put_latency,get_throughput,put_throughput" > results/get_put_hashed_key_results.csv

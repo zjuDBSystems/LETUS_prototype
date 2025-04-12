@@ -182,6 +182,7 @@ class DeltaPage : public Page {
   void ClearBasePageUpdateCount();
   void SerializeTo(std::ofstream &out) const;
   bool Deserialize(std::ifstream &in);
+  bool Deserialize(char *buffer);
 
  private:
   vector<DeltaItem> deltaitems_;

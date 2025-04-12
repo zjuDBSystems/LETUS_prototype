@@ -2,6 +2,7 @@
 #define _LSVPS_H_
 
 #include <cstdint>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -106,11 +107,13 @@ class LSVPS {
     // 实际写入单个页面到磁盘
     void writePageToDisk(const string &pid, DeltaPage *page);
     // 从磁盘读取页面
-    DeltaPage *readFromDisk(const string &pid);
+    bool readFromDisk(const string &pid, DeltaPage *page);
     void writeIndexBlock();
     void readIndexBlock();
 
-    unordered_map<string, DeltaPage *> cache_;
+    DeltaPage *page_pool_;
+    std::queue<size_t> free_pages_;
+    unordered_map<string, size_t> cache_;          // map pid to cache pool
     unordered_map<string, size_t> pid_to_offset_;  // Maps pid to file offset
     const size_t max_size_;                        // 缓存最大容量
     std::string cache_dir_;                        // 磁盘缓存目录
