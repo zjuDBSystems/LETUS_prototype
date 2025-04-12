@@ -648,7 +648,7 @@ DeltaPage *LSVPS::ActiveDeltaPageCache::Get(const string &pid) {
     page->SetLastPageKey(PageKey{0, 0, false, pid});
     page->SetPageKey(PageKey{0, 0, true, pid});
   }
-  cache_[pid] = pool_pos;
+  cache_.insert(std::make_pair(pid, pool_pos));
   return page;
 }
 
@@ -677,12 +677,14 @@ void LSVPS::ActiveDeltaPageCache::writePageToDisk(const string &pid,
   try {
     // 记录当前写入位置
     size_t offset;
-    if (pid_to_offset_.find(pid) != pid_to_offset_.end()) {
-      offset = pid_to_offset_[pid];
+    auto it = pid_to_offset_.find(pid) ;
+    if (it != pid_to_offset_.end()) {
+      offset = it->second;
       out.seekp(offset, ios::beg);
     } else {
       out.seekp(0, ios::end);
       offset = out.tellp();
+      pid_to_offset_.insert(std::make_pair(pid, offset));
     }
 
     // 写入页面数据
@@ -699,7 +701,7 @@ void LSVPS::ActiveDeltaPageCache::writePageToDisk(const string &pid,
     out.close();
 
     // 更新pid到offset的映射
-    pid_to_offset_[pid] = offset;
+    // pid_to_offset_[pid] = offset;
   } catch (const std::exception &e) {
     out.close();
     throw;
@@ -847,12 +849,14 @@ void LSVPS::ActiveDeltaPageCache::FlushToDisk() {
     // 将所有缓存中的页面写入磁盘
     for (const auto &[pid, pool_pos] : cache_) {
       size_t offset;
-      if (pid_to_offset_.find(pid) != pid_to_offset_.end()) {
-        offset = pid_to_offset_[pid];
+      auto offset_it = pid_to_offset_.find(pid) ;
+      if (offset_it!= pid_to_offset_.end()) {
+        offset = offset_it->second;
         out.seekp(offset, ios::beg);
       } else {
         out.seekp(0, ios::end);
         offset = out.tellp();
+        pid_to_offset_.insert(std::make_pair(pid, offset));
       }
 
       if (!page_pool_[pool_pos].GetData()) {
