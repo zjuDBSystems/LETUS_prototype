@@ -106,16 +106,18 @@ class Page {  // 设置成抽象类 序列化 反序列化 getPageKey setPageKey
   Page(PageKey pagekey) : pagekey_(pagekey) { data_ = nullptr; }
 
   Page(const Page& other) {
-    if (other.data_ != nullptr) {
-      data_ = new char[PAGE_SIZE];
-      memcpy(data_, other.data_, PAGE_SIZE);
-    } else {
-      data_ = nullptr;
-    }
+    // if (other.data_ != nullptr) {
+    //   data_ = new char[PAGE_SIZE];
+    //   memcpy(data_, other.data_, PAGE_SIZE);
+    // } else {
+    //   data_ = nullptr;
+    // }
+    data_ = nullptr;
     pagekey_ = other.pagekey_;
   }
 
-  virtual ~Page() = default;  // [hack]
+  // virtual ~Page() = default;  // [hack]
+  virtual ~Page() { delete[] data_; }
 
   const PageKey& GetPageKey() const {
     // std::cout << "[GetPageKey]" << pagekey_.pid << std::endl;

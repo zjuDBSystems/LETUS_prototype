@@ -7,7 +7,7 @@ key_size=32  # 20:SHA-1, 32:SHA-256
 # batch_sizes=(100 200 300 400 500)
 batch_sizes=(4000)
 value_sizes=(1024)
-n_test=20
+n_test=5
 data_path="$PWD/../data/"
 index_path="$PWD/../index"
 echo "data_path: $data_path"
