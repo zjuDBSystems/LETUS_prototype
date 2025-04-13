@@ -9,7 +9,6 @@
 #include <unistd.h>
 
 #include <chrono>
-#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -19,8 +18,6 @@
 #include "generator.hpp"
 
 // common values
-uint64_t MAX_KEY = pow(2, 32) - 1;
-// ZipfianGenerator key_generator(1, MAX_KEY);
 CounterGenerator key_generator(1);
 
 struct Task {
@@ -69,10 +66,13 @@ int taskGenerator(int tlen, int key_len, int value_len, int task_i,
 }
 
 int main(int argc, char** argv) {
-  int n_test = 1;
-  int batch_size = 60;  // 500, 1000, 2000, 3000, 4000
-  int key_len = 5;      // 32
-  int value_len = 256;  // 256, 512, 1024, 2048
+  int batch_size = 60;  //
+  int n_test = 200;
+  int key_len = 5;    // 32
+  int value_len = 5;  // 256, 512, 1024, 2048
+  // std::string data_path = "/Users/ldz/Code/miniLETUS/data/";
+  // std::string index_path = "/Users/ldz/Code/miniLETUS/";
+  // std::string result_path = "/Users/ldz/Code/miniLETUS/exps/results/";
   std::string data_path = "data/";
   std::string index_path = "index";
   std::string result_path = "exps/results/test.csv";
@@ -168,8 +168,8 @@ int main(int argc, char** argv) {
   rs_file.open(result_path, ios::app);
 
   // start test
-  double put_latency_sum = 0;
-  double get_latency_sum = 0;
+  double put_latency_l[n_test];
+  double get_latency_l[n_test];
   double wrong_cnt = 0;
   for (int j = 0; j < n_test; j++) {
     // put
@@ -190,19 +190,31 @@ int main(int argc, char** argv) {
     trie->Commit(j + 1);
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
-    double put_latency = double(duration.count()) *
-                         chrono::microseconds::period::num /
-                         chrono::microseconds::period::den;
+    put_latency_l[j] = double(duration.count()) *
+                       chrono::microseconds::period::num /
+                       chrono::microseconds::period::den;
+  }
+  // shuffle get_tasks
+  // 使用随机数生成器
+  // std::random_device rd;
+  uint64_t seed = 1882;
+  // uint64_t seed =
+  // std::chrono::system_clock::now().time_since_epoch().count();
+  std::mt19937 g(seed);
+  std::shuffle(get_tasks, get_tasks + n_test, g);
+  for (int j = 0; j < n_test; j++) {
     // get
-    keys = get_tasks[j].keys;
-    values = get_tasks[j].values;
-    start = chrono::system_clock::now();
+    auto keys = get_tasks[j].keys;
+    auto values = get_tasks[j].values;
+    auto versions = get_tasks[j].versions;
+    auto start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
       std::string value = values[i];
       uint64_t version = versions[i];
 #ifdef DEBUG
-      std::cout << i << " GET:" << key << ", v" << version << std::endl;
+      std::cout << i << " GET:" << key << "," << value << ", v" << version
+                << std::endl;
 #endif
       std::string value_2 = trie->Get(0, version, key);
 #ifdef DEBUG
@@ -212,29 +224,30 @@ int main(int argc, char** argv) {
         wrong_cnt += 1;
       }
     }
-    trie->Commit(j + 1);
-    end = chrono::system_clock::now();
-    duration = chrono::duration_cast<chrono::microseconds>(end - start);
-    double get_latency = double(duration.count()) *
-                         chrono::microseconds::period::num /
-                         chrono::microseconds::period::den;
-
-    put_latency_sum += put_latency;
-    get_latency_sum += get_latency;
-
+    auto end = chrono::system_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+    get_latency_l[j] = double(duration.count()) *
+                       chrono::microseconds::period::num /
+                       chrono::microseconds::period::den;
+  }
+  double put_latency_sum = 0;
+  double get_latency_sum = 0;
+  for (int j = 0; j < n_test; j++) {
     rs_file << j + 1 << ",";
-    rs_file << get_latency << ",";
-    rs_file << put_latency << ",";
-    rs_file << batch_size / get_latency << ",";
-    rs_file << batch_size / put_latency << std::endl;
+    rs_file << get_latency_l[j] << ",";
+    rs_file << put_latency_l[j] << ",";
+    rs_file << batch_size / get_latency_l[j] << ",";
+    rs_file << batch_size / put_latency_l[j] << std::endl;
+    get_latency_sum += get_latency_l[j];
+    put_latency_sum += put_latency_l[j];
   }
   std::cout << "latency: ";
-  std::cout << "get= " << get_latency_sum / n_test << " s, ";
   std::cout << "put= " << put_latency_sum / n_test << " s, ";
+  std::cout << "get= " << get_latency_sum / n_test << " s, ";
   std::cout << std::endl;
   std::cout << "throughput: ";
-  std::cout << "get= " << batch_size / (get_latency_sum / n_test) << " ops, ";
   std::cout << "put= " << batch_size / (put_latency_sum / n_test) << " ops, ";
+  std::cout << "get= " << batch_size / (get_latency_sum / n_test) << " ops, ";
   std::cout << std::endl;
   std::cout << "wrong count = " << wrong_cnt << std::endl;
   rs_file.close();
