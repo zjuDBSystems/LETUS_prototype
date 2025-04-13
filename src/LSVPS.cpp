@@ -677,7 +677,7 @@ void LSVPS::ActiveDeltaPageCache::writePageToDisk(const string &pid,
   try {
     // 记录当前写入位置
     size_t offset;
-    auto it = pid_to_offset_.find(pid) ;
+    auto it = pid_to_offset_.find(pid);
     if (it != pid_to_offset_.end()) {
       offset = it->second;
       out.seekp(offset, ios::beg);
@@ -714,7 +714,7 @@ void LSVPS::ActiveDeltaPageCache::evictIfNeeded() {
     auto it = cache_.begin();
     string pid_to_evict = it->first;
     // 写入磁盘
-    writePageToDisk(pid_to_evict, &page_pool_[it->second]);
+    // writePageToDisk(pid_to_evict, &page_pool_[it->second]);
     // 释放内存
     page_pool_[it->second].ClearDeltaPage();
     free_pages_.push(it->second);
@@ -849,8 +849,8 @@ void LSVPS::ActiveDeltaPageCache::FlushToDisk() {
     // 将所有缓存中的页面写入磁盘
     for (const auto &[pid, pool_pos] : cache_) {
       size_t offset;
-      auto offset_it = pid_to_offset_.find(pid) ;
-      if (offset_it!= pid_to_offset_.end()) {
+      auto offset_it = pid_to_offset_.find(pid);
+      if (offset_it != pid_to_offset_.end()) {
         offset = offset_it->second;
         out.seekp(offset, ios::beg);
       } else {
