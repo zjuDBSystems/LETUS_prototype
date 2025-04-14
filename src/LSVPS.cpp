@@ -155,26 +155,42 @@ bool LookupBlock::SerializeTo(std::ostream &out) const {
 
     // 1. 写入 entries 数量
     if (entries.size() > std::numeric_limits<uint32_t>::max()) {
+      std::cerr << "Error: too many lookup entries" << std::endl;
       return false;
     }
     uint32_t entriesSize = static_cast<uint32_t>(entries.size());
     out.write(reinterpret_cast<const char *>(&entriesSize),
               sizeof(entriesSize));
-    if (!out.good()) return false;
+    if (!out.good()) {
+      std::cerr << "Error: fail to write entriesSize" << std::endl;
+      return false;
+    }
 
     // 2. 写入所有 entries
     for (const auto &entry : entries) {
-      if (!entry.first.SerializeTo(out)) return false;
+      if (!entry.first.SerializeTo(out)) {
+        std::cerr << "Error: fail to write entry page key" << std::endl;
+        return false;
+      }
       out.write(reinterpret_cast<const char *>(&entry.second), sizeof(size_t));
-      if (!out.good()) return false;
+      if (!out.good()) {
+        std::cerr << "Error: fail to write entry location" << std::endl;
+        return false;
+      }
     }
 
     // 3. Calculate position within the LookupBlock
     std::streampos currentPos = out.tellp();
-    if (currentPos == std::streampos(-1)) return false;
+    if (currentPos == std::streampos(-1)) {
+      std::cerr << "Error: fail to get current position" << std::endl;
+      return false;
+    }
 
     size_t blockPos = static_cast<size_t>(currentPos - startPos);
-    if (blockPos > BLOCK_SIZE) return false;
+    if (blockPos > BLOCK_SIZE) {
+      std::cerr << "Error: read_size exceeds BLOCK_SIZE" << std::endl;
+      return false;
+    }
 
     size_t padding_size = BLOCK_SIZE - blockPos;
     std::vector<char> padding(padding_size, 0);
@@ -182,6 +198,7 @@ bool LookupBlock::SerializeTo(std::ostream &out) const {
 
     return out.good();
   } catch (const std::exception &) {
+    std::cerr << "Error: serialize lookup block failed" << std::endl;
     return false;
   }
 }
