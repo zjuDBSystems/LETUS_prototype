@@ -2,6 +2,7 @@
 #define _LSVPS_H_
 
 #include <cstdint>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -17,8 +18,9 @@ struct IndexBlock {
     uint64_t location;
   };
 
-  static constexpr size_t MAPPINGS_PER_BLOCK =
-      (INDEXBLOCK_SIZE - sizeof(size_t)) / sizeof(Mapping);
+  // INDEXBLOCK_SIZE / (version 8 + tid 8 + type 1 + pid 8 + 64 + location 8) =
+  // 126
+  static constexpr size_t MAPPINGS_PER_BLOCK = 126;
 
   IndexBlock();
   bool AddMapping(const PageKey &pagekey, uint64_t location);
@@ -56,7 +58,7 @@ class LSVPS {
       : cache_(),
         table_(*this),
         index_file_path_(index_file_path),
-        active_delta_page_cache_(300000, index_file_path) {}
+        active_delta_page_cache_(3000000, index_file_path) {}
   Page *PageQuery(uint64_t version);
   BasePage *LoadPage(const PageKey &pagekey);
   void StorePage(Page *page);
@@ -87,7 +89,8 @@ class LSVPS {
                         const std::filesystem::path &filepath);
     std::vector<Page *> buffer_;
     // gurantee that max_size >= one version pages
-    const size_t max_size_ = 200000;
+    // max number of entries in lookup block = 126, 126^2 = 15876
+    const size_t max_size_ = 15876;
     LSVPS &parent_LSVPS_;
   };
 
@@ -107,11 +110,13 @@ class LSVPS {
     // 实际写入单个页面到磁盘
     void writePageToDisk(const string &pid, DeltaPage *page);
     // 从磁盘读取页面
-    DeltaPage *readFromDisk(const string &pid);
+    bool readFromDisk(const string &pid, DeltaPage *page);
     void writeIndexBlock();
     void readIndexBlock();
 
-    unordered_map<string, DeltaPage *> cache_;
+    DeltaPage *page_pool_;
+    std::queue<size_t> free_pages_;
+    unordered_map<string, size_t> cache_;          // map pid to cache pool
     unordered_map<string, size_t> pid_to_offset_;  // Maps pid to file offset
     const size_t max_size_;                        // 缓存最大容量
     std::string cache_dir_;                        // 磁盘缓存目录

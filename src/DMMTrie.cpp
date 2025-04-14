@@ -429,6 +429,42 @@ bool DeltaPage::Deserialize(std::ifstream &in) {
   }
 }
 
+bool DeltaPage::Deserialize(char *buffer) {
+  // #ifdef DEBUG
+  //   cout << "new DeltaPage" << endl;
+  // #endif
+
+  // Page({0, 0, true, ""});  // 临时初始化，后面会更新
+  ClearDeltaPage();
+  b_update_count_ = 0;
+
+  size_t current_size = 0;
+  last_pagekey_.version =
+      *(reinterpret_cast<uint64_t *>(buffer + current_size));
+  current_size += sizeof(uint64_t);
+  last_pagekey_.tid = *(reinterpret_cast<uint64_t *>(buffer + current_size));
+  current_size += sizeof(uint64_t);
+  last_pagekey_.type = *(reinterpret_cast<bool *>(buffer + current_size));
+  current_size += sizeof(bool);
+  size_t pid_size = *(reinterpret_cast<size_t *>(buffer + current_size));
+  current_size += sizeof(pid_size);
+  last_pagekey_.pid = string(buffer + current_size,
+                             pid_size);  // deserialize pid (pid_size bytes)
+  current_size += pid_size;
+  update_count_ = *(reinterpret_cast<uint16_t *>(buffer + current_size));
+  current_size += sizeof(uint16_t);
+  for (int i = 0; i < update_count_; i++) {
+    deltaitems_.push_back(DeltaItem(buffer, current_size));
+  }
+
+  // 反序列化完成后，更新 PageKey
+  PageKey pagekey = {last_pagekey_.version, last_pagekey_.tid, true,
+                     last_pagekey_.pid};
+  this->SetPageKey(pagekey);
+
+  return true;
+}
+
 void DeltaPage::SerializeTo(std::ofstream &out) const {
   // 写入 last_pagekey_ 信息
   out.write(reinterpret_cast<const char *>(&last_pagekey_.version),

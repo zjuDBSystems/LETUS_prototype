@@ -3,7 +3,7 @@ mode=release
 
 # 定义测试参数数组
 key_size=32  # 20:SHA-1, 32:SHA-256
-# batch_sizes=(500 1000 2000 3000 4000 5000)
+batch_sizes=(500 1000 2000 3000 4000 5000)
 # batch_sizes=(100 200 300 400 500)
 batch_sizes=(5000)
 value_sizes=(1024)
