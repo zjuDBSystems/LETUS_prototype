@@ -75,6 +75,8 @@ add_executable(get_put_hashed_key "workload/exes/get_put_hashed_key.cc" ${letus_
 target_link_libraries(get_put_hashed_key OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
 add_executable(put_get_inter_hashed_key "workload/exes/put_get_inter_hashed_key.cc" ${letus_src})
 target_link_libraries(put_get_inter_hashed_key OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
+add_executable(simple_payment "workload/exes/simple_payment.cc" ${letus_src})
+target_link_libraries(simple_payment OpenSSL::SSL OpenSSL::Crypto ${GNUC_LIBRARIES})
 # add_executable(LSVPStest ${letus_tests})
 # target_link_libraries(LSVPStest letus GTest::GTest GTest::Main)
 
