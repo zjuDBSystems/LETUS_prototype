@@ -614,15 +614,15 @@ DeltaPage::DeltaPage(PageKey last_pagekey, uint16_t update_count,
     : last_pagekey_(last_pagekey),
       update_count_(update_count),
       b_update_count_(b_update_count) {
-// #ifdef DEBUG
-//   cout << "new DeltaPage" << endl;
-// #endif
+  // #ifdef DEBUG
+  //   cout << "new DeltaPage" << endl;
+  // #endif
 }
 
 DeltaPage::DeltaPage(const DeltaPage &other) : Page(other) {
-// #ifdef DEBUG
-//   cout << "new DeltaPage" << endl;
-// #endif
+  // #ifdef DEBUG
+  //   cout << "new DeltaPage" << endl;
+  // #endif
 
   // Copy DeltaPage specific members
   last_pagekey_ = other.last_pagekey_;
@@ -632,9 +632,9 @@ DeltaPage::DeltaPage(const DeltaPage &other) : Page(other) {
 }
 
 DeltaPage::DeltaPage(char *buffer) : b_update_count_(0) {
-// #ifdef DEBUG
-//   cout << "new DeltaPage" << endl;
-// #endif
+  // #ifdef DEBUG
+  //   cout << "new DeltaPage" << endl;
+  // #endif
 
   Page({0, 0, true, ""});  // 临时初始化，后面会更新
 
@@ -665,9 +665,9 @@ DeltaPage::DeltaPage(char *buffer) : b_update_count_(0) {
 }
 
 DeltaPage::~DeltaPage() {
-// #ifdef DEBUG
-//   cout << "delete DeltaPage" << endl;
-// #endif
+  // #ifdef DEBUG
+  //   cout << "delete DeltaPage" << endl;
+  // #endif
 }
 
 void DeltaPage::AddIndexNodeUpdate(uint8_t location, uint64_t version,
@@ -690,6 +690,7 @@ void DeltaPage::AddLeafNodeUpdate(uint8_t location, uint64_t version,
 
 void DeltaPage::SerializeTo() {
   char *buffer = this->GetData();
+  memset(buffer, 0, PAGE_SIZE);
   size_t current_size = 0;
   memcpy(buffer + current_size, &last_pagekey_.version, sizeof(uint64_t));
   current_size += sizeof(uint64_t);
@@ -736,15 +737,15 @@ void DeltaPage::ClearBasePageUpdateCount() { b_update_count_ = 0; }
 
 BasePage::BasePage(DMMTrie *trie, Node *root, const string &pid)
     : trie_(trie), root_(root), Page({0, 0, false, pid}) {
-// #ifdef DEBUG
-//   cout << "new BasePage" << endl;
-// #endif
+  // #ifdef DEBUG
+  //   cout << "new BasePage" << endl;
+  // #endif
 }
 
 BasePage::BasePage(const BasePage &other) : Page(other), trie_(other.trie_) {
-// #ifdef DEBUG
-//   cout << "new BasePage" << endl;
-// #endif
+  // #ifdef DEBUG
+  //   cout << "new BasePage" << endl;
+  // #endif
   // Deep copy the root node
   if (other.root_) {
     if (other.root_->IsLeaf()) {
@@ -759,9 +760,9 @@ BasePage::BasePage(const BasePage &other) : Page(other), trie_(other.trie_) {
 
 BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
   Page({0, 0, false, ""});  // 临时初始化，后面会更新
-// #ifdef DEBUG
-//   cout << "new BasePage" << endl;
-// #endif
+                            // #ifdef DEBUG
+                            //   cout << "new BasePage" << endl;
+                            // #endif
   size_t current_size = 0;
 
   uint64_t version = *(reinterpret_cast<uint64_t *>(
@@ -801,9 +802,9 @@ BasePage::BasePage(DMMTrie *trie, char *buffer) : trie_(trie) {
 
 BasePage::BasePage(DMMTrie *trie, string key, string pid, string nibbles)
     : trie_(trie), Page({0, 0, false, pid}) {
-// #ifdef DEBUG
-//   cout << "new BasePage" << endl;
-// #endif
+  // #ifdef DEBUG
+  //   cout << "new BasePage" << endl;
+  // #endif
   if (nibbles.size() == 0) {  // leafnode
     root_ = new LeafNode(0, key, {}, "");
   } else if (nibbles.size() == 1) {  // indexnode->leafnode
@@ -824,9 +825,9 @@ BasePage::BasePage(DMMTrie *trie, string key, string pid, string nibbles)
 }
 
 BasePage::~BasePage() {
-// #ifdef DEBUG
-//   cout << "delete BasePage" << endl;
-// #endif
+  // #ifdef DEBUG
+  //   cout << "delete BasePage" << endl;
+  // #endif
   for (int i = 0; i < DMM_NODE_FANOUT; i++) {
     if (root_->HasChild(i)) {
       delete root_->GetChild(i);
@@ -1012,6 +1013,18 @@ DMMTrie::DMMTrie(uint64_t tid, LSVPS *page_store, VDLS *value_store,
   deltapage_versions_.clear();
 }
 
+DMMTrie::~DMMTrie() {
+  while (lru_cache_.size()) {  // cache is full
+    PageKey last_key = pagekeys_.back().first;
+    auto last_iter = lru_cache_.find(last_key);
+    delete last_iter->second->second;  // release memory of basepage
+
+    // remove the page whose pagekey is at the tail of list
+    lru_cache_.erase(last_key);
+    pagekeys_.pop_back();
+  }
+}
+
 bool DMMTrie::Put(uint64_t tid, uint64_t version, const string &key,
                   const string &value) {
   if (version < current_version_) {  // version invalid
@@ -1043,6 +1056,7 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
     if (!page->GetRoot()->IsLeaf()) {  // first level in page is indexnode
       if (!page->GetRoot()->GetChild(GetIndex(nibble_path[i]))->IsLeaf()) {
         // second level is indexnode
+        // TODO: child的版本比Root高是正常的吗？
         page_version = page->GetRoot()
                            ->GetChild(GetIndex(nibble_path[i]))
                            ->GetChildVersion(GetIndex(nibble_path[i + 1]));
@@ -1095,7 +1109,7 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
     }
   }
 
-  unordered_map<string, DeltaPage *> active_deltapages;
+  // unordered_map<string, DeltaPage *> active_deltapages;
   set<string> pids;
 
   for (const auto &it : put_cache_) {
@@ -1107,14 +1121,13 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
   }
 
   // get the needed active deltapages from LSVPS
-  for (string pid : pids) {
-    active_deltapages[pid] = page_store_->GetActiveDeltaPage(pid);
-  }
+  // for (string pid : pids) {
+  //   active_deltapages[pid] = page_store_->GetActiveDeltaPage(pid);
+  // }
 
   for (const auto &it : updates) {
     string pid = it.first;
     bool if_exceed = false;
-
     // get the latest version number of a page
     uint64_t page_version = GetPageVersion({0, 0, false, pid}).first;
     PageKey pagekey = {version, 0, false, pid},
@@ -1129,7 +1142,7 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
 
     // DeltaPage *deltapage = GetDeltaPage(pid);
 
-    DeltaPage *deltapage = active_deltapages[pid];
+    DeltaPage *deltapage = page_store_->GetActiveDeltaPage(pid);
 
     if (2 * it.second.size() + deltapage->GetDeltaPageUpdateCount() >=
         2 * Td_) {
@@ -1182,6 +1195,8 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
       deltapage->SetLastPageKey(pagekey);
     }
     UpdatePageKey(old_pagekey, pagekey);
+    // deltapage->SerializeTo();
+    page_store_->StoreActiveDeltaPage(deltapage);
   }
 
   for (const auto &it : page_cache_) {
@@ -1193,9 +1208,9 @@ void DMMTrie::CalcRootHash(uint64_t tid, uint64_t version) {
   }
 
   // send the active deltapages back to LSVPS
-  for (const auto &it : active_deltapages) {
-    page_store_->StoreActiveDeltaPage(it.second);
-  }
+  // for (const auto &it : active_deltapages) {
+  //   page_store_->StoreActiveDeltaPage(it.second);
+  // }
   for (auto &pair : page_cache_) {
     delete pair.second;
   }
@@ -1424,7 +1439,12 @@ void DMMTrie::PutPage(const PageKey &pagekey,
     lru_cache_.erase(last_key);
     pagekeys_.pop_back();
   }
-
+  auto it = lru_cache_.find(pagekey);
+  if (it != lru_cache_.end()) {
+    delete it->second->second;
+    pagekeys_.erase(it->second);
+    lru_cache_.erase(it);
+  }
   // insert the pair of PageKey and BasePage* to the front
   pagekeys_.push_front(make_pair(pagekey, page));
   lru_cache_[pagekey] = pagekeys_.begin();

@@ -194,7 +194,9 @@ int main(int argc, char** argv) {
   page_store->RegisterTrie(trie);
   ofstream rs_file;
   rs_file.open(result_path, ios::trunc);
-  rs_file << "version,op,latency,throughput,pmem(kB),vmem(kB)" << std::endl;
+  rs_file << "version,get_latency,put_latency,get_throughput,put_throughput,"
+             "put_pmem(kB),put_vmem(kB)"
+          << std::endl;
   rs_file.close();
   rs_file.open(result_path, ios::app);
 
@@ -206,11 +208,9 @@ int main(int argc, char** argv) {
   double vmem_last_af = 0;
 #endif
   // start test
-  double put_latency_l[n_test];
-  double get_latency_l[n_test];
-  double put_pmem_l[n_test];
-  double put_vmem_l[n_test];
   double wrong_cnt = 0;
+  double get_latency_sum = 0;
+  double put_latency_sum = 0;
   for (int j = 0; j < n_test; j++) {
     // put
     auto keys = put_tasks[j].keys;
@@ -248,22 +248,16 @@ int main(int argc, char** argv) {
 #endif
     auto end = chrono::system_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
-    put_latency_l[j] = double(duration.count()) *
-                       chrono::microseconds::period::num /
-                       chrono::microseconds::period::den;
+    double put_latency = double(duration.count()) *
+                         chrono::microseconds::period::num /
+                         chrono::microseconds::period::den;
     auto [pmem, vmem] = getMemoryUsage();
-    put_pmem_l[j] = pmem;
-    put_vmem_l[j] = vmem;
-    rs_file << j + 1 << "," << "put," << put_latency_l[j] << ","
-            << batch_size / put_latency_l[j] << "," << pmem << "," << vmem
-            << endl;
-  }
-  for (int j = 0; j < n_test; j++) {
+
     // get
-    auto keys = get_tasks[j].keys;
-    auto values = get_tasks[j].values;
-    auto versions = get_tasks[j].versions;
-    auto start = chrono::system_clock::now();
+    keys = get_tasks[j].keys;
+    values = get_tasks[j].values;
+    versions = get_tasks[j].versions;
+    start = chrono::system_clock::now();
     for (int i = 0; i < keys.size(); i++) {
       std::string key = keys[i];
       std::string value = values[i];
@@ -280,30 +274,18 @@ int main(int argc, char** argv) {
         wrong_cnt += 1;
       }
     }
-    auto end = chrono::system_clock::now();
-    auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
-    get_latency_l[j] = double(duration.count()) *
-                       chrono::microseconds::period::num /
-                       chrono::microseconds::period::den;
-    rs_file << j + 1 << "," << "get," << get_latency_l[j] << ","
-            << batch_size / get_latency_l[j] << "," << 0 << "," << 0 << endl;
-  }
-  double put_latency_sum = 0;
-  double get_latency_sum = 0;
-  rs_file << "---summary---" << endl;
-  rs_file << "version,latency,put_latency,get_throughput,put_throughput,"
-             "put_pmem(kB),put_vmem(kB)"
-          << std::endl;
-  for (int j = 0; j < n_test; j++) {
-    rs_file << j + 1 << ",";
-    rs_file << get_latency_l[j] << ",";
-    rs_file << put_latency_l[j] << ",";
-    rs_file << batch_size / get_latency_l[j] << ",";
-    rs_file << batch_size / put_latency_l[j] << ",";
-    rs_file << put_pmem_l[j] << ",";
-    rs_file << put_vmem_l[j] << std::endl;
-    get_latency_sum += get_latency_l[j];
-    put_latency_sum += put_latency_l[j];
+    end = chrono::system_clock::now();
+    duration = chrono::duration_cast<chrono::microseconds>(end - start);
+    double get_latency = double(duration.count()) *
+                         chrono::microseconds::period::num /
+                         chrono::microseconds::period::den;
+
+    rs_file << j + 1 << "," << get_latency << "," << put_latency << ","
+            << batch_size / get_latency << "," << batch_size / put_latency
+            << "," << pmem << "," << vmem << endl;
+
+    get_latency_sum += get_latency;
+    put_latency_sum += put_latency;
   }
   std::cout << "latency: ";
   std::cout << "put= " << put_latency_sum / n_test << " s, ";
