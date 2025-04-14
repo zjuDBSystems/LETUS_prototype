@@ -89,7 +89,8 @@ class LSVPS {
                         const std::filesystem::path &filepath);
     std::vector<Page *> buffer_;
     // gurantee that max_size >= one version pages
-    const size_t max_size_ = 20000;
+    // max number of entries in lookup block = 126, 126^2 = 15876
+    const size_t max_size_ = 15876;
     LSVPS &parent_LSVPS_;
   };
 
