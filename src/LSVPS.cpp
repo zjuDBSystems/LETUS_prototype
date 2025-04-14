@@ -274,6 +274,7 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
     uint64_t replay_version =
         trie_->GetVersionUpperbound(pagekey.pid, pagekey.version);
     delta_pagekey.version = replay_version;
+    // WARNING: 这个page有可能被flush所释放掉。
     DeltaPage *replay_sentinel =
         dynamic_cast<DeltaPage *>(pageLookup(delta_pagekey));
     if (replay_sentinel != nullptr) {
@@ -284,6 +285,7 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
     }
   }
   while (current_pagekey.type) {
+    // WARNING: 这个page有可能被flush所释放掉。
     DeltaPage *delta_page = dynamic_cast<DeltaPage *>(
         pageLookup(current_pagekey));  // precisely search
     if (delta_page) {
@@ -296,6 +298,7 @@ BasePage *LSVPS::LoadPage(const PageKey &pagekey) {
   if (current_pagekey.version == 0)
     basepage = new BasePage(trie_, nullptr, pagekey.pid);
   else {
+    // WARNING: 这个page有可能被flush所释放掉。
     basepage = dynamic_cast<BasePage *>(pageLookup(current_pagekey));
     // TODO: leak here, basepage is not deleted but overwritten by new
     if (basepage == nullptr) {
@@ -550,6 +553,9 @@ void LSVPS::MemIndexTable::Flush() {
   parent_LSVPS_.AddIndexFile(
       {buffer_.front()->GetPageKey(), buffer_.back()->GetPageKey(), filepath});
 
+  for (auto page : buffer_) {
+    delete page;
+  }
   buffer_.clear();
 }
 
@@ -573,6 +579,7 @@ void LSVPS::MemIndexTable::writeToStorage(
       if (!outFile.good()) {
         throw std::runtime_error("Failed to write page data");
       }
+      // page->ReleaseData();
     }
 
     // 写入索引块

@@ -152,6 +152,11 @@ class Page {  // 设置成抽象类 序列化 反序列化 getPageKey setPageKey
     }
     return data_;
   }
+
+  void ReleaseData() {
+    delete[] data_;
+    data_ = nullptr;
+  }
 };
 inline std::ostream& operator<<(std::ostream& os, const PageKey& key) {
   os << "PageKey(version=" << key.version << ", tid=" << key.tid
