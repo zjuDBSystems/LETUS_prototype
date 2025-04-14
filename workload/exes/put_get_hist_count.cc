@@ -216,7 +216,9 @@ int main(int argc, char** argv) {
       std::cout << i << " GET:" << key << "," << value << ", v" << version
                 << std::endl;
 #endif
-      std::string value_2 = trie->Get(0, version, key);
+      // std::string value_2 = trie->Get(0, version, key);
+      DMMTrieProof proof = trie->GetProof(0, version, key);
+      std::string value_2 = proof.value;
 #ifdef DEBUG
       std::cout << "value = " << value_2 << std::endl;
 #endif
