@@ -18,8 +18,9 @@ struct IndexBlock {
     uint64_t location;
   };
 
-  static constexpr size_t MAPPINGS_PER_BLOCK =
-      (INDEXBLOCK_SIZE - sizeof(size_t)) / sizeof(Mapping);
+  // INDEXBLOCK_SIZE / (version 8 + tid 8 + type 1 + pid 8 + 64 + location 8) =
+  // 126
+  static constexpr size_t MAPPINGS_PER_BLOCK = 126;
 
   IndexBlock();
   bool AddMapping(const PageKey &pagekey, uint64_t location);
@@ -88,7 +89,7 @@ class LSVPS {
                         const std::filesystem::path &filepath);
     std::vector<Page *> buffer_;
     // gurantee that max_size >= one version pages
-    const size_t max_size_ = 20000;
+    const size_t max_size_ = 200000;
     LSVPS &parent_LSVPS_;
   };
 
