@@ -568,6 +568,7 @@ void LSVPS::MemIndexTable::writeToStorage(
       if (!page || !page->GetData()) {
         throw std::runtime_error("Invalid page data encountered");
       }
+      page->SerializeTo();
       outFile.write(reinterpret_cast<const char *>(page->GetData()), PAGE_SIZE);
       if (!outFile.good()) {
         throw std::runtime_error("Failed to write page data");
@@ -879,6 +880,7 @@ void LSVPS::ActiveDeltaPageCache::FlushToDisk() {
       if (!page_pool_[pool_pos].GetData()) {
         throw std::runtime_error("Invalid page data encountered");
       }
+      page_pool_[pool_pos].SerializeTo();
       out.write(reinterpret_cast<const char *>(page_pool_[pool_pos].GetData()),
                 PAGE_SIZE);
       if (!out.good()) {

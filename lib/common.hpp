@@ -125,7 +125,7 @@ class Page {  // 设置成抽象类 序列化 反序列化 getPageKey setPageKey
   }
 
   // virtual size_t GetSerializedSize() = 0;
-
+  virtual void SerializeTo() {}
   virtual bool SerializeTo(std::ostream& out) const { return true; }
 
   virtual bool Deserialize(std::istream& in) {

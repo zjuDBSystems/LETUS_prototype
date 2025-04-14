@@ -20,7 +20,7 @@ std::string BuildKeyName(uint64_t key_num, int key_len) {
 }
 
 int main(int argc, char** argv) {
-  int num_accout = 40000000;  // 40,000,000(40M) 2,000,000(2M)
+  int num_accout = 5000000;  // 40,000,000(40M) 2,000,000(2M)
   int load_batch_size = 5000;
   int num_txn = 10000;
   int txn_batch_size = 1000;
