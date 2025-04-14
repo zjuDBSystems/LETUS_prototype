@@ -41,6 +41,12 @@
 # MacOS
 .DS_Store
 
+
+# flamegraph
+*.data
+*.data.old
+*.folded
+
 # folders
 .vscode/
 build/
@@ -51,3 +57,4 @@ bak/
 data/
 exps/results/
 results/
+FlameGraph/
