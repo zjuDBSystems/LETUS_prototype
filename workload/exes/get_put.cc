@@ -20,7 +20,8 @@
 
 // common values
 uint64_t MAX_KEY = pow(2, 32) - 1;
-ZipfianGenerator key_generator(1, MAX_KEY);
+// ZipfianGenerator key_generator(1, MAX_KEY);
+CounterGenerator key_generator(1);
 
 struct Task {
   std::vector<int> ops;
@@ -72,9 +73,9 @@ int main(int argc, char** argv) {
   int batch_size = 60;  // 500, 1000, 2000, 3000, 4000
   int key_len = 5;      // 32
   int value_len = 256;  // 256, 512, 1024, 2048
-  std::string data_path = "/Users/ldz/Code/miniLETUS/data/";
-  std::string index_path = "/Users/ldz/Code/miniLETUS/";
-  std::string result_path = "/Users/ldz/Code/miniLETUS/exps/results/";
+  std::string data_path = "data/";
+  std::string index_path = "index";
+  std::string result_path = "exps/results/test.csv";
 
   int opt;
   while ((opt = getopt(argc, argv, "b:n:k:v:d:r:i:")) != -1) {
