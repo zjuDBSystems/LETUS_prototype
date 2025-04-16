@@ -55,7 +55,9 @@ int main() {
   trie->Delete(0, 3, make_key("12345"));
   trie->Commit(3);
   cout << trie->Get(0, 3, make_key("12345")) << endl;
-  cout << trie->Get(0, 3, make_key("28294")) << endl;  // not exist key
+  cout << trie->Get(0, 1, make_key("28294")) << endl;  // not exist key
+  cout << trie->GetProof(0, 1, make_key("28294")).value
+       << endl;  // not exist key
   cout << trie->GetProof(0, 3, make_key("28294")).value
        << endl;  // not exist key
 }

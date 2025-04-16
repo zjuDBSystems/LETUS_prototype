@@ -1084,13 +1084,14 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
     string pid = nibble_path.substr(0, i);
     BasePage *page =
         GetPage({page_version, 0, false, pid});  // false means basepage
-    if (page == nullptr) {
+    if (page == nullptr || page->GetRoot() == nullptr) {
       cout << "Key " << key << " not found at version " << version << endl;
       return "";
     }
 
     if (!page->GetRoot()->IsLeaf()) {  // first level in page is indexnode
-      if (!page->GetRoot()->HasChild(nibble_path[i])) {
+      if (!page->GetRoot()->HasChild(GetIndex(nibble_path[i]))) {
+        cout << "child not found" << endl;
         cout << "Key " << key << " not found at version " << version << endl;
         return "";
       }
@@ -1295,14 +1296,14 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
     string pid = nibble_path.substr(0, i);
     BasePage *page =
         GetPage({page_version, 0, false, pid});  // false means basepage
-    if (page == nullptr) {
+    if (page == nullptr || page->GetRoot() == nullptr) {
       cout << "Key " << key << " not found at version " << version << endl;
       merkle_proof.value = "";
       return merkle_proof;
     }
 
     if (!page->GetRoot()->IsLeaf()) {
-      if (!page->GetRoot()->HasChild(nibble_path[i])) {
+      if (!page->GetRoot()->HasChild(GetIndex(nibble_path[i]))) {
         cout << "Key " << key << " not found at version " << version << endl;
         merkle_proof.value = "";
         return merkle_proof;
