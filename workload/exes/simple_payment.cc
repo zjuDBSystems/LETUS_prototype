@@ -20,11 +20,11 @@ std::string BuildKeyName(uint64_t key_num, int key_len) {
 }
 
 int main(int argc, char** argv) {
-  int num_accout = 50000000;  // 40,000,000(40M) 2,000,000(2M)
-  int load_batch_size = 5000;
+  int num_accout = 100000000;  // 40,000,000(40M) 2,000,000(2M)
+  int load_batch_size = 20000;
   int num_txn = 10000;
-  int txn_batch_size = 1000;
-  int key_len = 64;
+  int txn_batch_size = 600;
+  int key_len = 9;
   std::string data_path = "data/";
   std::string index_path = "index";
   std::string result_path = "exps/results/test.csv";
@@ -62,12 +62,32 @@ int main(int argc, char** argv) {
             << version << std::endl;
   // transaction
   int num_txn_version = num_txn / txn_batch_size;
-  UniformGenerator txn_key_generator(1, num_accout);
+  // pure random key chosing
+  // UniformGenerator txn_key_generator(1, num_accout); // full
+  // UniformGenerator txn_key_generator(num_accout - num_txn,
+  //                                    num_accout);  // latest
+  // UniformGenerator txn_key_generator(1, num_txn);  // oldest
+  // LETUS: 80% of accounts are called 20% of the time,
+  //   while the remaining 20% of accounts are called 80% of the time.
+  int random_keys[num_txn * 2];
+  UniformGenerator active_judger(0, 1000);  // if access active accounts
+  UniformGenerator active_key_generator(num_accout * 0.8, num_accout);
+  UniformGenerator inactive_key_generator(1, num_accout * 0.8);
+  for (int i = 0; i < num_txn * 2; i++) {
+    if (active_judger.Next() < 800) {
+      random_keys[i] = active_key_generator.Next();
+    } else {
+      random_keys[i] = inactive_key_generator.Next();
+    }
+  }
+  int txn_key_id = 0;
   for (; version <= num_load_version + num_txn_version; version++) {
     auto start = chrono::system_clock::now();
     for (int i = 0; i < txn_batch_size; i++) {
-      std::string key_send = BuildKeyName(txn_key_generator.Next(), key_len);
-      std::string key_recv = BuildKeyName(txn_key_generator.Next(), key_len);
+      std::string key_send = BuildKeyName(random_keys[txn_key_id], key_len);
+      txn_key_id++;
+      std::string key_recv = BuildKeyName(random_keys[txn_key_id], key_len);
+      txn_key_id++;
       DMMTrieProof proof_send = trie->GetProof(0, version - 1, key_send);
       DMMTrieProof proof_recv = trie->GetProof(0, version - 1, key_recv);
       int value_send = std::stoi(proof_send.value);
