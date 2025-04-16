@@ -7,15 +7,18 @@
 #include "VDLS.hpp"
 
 string make_key(const std::string& key) {
-  unsigned char hash[SHA_DIGEST_LENGTH];
-  SHA1(reinterpret_cast<const unsigned char*>(key.c_str()), key.size(), hash);
+  // unsigned char hash[SHA_DIGEST_LENGTH];
+  // SHA1(reinterpret_cast<const unsigned char*>(key.c_str()), key.size(),
+  // hash);
 
-  std::ostringstream hashString;
-  for (int i = 0; i < SHA_DIGEST_LENGTH; i++) {
-    hashString << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
-  }
-  // cout << hashString.str() << endl;
-  return hashString.str();
+  // std::ostringstream hashString;
+  // for (int i = 0; i < SHA_DIGEST_LENGTH; i++) {
+  //   hashString << std::hex << std::setw(2) << std::setfill('0') <<
+  //   (int)hash[i];
+  // }
+  // // cout << hashString.str() << endl;
+  // return hashString.str();
+  return key;
 }
 
 int main() {
@@ -52,4 +55,7 @@ int main() {
   trie->Delete(0, 3, make_key("12345"));
   trie->Commit(3);
   cout << trie->Get(0, 3, make_key("12345")) << endl;
+  cout << trie->Get(0, 3, make_key("28294")) << endl;  // not exist key
+  cout << trie->GetProof(0, 3, make_key("28294")).value
+       << endl;  // not exist key
 }

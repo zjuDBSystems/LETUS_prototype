@@ -1090,6 +1090,10 @@ string DMMTrie::Get(uint64_t tid, uint64_t version, const string &key) {
     }
 
     if (!page->GetRoot()->IsLeaf()) {  // first level in page is indexnode
+      if (!page->GetRoot()->HasChild(nibble_path[i])) {
+        cout << "Key " << key << " not found at version " << version << endl;
+        return "";
+      }
       if (!page->GetRoot()->GetChild(GetIndex(nibble_path[i]))->IsLeaf()) {
         // second level is indexnode
         // TODO: child的版本比Root高是正常的吗？
@@ -1293,10 +1297,16 @@ DMMTrieProof DMMTrie::GetProof(uint64_t tid, uint64_t version,
         GetPage({page_version, 0, false, pid});  // false means basepage
     if (page == nullptr) {
       cout << "Key " << key << " not found at version " << version << endl;
+      merkle_proof.value = "";
       return merkle_proof;
     }
 
     if (!page->GetRoot()->IsLeaf()) {
+      if (!page->GetRoot()->HasChild(nibble_path[i])) {
+        cout << "Key " << key << " not found at version " << version << endl;
+        merkle_proof.value = "";
+        return merkle_proof;
+      }
       // first level in page is indexnode
       merkle_proof.proofs.push_back(
           page->GetRoot()->GetNodeProof(i, GetIndex(nibble_path[i])));
